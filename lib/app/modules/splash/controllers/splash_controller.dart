@@ -58,7 +58,7 @@ class SplashController extends GetxController {
     bool hasCompletedRealLanguageSelection = storage.read('language_selection_completed') ?? false;
 
 
-    Future.delayed(const Duration(seconds: 1), () {
+    Future.delayed(const Duration(milliseconds: 100), () {
       if (token != null && token.isNotEmpty) {
         print("Token found, navigating to Home");
         Get.offAllNamed(Routes.BOTTOM_NAV_HOME);
