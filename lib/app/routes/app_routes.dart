@@ -5,10 +5,16 @@ abstract class Routes {
   Routes._();
   static const SPLASH = _Paths.SPLASH;
   static const LOGIN = _Paths.LOGIN;
+  static const LANGUAGE = _Paths.LANGUAGE;
+  static const ONBOARDING = _Paths.ONBOARDING;
+  static const BOTTOM_NAV_HOME = _Paths.BOTTOM_NAV_HOME;
 }
 
 abstract class _Paths {
   _Paths._();
   static const SPLASH = '/splash';
   static const LOGIN = '/login';
+  static const LANGUAGE = '/language';
+  static const ONBOARDING = '/onboarding';
+  static const BOTTOM_NAV_HOME = '/bottom-nav-home';
 }
