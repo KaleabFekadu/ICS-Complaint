@@ -46,8 +46,8 @@ class LoginView extends GetView<LoginController> {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          Colors.red.withOpacity(0.9), // Subtle red at the top
-                          Colors.redAccent.withOpacity(0.5), // Vibrant red at the bottom
+                          Colors.grey.withOpacity(0.9), // Subtle red at the top
+                          Colors.grey.withOpacity(0.5), // Vibrant red at the bottom
                         ],
                       ),
                     ),
@@ -63,7 +63,7 @@ class LoginView extends GetView<LoginController> {
                             duration: const Duration(milliseconds: 500),
                             curve: Curves.easeInOut,
                             child: Image.asset(
-                              'assets/logos/ccilogomain.png',
+                              'assets/logos/logo_2.png',
                               height: 280,
                               fit: BoxFit.contain,
                             ),

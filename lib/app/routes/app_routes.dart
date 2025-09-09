@@ -8,6 +8,8 @@ abstract class Routes {
   static const LANGUAGE = _Paths.LANGUAGE;
   static const ONBOARDING = _Paths.ONBOARDING;
   static const BOTTOM_NAV_HOME = _Paths.BOTTOM_NAV_HOME;
+  static const SIGNUP = _Paths.SIGNUP;
+  static const FORGET = _Paths.FORGET;
 }
 
 abstract class _Paths {
@@ -17,4 +19,6 @@ abstract class _Paths {
   static const LANGUAGE = '/language';
   static const ONBOARDING = '/onboarding';
   static const BOTTOM_NAV_HOME = '/bottom-nav-home';
+  static const SIGNUP = '/signup';
+  static const FORGET = '/forget';
 }
