@@ -10,6 +10,9 @@ abstract class Routes {
   static const BOTTOM_NAV_HOME = _Paths.BOTTOM_NAV_HOME;
   static const SIGNUP = _Paths.SIGNUP;
   static const FORGET = _Paths.FORGET;
+  static const HOME = _Paths.HOME;
+  static const PROFILE = _Paths.PROFILE;
+  static const QRSCANNER = _Paths.QRSCANNER;
 }
 
 abstract class _Paths {
@@ -21,4 +24,7 @@ abstract class _Paths {
   static const BOTTOM_NAV_HOME = '/bottom-nav-home';
   static const SIGNUP = '/signup';
   static const FORGET = '/forget';
+  static const HOME = '/home';
+  static const PROFILE = '/profile';
+  static const QRSCANNER = '/qrscanner';
 }
