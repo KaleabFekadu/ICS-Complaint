@@ -1,23 +1,13 @@
 import 'package:get/get.dart';
 
 class QrscannerController extends GetxController {
-  //TODO: Implement QrscannerController
+  var scannedCode = ''.obs;
 
-  final count = 0.obs;
-  @override
-  void onInit() {
-    super.onInit();
+  void setScannedCode(String code) {
+    scannedCode.value = code;
   }
 
-  @override
-  void onReady() {
-    super.onReady();
+  void clearScannedCode() {
+    scannedCode.value = '';
   }
-
-  @override
-  void onClose() {
-    super.onClose();
-  }
-
-  void increment() => count.value++;
 }
