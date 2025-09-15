@@ -47,6 +47,9 @@ dependencies:
   animate_do: ^4.2.0
   graphql_flutter: ^5.1.2
   mobile_scanner: ^4.0.0
+  clipboard: ^2.0.0
+  flutter_sound: ^9.2.13
+  audio_session: ^0.1.16
 
   socket_io_client: ^3.1.2
   flutter_markdown: ^0.6.18
