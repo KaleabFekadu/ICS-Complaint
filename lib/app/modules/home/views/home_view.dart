@@ -290,37 +290,40 @@ class HomeView extends GetView<HomeController> {
       floatingActionButton: Obx(() {
         return controller.selectedIndex.value == 0
             ? AnimatedScale(
-          duration: Duration(milliseconds: 250),
+          duration: const Duration(milliseconds: 250),
           scale: 1.0,
-          child: SizedBox(
-            height: 46,
-            child: FloatingActionButton.extended(
-              heroTag: 'home_fab',
-              onPressed: () {
-                Get.to(CreateComplaintView());
-              },
-              icon: Icon(
-                Iconsax.add,
-                color: TColors.primary,
-                size: 20,
-              ),
-              label: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 2),
-                child: Text(
-                  'Create Complaint'.tr,
-                  style: TextStyle(
-                    color: TColors.primary,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 22), // 👈 move inward
+            child: SizedBox(
+              height: 46,
+              child: FloatingActionButton.extended(
+                heroTag: 'home_fab',
+                onPressed: () {
+                  Get.to(CreateComplaintView());
+                },
+                icon: Icon(
+                  Iconsax.add,
+                  color: TColors.primary,
+                  size: 20,
+                ),
+                label: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 2),
+                  child: Text(
+                    'Create Complaint'.tr,
+                    style: TextStyle(
+                      color: TColors.primary,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
-              ),
-              backgroundColor: Colors.white,
-              foregroundColor: TColors.primary,
-              elevation: 1,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-                side: BorderSide(color: TColors.primary, width: 1.0),
+                backgroundColor: Colors.white,
+                foregroundColor: TColors.primary,
+                elevation: 1,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  side: BorderSide(color: TColors.primary, width: 1.0),
+                ),
               ),
             ),
           ),
