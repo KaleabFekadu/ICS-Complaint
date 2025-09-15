@@ -22,7 +22,7 @@ dependencies:
   get_storage: ^2.1.1
   iconsax: ^0.0.8
   dio: ^5.7.0
-  file_picker: ^9.0.0
+  file_picker: ^8.0.0
   permission_handler: ^11.3.1
   readmore: ^2.0.0
   url_launcher: ^6.3.1
@@ -79,6 +79,7 @@ flutter:
     - assets/logos/10221134.jpg
     - assets/logos/2346699_315780-P8VAIG-9.jpg
     - assets/logos/Screenshot 2025-09-04 at 11.18.19 in the morning.jpg
+    - assets/logos/banner passport .53c1e5d2.jpg
 
 
 

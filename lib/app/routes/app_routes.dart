@@ -13,6 +13,7 @@ abstract class Routes {
   static const HOME = _Paths.HOME;
   static const PROFILE = _Paths.PROFILE;
   static const QRSCANNER = _Paths.QRSCANNER;
+  static const CREATE_COMPLAINT = _Paths.CREATE_COMPLAINT;
 }
 
 abstract class _Paths {
@@ -27,4 +28,5 @@ abstract class _Paths {
   static const HOME = '/home';
   static const PROFILE = '/profile';
   static const QRSCANNER = '/qrscanner';
+  static const CREATE_COMPLAINT = '/create-complaint';
 }

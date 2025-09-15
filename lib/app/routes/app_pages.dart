@@ -2,6 +2,8 @@ import 'package:get/get.dart';
 
 import '../modules/bottom_nav_home/bindings/bottom_nav_home_binding.dart';
 import '../modules/bottom_nav_home/views/bottom_nav_home_view.dart';
+import '../modules/create_complaint/bindings/create_complaint_binding.dart';
+import '../modules/create_complaint/views/create_complaint_view.dart';
 import '../modules/forget/bindings/forget_binding.dart';
 import '../modules/forget/views/forget_view.dart';
 import '../modules/home/bindings/home_binding.dart';
@@ -78,6 +80,11 @@ class AppPages {
       name: _Paths.QRSCANNER,
       page: () => const QrscannerView(),
       binding: QrscannerBinding(),
+    ),
+    GetPage(
+      name: _Paths.CREATE_COMPLAINT,
+      page: () => const CreateComplaintView(),
+      binding: CreateComplaintBinding(),
     ),
   ];
 }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -12,12 +13,55 @@ class HomeController extends GetxController {
   var errorMessage = ''.obs;
   var hasToken = true.obs; // Assume logged in for demo
   var currentTab = 'pending'.obs;
+  late Timer autoScrollTimer;
+  var currentPagenews = 0.obs;
+  final PageController announcementsPageController = PageController();
+  var currentPage = 0.obs;
+  final PageController newsPageController = PageController();
+  var selectedIndex = 0.obs;
+
+
+
+
+  List<String> announcements = [
+    'Public Hearing Scheduled',
+    'Citizen Feedback Initiative',
+    'New Case Procedures',
+    'Legal Training Session',
+    'Case Updates',
+  ];
 
   @override
   void onInit() {
     super.onInit();
     loadDummyReports();
+    startAutoScroll();
   }
+
+  void startAutoScroll() {
+    autoScrollTimer = Timer.periodic(Duration(seconds: 3), (timer) {
+      if (announcementsPageController.hasClients) {
+        int nextPage = (currentPage.value + 1) % announcements.length;
+        announcementsPageController.animateToPage(
+          nextPage,
+          duration: Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+        currentPage.value = nextPage;
+      }
+
+      if (newsPageController.hasClients) {
+        int nextPage = (currentPagenews.value + 1) % 3;
+        newsPageController.animateToPage(
+          nextPage,
+          duration: Duration(milliseconds: 1000),
+          curve: Curves.easeInOut,
+        );
+        currentPagenews.value = nextPage;
+      }
+    });
+  }
+
 
   void loadDummyReports() {
     // Dummy data mimicking the exact structure of the backend response

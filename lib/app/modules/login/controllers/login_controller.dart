@@ -73,8 +73,8 @@ class LoginController extends GetxController {
     }
 
     // ===== STATIC USER LOGIN CHECK =====
-    const staticEmail = 'sola@aii.et';
-    const staticPassword = 'sol@1234567';
+    const staticEmail = 'caleab@ics.et';
+    const staticPassword = 'kal1234567';
 
     if (emailController.text.trim() == staticEmail &&
         passwordController.text.trim() == staticPassword) {

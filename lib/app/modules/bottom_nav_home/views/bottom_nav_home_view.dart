@@ -52,8 +52,8 @@ class BottomNavHomeView extends GetView<BottomNavHomeController> {
                 _buildNavItem(
                   controller: controller,
                   index: 0,
-                  icon: Iconsax.receipt,
-                  label: 'Reports',
+                  icon: Iconsax.home,
+                  label: 'Home',
                   selectedColor: TColors.primary,
                   unselectedColor: Colors.grey,
                 ),
