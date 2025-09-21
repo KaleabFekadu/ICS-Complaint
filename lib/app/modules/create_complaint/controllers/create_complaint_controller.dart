@@ -59,6 +59,20 @@ class CreateComplaintController extends GetxController {
 
   var isFilePickerActive = false.obs;
 
+  // Add to class properties
+  var selectedBranch = ''.obs;
+  var selectedService = ''.obs;
+  final branches = ['Branch A', 'Branch B', 'Branch C'].obs;
+  final servicesByBranch = {
+    'Branch A': ['Service A1', 'Service A2', 'Service A3'],
+    'Branch B': ['Service B1', 'Service B2'],
+    'Branch C': ['Service C1', 'Service C2', 'Service C3', 'Service C4'],
+  }.obs;
+
+  // Add method to get services for selected branch
+  List<String> getServicesForBranch(String branch) {
+    return servicesByBranch[branch] ?? [];
+  }
 
   // Audio recording variables
   final FlutterSoundPlayer _audioPlayer = FlutterSoundPlayer();
@@ -160,6 +174,7 @@ class CreateComplaintController extends GetxController {
     await _initAudioPlayer(); // Initialize player
   }
 
+  // Modify resetForm() to include new properties
   void resetForm() {
     ticketNumber.value = '';
     firstName.value = '';
@@ -177,7 +192,9 @@ class CreateComplaintController extends GetxController {
     incidentTime.value = null;
     incidentPlace.value = '';
     contactMe.value = false;
-    clearRecordings(); // Clear any audio recordings
+    selectedBranch.value = '';
+    selectedService.value = '';
+    clearRecordings();
     // Reset text controllers
     ticketNumberController.clear();
     firstNameController.clear();
@@ -720,20 +737,8 @@ class CreateComplaintController extends GetxController {
   // In user_create_controller.dart, modify the verifyTicket method
 
   Future<void> verifyTicket() async {
-    if (ticketNumber.isEmpty) {
-      errorMessage.value = 'Ticket number does not match the selected institution.'.tr;
-      //    errorMessage.value = 'Please enter a ticket number.'.tr;
-      return;
-    }
-
-    // Extract prefix from ticket number (e.g., "NID" from "NID-9825-5")
-    final ticketPrefix = ticketNumber.value.split('-')[0].toUpperCase();
-    // Extract prefix from category name (e.g., "NID" from "NID/የፋይዳ")
-    final categoryPrefix = categoryName.value.split('/')[0].toUpperCase();
-
-    // Check if prefixes match
-    if (ticketPrefix != categoryPrefix) {
-      errorMessage.value = 'Ticket number does not match the selected institution.'.tr;
+    if (selectedBranch.isEmpty || selectedService.isEmpty) {
+      errorMessage.value = 'Please select both branch and service.'.tr;
       isTicketVerified(false);
       return;
     }
@@ -742,57 +747,30 @@ class CreateComplaintController extends GetxController {
     errorMessage('');
 
     try {
-      final formattedTicketNumber = ticketNumber.value;
-      final url = '${Config.baseUrl}/$formattedTicketNumber';
+      // Simulate ticket verification with branch and service
+      // This is a placeholder - replace with actual API call when integrating
+      await Future.delayed(Duration(seconds: 1)); // Simulate network delay
+      ticketInfo.assignAll({
+        'ticketNumber': 'TICKET-${selectedBranch.value.split(' ').last}-${selectedService.value.split(' ').last}',
+        'companyName': selectedBranch.value,
+        'roomName': 'Room 101',
+        'staffName': 'Staff Member',
+        'ticketCreatedAt': DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
+        'calledAt': null,
+        'servedDate': null,
+        'served': false,
+      });
+      isTicketVerified(true);
 
-      final response = await http.get(Uri.parse(url)).timeout(
-        const Duration(seconds: 30),
-        onTimeout: () => throw TimeoutException('Ticket verification timed out'),
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        String? ticketCreatedAt = data['ticketCreatedAt'] as String?;
-        if (ticketCreatedAt != null) {
-          try {
-            DateTime parsedDate =
-            DateTime.parse(ticketCreatedAt.replaceAll(' ', 'T'));
-            data['ticketCreatedAt'] =
-                DateFormat('yyyy-MM-dd HH:mm:ss').format(parsedDate);
-          } catch (e) {
-            print('Error parsing ticketCreatedAt: $e');
-            data['ticketCreatedAt'] = null;
-          }
-        }
-        for (var key in ['calledAt', 'servedDate']) {
-          if (data[key] != null) {
-            try {
-              DateTime parsedDate =
-              DateTime.parse((data[key] as String).replaceAll(' ', 'T'));
-              data[key] = DateFormat('yyyy-MM-dd HH:mm:ss').format(parsedDate);
-            } catch (e) {
-              print('Error parsing $key: $e');
-              data[key] = null;
-            }
-          }
-        }
-        ticketInfo.assignAll(data);
-        isTicketVerified(true);
-
-        final today = DateTime.now().toIso8601String().split('T')[0];
-        final ticketCreatedAtDate = ticketCreatedAt?.split(' ')[0];
-        if (!(data['served'] ?? false) && ticketCreatedAtDate == today) {
-          errorMessage.value =
-          'Thank you for your patience. Our team is currently processing your request, and we will be contacting you shortly.';
-        }
-      } else {
-        errorMessage.value = 'Your ticket was not found in our records.';
-        isTicketVerified(false);
+      final today = DateTime.now().toIso8601String().split('T')[0];
+      final ticketCreatedAtDate = ticketInfo['ticketCreatedAt']?.split(' ')[0];
+      if (!(ticketInfo['served'] ?? false) && ticketCreatedAtDate == today) {
+        errorMessage.value =
+        'Thank you for your patience. Our team is currently processing your request, and we will be contacting you shortly.';
       }
     } catch (e, stackTrace) {
       print('Ticket verification error: $e\nStack trace: $stackTrace');
-      errorMessage.value =
-      'Ticket verification service is unavailable';
+      errorMessage.value = 'Ticket verification service is unavailable';
       isTicketVerified(false);
     } finally {
       isLoading(false);
@@ -805,6 +783,8 @@ class CreateComplaintController extends GetxController {
     ticketInfo.clear();
     isTicketVerified(false);
     errorMessage('');
+    selectedBranch.value = '';
+    selectedService.value = '';
   }
 
   // Navigate to next step

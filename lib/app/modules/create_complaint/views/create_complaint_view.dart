@@ -126,7 +126,7 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
   }
 
   Widget _buildWizardHeader(BuildContext context) {
-    final stepTitles = ['Ticket Info'.tr, 'Personal Info'.tr, 'Report Details'.tr, 'File Upload'.tr];
+    final stepTitles = ['Branch'.tr, 'Personal Info'.tr, 'Report Details'.tr, 'Attachment'.tr];
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       child: Row(
@@ -186,7 +186,7 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                   Text(
                     stepTitles[index],
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 10,
                       fontWeight: FontWeight.w500,
                       color: controller.currentStep.value >= index
                           ? TColorss.textPrimary
@@ -212,12 +212,14 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
     ][controller.currentStep.value];
   }
 
+  // In create_complaint_view.dart, replace _buildStep1() with this:
+
   Widget _buildStep1() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Ticket Information'.tr,
+          'Branch Information'.tr,
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -225,20 +227,109 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
           ),
         ),
         const SizedBox(height: 8),
-        // Text(
-        //   'Enter full ticket number (e.g., DARS-1*1*1-*)'.tr,
-        //   style: TextStyle(
-        //     fontSize: 14,
-        //     color: TColorss.textSecondary,
-        //   ),
-        // ),
-        // const SizedBox(height: 8),
-        _buildTextField(
-          controller: controller.ticketNumberController,
-          label: 'Ticket Number*'.tr,
-          maxLength: 30,
-          onChanged: (value) => controller.ticketNumber.value = value,
+        Text(
+          'Select Branch'.tr,
+          style: TextStyle(
+            fontSize: 14,
+            color: TColorss.textSecondary,
+          ),
         ),
+        const SizedBox(height: 8),
+        Obx(() => DropdownButtonFormField<String>(
+          value: controller.selectedBranch.value.isEmpty ? null : controller.selectedBranch.value,
+          hint: Text(
+            'Select a branch'.tr,
+            style: TextStyle(color: TColorss.textSecondary),
+          ),
+          isExpanded: true,
+          items: controller.branches.map((branch) {
+            return DropdownMenuItem<String>(
+              value: branch,
+              child: Text(branch),
+            );
+          }).toList(),
+          onChanged: (value) {
+            if (value != null) {
+              controller.selectedBranch.value = value;
+              controller.selectedService.value = ''; // Reset service when branch changes
+            }
+          },
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: TColorss.surfaceSecondary,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: TColorss.primary, width: 1.5),
+            ),
+            prefixIcon: Icon(
+              Iconsax.location,
+              color: TColorss.textSecondary,
+            ),
+          ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please select a branch'.tr;
+            }
+            return null;
+          },
+        )),
+        const SizedBox(height: 16),
+        Text(
+          'Select Service'.tr,
+          style: TextStyle(
+            fontSize: 14,
+            color: TColorss.textSecondary,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Obx(() => DropdownButtonFormField<String>(
+          value: controller.selectedService.value.isEmpty ? null : controller.selectedService.value,
+          hint: Text(
+            'Select a service'.tr,
+            style: TextStyle(color: TColorss.textSecondary),
+          ),
+          isExpanded: true,
+          items: controller.getServicesForBranch(controller.selectedBranch.value).map((service) {
+            return DropdownMenuItem<String>(
+              value: service,
+              child: Text(service),
+            );
+          }).toList(),
+          onChanged: controller.selectedBranch.value.isEmpty
+              ? null
+              : (value) {
+            if (value != null) {
+              controller.selectedService.value = value;
+            }
+          },
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: TColorss.surfaceSecondary,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: TColorss.primary, width: 1.5),
+            ),
+            prefixIcon: Icon(
+              Iconsax.task,
+              color: TColorss.textSecondary,
+            ),
+            enabled: controller.selectedBranch.value.isNotEmpty,
+          ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please select a service'.tr;
+            }
+            return null;
+          },
+        )),
         const SizedBox(height: 24),
         Obx(
               () => controller.isLoading.value
@@ -267,7 +358,7 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                     ),
                   ),
                   child: Text(
-                    controller.isTicketVerified.value ? 'Retry Another Ticket'.tr : 'Fetch Ticket Info'.tr,
+                    controller.isTicketVerified.value ? 'Retry Selection'.tr : 'Fetch Branch Info'.tr,
                   ),
                 ),
               ),
@@ -456,17 +547,17 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Text(
+        //   'Attachements'.tr,
+        //   style: TextStyle(
+        //     fontSize: 20,
+        //     fontWeight: FontWeight.bold,
+        //     color: TColorss.textPrimary,
+        //   ),
+        // ),
+        // const SizedBox(height: 16),
         Text(
-          'File Upload'.tr,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: TColorss.textPrimary,
-          ),
-        ),
-        const SizedBox(height: 16),
-        Text(
-          'Do you want to upload documents?'.tr,
+          'Do you want to upload attachments?'.tr,
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w500,
@@ -1025,7 +1116,7 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Ticket Information'.tr,
+                'Branch Information'.tr,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
