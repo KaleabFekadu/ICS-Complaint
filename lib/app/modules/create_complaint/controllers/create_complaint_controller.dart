@@ -1119,6 +1119,7 @@ class CreateComplaintController extends GetxController {
     final qrController = Get.find<QrscannerController>();
     final isQrScanned = qrController.scannedCode.isNotEmpty && staffInfo.isNotEmpty;
 
+    // Validate inputs
     if (!isQrScanned) {
       if (selectedBranchId.value.isEmpty) {
         errorMessage.value = 'Please select a branch.'.tr;
@@ -1134,6 +1135,7 @@ class CreateComplaintController extends GetxController {
       return;
     }
 
+    // Validate file extensions and sizes
     for (var file in files) {
       final extension = file.extension?.toLowerCase() ?? '';
       if (!backendAllowedExtensions.contains(extension)) {
@@ -1238,10 +1240,10 @@ class CreateComplaintController extends GetxController {
         'variables': {'input': input},
       };
 
-      final map = <String, String>{};
-      for (var i = 0; i < files.length; i++) {
-        map['file$i'] = 'variables.input.attachments.$i';
-      }
+      // Construct the map field as an array of arrays with a single string path
+      final map = files.isNotEmpty
+          ? List.generate(files.length, (i) => ['file$i', 'variables.input.attachments.$i'])
+          : [];
 
       request.fields['operations'] = jsonEncode(operations);
       request.fields['map'] = jsonEncode(map);
@@ -1269,6 +1271,8 @@ class CreateComplaintController extends GetxController {
       print('File map: $map');
       print('Request URL: ${Config.baseUrl}/graphql');
       print('Request headers: ${request.headers}');
+      print('Multipart fields: ${request.fields}');
+      print('Multipart files: ${request.files.map((f) => f.field).toList()}');
 
       final response = await request.send();
       final responseBody = await response.stream.bytesToString();
@@ -1435,8 +1439,8 @@ class CreateComplaintController extends GetxController {
             SizedBox(height: 24),
             _buildInfoRow('Track Number:', reportId),
             SizedBox(height: 12),
-            _buildInfoRow('Ticket Number:', ticketNumber),
-            SizedBox(height: 24),
+           // _buildInfoRow('Ticket Number:', ticketNumber),
+           // SizedBox(height: 24),
             Row(
               children: [
                 Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 20),
