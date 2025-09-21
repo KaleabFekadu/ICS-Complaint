@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:iconsax/iconsax.dart';
+import '../../../utils/constants/colors.dart';
+import '../../qrscanner/controllers/qrscanner_controller.dart';
 import '../controllers/create_complaint_controller.dart';
 import 'package:intl/intl.dart';
 import 'dart:io';
@@ -226,166 +228,257 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
             color: TColorss.textPrimary,
           ),
         ),
-        const SizedBox(height: 8),
-        Text(
-          'Select Branch'.tr,
-          style: TextStyle(
-            fontSize: 14,
-            color: TColorss.textSecondary,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Obx(() => DropdownButtonFormField<String>(
-          value: controller.selectedBranch.value.isEmpty ? null : controller.selectedBranch.value,
-          hint: Text(
-            'Select a branch'.tr,
-            style: TextStyle(color: TColorss.textSecondary),
-          ),
-          isExpanded: true,
-          items: controller.branches.map((branch) {
-            return DropdownMenuItem<String>(
-              value: branch,
-              child: Text(branch),
-            );
-          }).toList(),
-          onChanged: (value) {
-            if (value != null) {
-              controller.selectedBranch.value = value;
-              controller.selectedService.value = ''; // Reset service when branch changes
-            }
-          },
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: TColorss.surfaceSecondary,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: TColorss.primary, width: 1.5),
-            ),
-            prefixIcon: Icon(
-              Iconsax.location,
-              color: TColorss.textSecondary,
-            ),
-          ),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Please select a branch'.tr;
-            }
-            return null;
-          },
-        )),
         const SizedBox(height: 16),
-        Text(
-          'Select Service'.tr,
-          style: TextStyle(
-            fontSize: 14,
-            color: TColorss.textSecondary,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Obx(() => DropdownButtonFormField<String>(
-          value: controller.selectedService.value.isEmpty ? null : controller.selectedService.value,
-          hint: Text(
-            'Select a service'.tr,
-            style: TextStyle(color: TColorss.textSecondary),
-          ),
-          isExpanded: true,
-          items: controller.getServicesForBranch(controller.selectedBranch.value).map((service) {
-            return DropdownMenuItem<String>(
-              value: service,
-              child: Text(service),
-            );
-          }).toList(),
-          onChanged: controller.selectedBranch.value.isEmpty
-              ? null
-              : (value) {
-            if (value != null) {
-              controller.selectedService.value = value;
-            }
-          },
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: TColorss.surfaceSecondary,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: TColorss.primary, width: 1.5),
-            ),
-            prefixIcon: Icon(
-              Iconsax.task,
-              color: TColorss.textSecondary,
-            ),
-            enabled: controller.selectedBranch.value.isNotEmpty,
-          ),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Please select a service'.tr;
-            }
-            return null;
-          },
-        )),
-        const SizedBox(height: 24),
-        Obx(
-              () => controller.isLoading.value
-              ? Center(
-            child: CircularProgressIndicator(
-              color: TColorss.primary,
-              strokeWidth: 4,
-              backgroundColor: TColorss.primary.withOpacity(0.2),
-            ),
-          )
-              : Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              ZoomIn(
-                duration: const Duration(milliseconds: 400),
-                child: ElevatedButton(
-                  onPressed: controller.isTicketVerified.value ? controller.retryTicket : controller.verifyTicket,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: TColorss.accent,
-                    foregroundColor: TColorss.surface,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    textStyle: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                  child: Text(
-                    controller.isTicketVerified.value ? 'Retry Selection'.tr : 'Fetch Branch Info'.tr,
-                  ),
+        Obx(() {
+          final QrscannerController qrController = Get.find<QrscannerController>(); // Define qrController here
+          if (qrController.scannedCode.isNotEmpty && controller.staffInfo.isNotEmpty) {
+            // Display scanned staff information
+            return Card(
+              elevation: 0,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: TColorss.surface,
+                  borderRadius: BorderRadius.circular(12),
                 ),
-              ),
-              if (controller.isTicketVerified.value)
-                Padding(
-                  padding: const EdgeInsets.only(left: 8),
-                  child: ZoomIn(
-                    duration: const Duration(milliseconds: 400),
-                    child: ElevatedButton(
-                      onPressed: controller.nextStep,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: TColorss.primary,
-                        foregroundColor: TColorss.surface,
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        textStyle: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Scanned Staff Information'.tr,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: TColorss.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _buildInfoRow('Staff Name'.tr, controller.staffInfo['name']?.toString() ?? 'N/A'),
+                    _buildInfoRow('Branch'.tr, controller.staffInfo['branch']?['name']?.toString() ?? 'N/A'),
+                    _buildInfoRow('Service'.tr, controller.staffInfo['service']?['name']?.toString() ?? 'N/A'),
+                    _buildInfoRow('Position'.tr, controller.staffInfo['position']?.toString() ?? 'N/A'),
+                    _buildInfoRow('Phone'.tr, controller.staffInfo['phone_number']?.toString() ?? 'N/A'),
+                    _buildInfoRow('Email'.tr, controller.staffInfo['email']?.toString() ?? 'N/A'),
+                    const SizedBox(height: 16),
+                    Center(
+                      child: TextButton(
+                        onPressed: () {
+                          qrController.clearScannedCode();
+                          controller.clearStaffInfo();
+                        },
+                        child: Text(
+                          'Clear Scanned Data'.tr,
+                          style: TextStyle(color: TColorss.error, fontSize: 14),
                         ),
                       ),
-                      child: Text('Next'.tr),
                     ),
+                  ],
+                ),
+              ),
+            );
+          } else {
+            // Show dropdowns for branch and service selection
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Select Branch'.tr,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: TColorss.textSecondary,
                   ),
                 ),
-            ],
-          ),
-        ),
+                const SizedBox(height: 8),
+                AnimatedSlide(
+                  offset: const Offset(0, 0),
+                  duration: const Duration(milliseconds: 600),
+                  curve: Curves.easeInOut,
+                  child: DropdownButtonFormField<String>(
+                    value: controller.selectedBranchId.value.isEmpty
+                        ? null
+                        : controller.selectedBranchId.value,
+                    decoration: InputDecoration(
+                      hintText: controller.isLoadingBranches.value
+                          ? 'Loading branches...'.tr
+                          : 'Choose branch'.tr,
+                      prefixIcon: Icon(
+                        Iconsax.location,
+                        color: Colors.grey.shade600,
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey.shade100,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 1,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: TColorss.primary,
+                          width: 1.5,
+                        ),
+                      ),
+                      errorText: controller.errorMessage.value.isEmpty
+                          ? null
+                          : controller.errorMessage.value,
+                    ),
+                    items: controller.branches.map((branch) {
+                      return DropdownMenuItem<String>(
+                        value: branch['id'].toString(),
+                        child: Text(branch['name']?.toString() ?? 'Unnamed Branch'),
+                      );
+                    }).toList(),
+                    onChanged: controller.isLoadingBranches.value
+                        ? null
+                        : (value) {
+                      if (value != null) {
+                        controller.selectedBranchId.value = value;
+                        controller.selectedServiceId.value = '';
+                        controller.fetchServicesForBranch(value);
+                      }
+                    },
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Select Service'.tr,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: TColorss.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                AnimatedSlide(
+                  offset: const Offset(0, 0),
+                  duration: const Duration(milliseconds: 600),
+                  curve: Curves.easeInOut,
+                  child: DropdownButtonFormField<String>(
+                    value: controller.selectedServiceId.value.isEmpty
+                        ? null
+                        : controller.selectedServiceId.value,
+                    decoration: InputDecoration(
+                      hintText: controller.isLoadingServices.value
+                          ? 'Loading services...'.tr
+                          : controller.selectedBranchId.value.isEmpty
+                          ? 'Select a branch first'.tr
+                          : 'Choose service'.tr,
+                      prefixIcon: Icon(
+                        Iconsax.task,
+                        color: Colors.grey.shade600,
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey.shade100,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 1,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: TColorss.primary,
+                          width: 1.5,
+                        ),
+                      ),
+                      errorText: controller.errorMessage.value.isEmpty
+                          ? null
+                          : controller.errorMessage.value,
+                    ),
+                    items: controller.services.map((service) {
+                      return DropdownMenuItem<String>(
+                        value: service['id'].toString(),
+                        child: Text(service['name']?.toString() ?? 'Unnamed Service'),
+                      );
+                    }).toList(),
+                    onChanged: controller.isLoadingServices.value ||
+                        controller.selectedBranchId.value.isEmpty
+                        ? null
+                        : (value) {
+                      if (value != null) {
+                        controller.selectedServiceId.value = value;
+                      }
+                    },
+                  ),
+                ),
+              ],
+            );
+          }
+        }),
+        const SizedBox(height: 24),
+        Obx(() => Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            ZoomIn(
+              duration: const Duration(milliseconds: 400),
+              child: ElevatedButton(
+                onPressed: null, // Disable Previous button in Step 1
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: TColorss.textSecondary.withOpacity(0.5),
+                  foregroundColor: TColorss.surface,
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  elevation: 2,
+                  textStyle: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                child: Text('Previous'.tr),
+              ),
+            ),
+            ZoomIn(
+              duration: const Duration(milliseconds: 400),
+              child: ElevatedButton(
+                onPressed: () {
+                  final QrscannerController qrController = Get.find<QrscannerController>(); // Define qrController here
+                  if (qrController.scannedCode.isNotEmpty && controller.staffInfo.isNotEmpty) {
+                    // If QR code is scanned and staff info is available, proceed
+                    controller.nextStep();
+                  } else if (controller.selectedBranchId.value.isNotEmpty &&
+                      controller.selectedServiceId.value.isNotEmpty) {
+                    // If dropdowns are used, ensure branch and service are selected
+                    controller.nextStep();
+                  } else {
+                    controller.errorMessage.value = 'Please select a branch and service or scan a QR code.'.tr;
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: (controller.selectedBranchId.value.isNotEmpty &&
+                      controller.selectedServiceId.value.isNotEmpty) ||
+                      (Get.find<QrscannerController>().scannedCode.isNotEmpty &&
+                          controller.staffInfo.isNotEmpty)
+                      ? TColorss.primary
+                      : TColorss.textSecondary.withOpacity(0.5),
+                  foregroundColor: TColorss.surface,
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  elevation: 2,
+                  textStyle: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                child: Text('Next'.tr),
+              ),
+            ),
+          ],
+        )),
       ],
     );
   }

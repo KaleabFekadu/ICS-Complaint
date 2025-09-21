@@ -10,7 +10,7 @@ class FeedbackView extends GetView<FeedbackController> {
 
   @override
   Widget build(BuildContext context) {
-    FeedbackController controller = Get.put(FeedbackController());
+    Get.put(FeedbackController()); // Ensure controller is initialized
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: TColors.primary,
       statusBarIconBrightness: Brightness.light,
@@ -93,8 +93,6 @@ class FeedbackView extends GetView<FeedbackController> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Branch Dropdown
-                    const SizedBox(height: 8),
-                    // Branch Dropdown
                     AnimatedOpacity(
                       opacity: 1.0,
                       duration: const Duration(milliseconds: 600),
@@ -126,7 +124,8 @@ class FeedbackView extends GetView<FeedbackController> {
                           ),
                           filled: true,
                           fillColor: Colors.grey.shade100,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 18),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -168,7 +167,7 @@ class FeedbackView extends GetView<FeedbackController> {
                     )),
                     const SizedBox(height: 20),
 
-// Service Dropdown
+                    // Service Dropdown
                     AnimatedOpacity(
                       opacity: 1.0,
                       duration: const Duration(milliseconds: 600),
@@ -202,7 +201,8 @@ class FeedbackView extends GetView<FeedbackController> {
                           ),
                           filled: true,
                           fillColor: Colors.grey.shade100,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 18),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -231,7 +231,8 @@ class FeedbackView extends GetView<FeedbackController> {
                             child: Text(service['name']),
                           );
                         }).toList(),
-                        onChanged: controller.isLoadingServices.value || controller.selectedBranchId.value.isEmpty
+                        onChanged: controller.isLoadingServices.value ||
+                            controller.selectedBranchId.value.isEmpty
                             ? null
                             : (value) {
                           if (value != null) {
@@ -241,6 +242,7 @@ class FeedbackView extends GetView<FeedbackController> {
                       ),
                     )),
                     const SizedBox(height: 20),
+
                     // Rating
                     AnimatedOpacity(
                       opacity: 1.0,
@@ -258,7 +260,8 @@ class FeedbackView extends GetView<FeedbackController> {
                     Obx(() => AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
                       curve: Curves.easeInOut,
-                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                      padding:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                       decoration: BoxDecoration(
                         color: Colors.grey.shade100,
                         borderRadius: BorderRadius.circular(12),
@@ -286,7 +289,9 @@ class FeedbackView extends GetView<FeedbackController> {
                                 margin: const EdgeInsets.symmetric(horizontal: 8),
                                 child: Icon(
                                   isSelected ? Icons.star : Icons.star_border,
-                                  color: isSelected ? Colors.amber.shade700 : Colors.grey.shade400,
+                                  color: isSelected
+                                      ? Colors.amber.shade700
+                                      : Colors.grey.shade400,
                                   size: 40,
                                   shadows: isSelected
                                       ? [
@@ -305,6 +310,7 @@ class FeedbackView extends GetView<FeedbackController> {
                       ),
                     )),
                     const SizedBox(height: 20),
+
                     // Description
                     AnimatedOpacity(
                       opacity: 1.0,
@@ -380,8 +386,7 @@ class FeedbackView extends GetView<FeedbackController> {
                             ),
                             elevation: 3,
                             shadowColor: TColors.primary.withOpacity(0.4),
-                            padding:
-                            const EdgeInsets.symmetric(vertical: 16),
+                            padding: const EdgeInsets.symmetric(vertical: 16),
                           ),
                           child: controller.isSubmitting.value
                               ? const SizedBox(

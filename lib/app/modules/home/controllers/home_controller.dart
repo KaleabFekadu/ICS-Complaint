@@ -196,7 +196,6 @@ class HomeController extends GetxController {
             report_place
             associated_parties
             is_complaint
-            report_category
             rating
             feedback_description
             first_name

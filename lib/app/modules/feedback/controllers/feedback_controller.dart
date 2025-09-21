@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:ics_complaint/app/modules/home/views/home_view.dart';
+import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../utils/constants/config.dart';
 
 class FeedbackController extends GetxController {
-  var selectedBranchId = ''.obs; // Changed to store branch ID
-  var selectedServiceId = ''.obs; // Changed to store service ID
+  var selectedBranchId = ''.obs;
+  var selectedServiceId = ''.obs;
   var rating = 0.obs;
   var description = ''.obs;
   var isSubmitting = false.obs;
@@ -14,8 +16,8 @@ class FeedbackController extends GetxController {
   var isLoadingServices = false.obs;
   var errorMessage = ''.obs;
 
-  final branches = <Map<String, dynamic>>[].obs; // Store branch data (id, name)
-  final services = <Map<String, dynamic>>[].obs; // Store service data (id, name)
+  final branches = <Map<String, dynamic>>[].obs;
+  final services = <Map<String, dynamic>>[].obs;
 
   @override
   void onInit() {
@@ -51,7 +53,12 @@ class FeedbackController extends GetxController {
             code
             description
             icon
-            
+            services {
+              id
+              name
+              description
+              draft
+            }
           }
         }
       ''';
@@ -72,7 +79,6 @@ class FeedbackController extends GetxController {
       final data = result.data?['all_branches'] as List<dynamic>?;
       if (data != null) {
         branches.assignAll(data.cast<Map<String, dynamic>>());
-        // Cache services for each branch
         services.clear();
         selectedBranchId.value = '';
         selectedServiceId.value = '';
@@ -143,7 +149,10 @@ class FeedbackController extends GetxController {
 
       final data = result.data?['branch'] as Map<String, dynamic>?;
       if (data != null && data['services'] != null) {
-        services.assignAll((data['services'] as List<dynamic>).cast<Map<String, dynamic>>().where((service) => !(service['draft'] ?? false)).toList());
+        services.assignAll((data['services'] as List<dynamic>)
+            .cast<Map<String, dynamic>>()
+            .where((service) => !(service['draft'] ?? false))
+            .toList());
         selectedServiceId.value = '';
       } else {
         errorMessage.value = 'No services found for this branch.'.tr;
@@ -234,9 +243,139 @@ class FeedbackController extends GetxController {
         return;
       }
 
-      // TODO: Integrate API call for submitting feedback
-      await Future.delayed(const Duration(seconds: 1)); // Simulate API delay
+      final client = GraphQLClient(
+        link: HttpLink(
+          '${Config.baseUrl}/graphql',
+          defaultHeaders: {'Authorization': 'Bearer $token'},
+        ),
+        cache: GraphQLCache(),
+      );
 
+      const mutation = r'''
+        mutation CreateCorruptionReport($input: CorruptionReportCreateInput!) {
+          createCorruptionReport(input: $input) {
+            id
+            description
+            category
+            rating
+            feedback_description
+            service {
+              id
+              name
+            }
+            branch {
+              id
+              name
+            }
+            status
+            created_at
+          }
+        }
+      ''';
+
+      // Get user details from SharedPreferences
+      final firstName = prefs.getString('first_name') ?? 'Anonymous';
+      final fatherName = prefs.getString('father_name') ?? '';
+      final grandFatherName = prefs.getString('grand_father_name') ?? '';
+
+      // Get branch and service names for better description
+      final selectedBranch = branches.firstWhere(
+            (branch) => branch['id'].toString() == selectedBranchId.value,
+        orElse: () => {'name': 'Unknown Branch'},
+      );
+      final selectedService = services.firstWhere(
+            (service) => service['id'].toString() == selectedServiceId.value,
+        orElse: () => {'name': 'Unknown Service'},
+      );
+      final branchName = selectedBranch['name'];
+      final serviceName = selectedService['name'];
+
+      // Format service_date to date-only (YYYY-MM-DD)
+      // Format service_date to match backend expectation: "YYYY-MM-DD HH:MM:SS"
+      final now = DateTime.now().toUtc();
+      final serviceDate = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}';
+
+      final input = {
+        'description': 'Feedback for $serviceName at $branchName',
+        'category': 'FEEDBACK',
+        'service_id': selectedServiceId.value,
+        'branch_id': selectedBranchId.value,
+        'rating': rating.value,
+        'feedback_description': description.value.trim(),
+        'institution_name': branchName,
+        'report_place': '$branchName, Addis Ababa',
+        'service_date': serviceDate, // This will now be "2025-09-21 14:30:45"
+        'share_contact': false,
+        'is_complaint': false,
+        'first_name': firstName.isNotEmpty ? firstName : 'Anonymous',
+        'father_name': fatherName,
+        'grand_father_name': grandFatherName,
+        'attachments': [],
+      };
+
+      // Debug input
+      print('Submitting feedback with input: $input');
+
+      final result = await client.mutate(
+        MutationOptions(
+          document: gql(mutation),
+          variables: {'input': input},
+          fetchPolicy: FetchPolicy.networkOnly,
+          errorPolicy: ErrorPolicy.all,
+        ),
+      );
+
+      if (result.hasException) {
+        String errorMsg = 'Failed to submit feedback: ${result.exception.toString()}'.tr;
+        if (result.exception!.graphqlErrors.isNotEmpty) {
+          errorMsg = result.exception!.graphqlErrors.first.message;
+          if (errorMsg.toLowerCase().contains('unauthorized') ||
+              errorMsg.toLowerCase().contains('token')) {
+            await prefs.remove('access_token');
+            Get.offAllNamed('/login');
+            errorMsg = 'Session expired. Please log in again.'.tr;
+          } else if (errorMsg.toLowerCase().contains('service_id') ||
+              errorMsg.toLowerCase().contains('branch_id')) {
+            errorMsg = 'Invalid branch or service selected. Please try again.'.tr;
+          } else if (errorMsg.toLowerCase().contains('service_date')) {
+            errorMsg = 'Invalid date format. Please try again.'.tr;
+          }
+        } else if (result.exception!.linkException != null) {
+          errorMsg = 'Network error: Please check your internet connection.'.tr;
+        }
+        print('Submission error: $errorMsg');
+        Get.snackbar(
+          'Error'.tr,
+          errorMsg,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          snackPosition: SnackPosition.TOP,
+          margin: const EdgeInsets.all(16),
+          borderRadius: 8,
+          duration: const Duration(seconds: 4),
+          isDismissible: true,
+        );
+        return;
+      }
+
+      final data = result.data?['createCorruptionReport'] as Map<String, dynamic>?;
+      if (data == null) {
+        print('Submission error: No data returned from server');
+        Get.snackbar(
+          'Error'.tr,
+          'No data returned from server.'.tr,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          snackPosition: SnackPosition.TOP,
+          margin: const EdgeInsets.all(16),
+          borderRadius: 8,
+          duration: const Duration(seconds: 4),
+          isDismissible: true,
+        );
+        return;
+      }
+
+      print('Feedback submitted successfully: $data');
       Get.snackbar(
         'Success'.tr,
         'Feedback submitted successfully!'.tr,
@@ -245,7 +384,7 @@ class FeedbackController extends GetxController {
         snackPosition: SnackPosition.TOP,
         margin: const EdgeInsets.all(16),
         borderRadius: 8,
-        duration: const Duration(seconds: 4),
+        duration: const Duration(seconds: 2),
         isDismissible: true,
       );
 
@@ -254,7 +393,11 @@ class FeedbackController extends GetxController {
       selectedServiceId.value = '';
       rating.value = 0;
       description.value = '';
+
+      // Navigate back to previous screen
+      Get.to(HomeView());
     } catch (e) {
+      print('Unexpected error during submission: $e');
       Get.snackbar(
         'Error'.tr,
         'Failed to submit feedback: $e'.tr,
