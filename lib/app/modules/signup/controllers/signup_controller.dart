@@ -22,7 +22,7 @@ class SignupController extends GetxController {
   var isLoading = false.obs;
 
   final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'http://10.86.2.212:4400',
+    baseUrl: 'http://10.169.15.212:4400',
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 10),
     headers: {'Content-Type': 'application/json'},
