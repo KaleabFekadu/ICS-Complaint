@@ -437,6 +437,8 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
+  // In home_view.dart, replace the _buildReportCard method with this:
+
   Widget _buildReportCard(BuildContext context, Map<String, dynamic> report) {
     final status = (report['status'] ?? 'UNKNOWN').toString().toUpperCase();
     final requests = (report['requests'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
@@ -528,20 +530,11 @@ class HomeView extends GetView<HomeController> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                report['staff_name'] ?? '-',
+                                report['institution_name'] ?? '-',
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
                                   color: TColorss.textPrimary,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Ticket: ${report['ticket_number'] ?? '-'}',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: TColorss.textSecondary,
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -628,12 +621,13 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
+  // In home_view.dart, replace the _showReportModal method with this:
+
   void _showReportModal(BuildContext context, Map<String, dynamic> report) {
     final status = (report['status'] ?? 'UNKNOWN').toString().toUpperCase();
     final requests = (report['requests'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
     final escalations = (report['complaintReportEscalations'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
     final hasPendingRequests = requests.any((req) => req['status'] == 'PENDING');
-    final reportCategory = report['reportCategory'] as Map<String, dynamic>?;
 
     showModalBottomSheet(
       context: context,
@@ -676,50 +670,25 @@ class HomeView extends GetView<HomeController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Basic report info...
-
-                      if (reportCategory != null)
-                        _buildDetailRow('Category', reportCategory['name'] ?? '-'),
-
-                      _buildDetailRow('Ticket Number', report['ticket_number'] ?? '-'),
-                      _buildDetailRow('Track Number', report['id'] ?? '-'),
-                      _buildDetailRow('Staff Name', report['staff_name'] ?? '-'),
-                      _buildDetailRow('Room Name', report['room_name'] ?? '-'),
-                      _buildDetailRow('Ticket Created At', _formatDateTime(report['ticket_created_at'])),
-                      _buildDetailRow('Called At', _formatDateTime(report['called_at'])),
-                      _buildDetailRow('Served Date', _formatDateTime(report['served_date'])),
-                      _buildDetailRow('Served', report['served'] == true ? 'Yes' : 'No'),
+                      _buildDetailRow('Track Number', report['id']?.toString() ?? '-'),
+                      _buildDetailRow('Institution Name', report['institution_name'] ?? '-'),
+                      _buildDetailRow('Responsible Person', report['responsible_person'] ?? '-'),
+                      _buildDetailRow('Phone', report['responsible_person_phone'] ?? '-'),
+                      _buildDetailRow('Address', report['responsible_person_address'] ?? '-'),
+                      _buildDetailRow('Report Place', report['report_place'] ?? '-'),
+                      _buildDetailRow('Associated Parties', report['associated_parties'] ?? '-'),
                       _buildDetailRow('First Name', report['first_name'] ?? '-'),
                       _buildDetailRow('Father\'s Name', report['father_name'] ?? '-'),
                       _buildDetailRow('Grandfather\'s Name', report['grand_father_name'] ?? '-'),
-                      _buildDetailRow('Institution Name', report['institution_name'] ?? '-'),
-                      _buildDetailRow('Institution Address', report['report_place'] ?? '-'),
-
-
+                      _buildDetailRow('Service Date', _formatDateTime(report['service_date'])),
+                      _buildDetailRow('Share Contact', report['share_contact'] == true ? 'Yes' : 'No'),
+                      _buildDetailRow('Status', status, color: _getStatusColor(status)),
+                      _buildDetailRow('Service', report['service']?['name'] ?? '-'),
+                      _buildDetailRow('Branch', report['branch']?['name'] ?? '-'),
                       const Divider(color: TColorss.textSecondary),
+                      _buildDetailRow('Findings', report['findings']?.isEmpty ?? true ? '-' : report['findings'].join(', ')),
+                      _buildDetailRow('Created At', _formatDateTime(report['created_at'])),
 
-                      _buildDetailRow('Description', report['description'] ?? '-'),
-
-                      // Status with appropriate color
-                      _buildDetailRow(
-                        'Status',
-                        report['status'] ?? '-',
-                        color: _getStatusColor(report['status']),
-                      ),
-                      _buildDetailRow('Acceptance Remark', report['acceptance_remark'] ?? '-'),
-
-
-                      // Additional status information
-                      if (status == 'CLOSED' && report['closing_remark'] != null)
-                        _buildDetailRow('Closing Remarks', report['closing_remark']),
-
-                      if (status == 'INVALID_COMPLAINT' && report['closing_remark'] != null)
-                        _buildDetailRow('Invalid Reason', report['closing_remark']),
-
-                      if (report['verification_remark'] != null)
-                        _buildDetailRow('Verification Remarks', report['verification_remark']),
-
-                      // Display all requests
                       if (requests.isNotEmpty) ...[
                         const SizedBox(height: 16),
                         Text(
@@ -734,11 +703,10 @@ class HomeView extends GetView<HomeController> {
                         ...requests.map((request) => _buildRequestCard(context, request)).toList(),
                       ],
 
-                      // Display all escalations
                       if (escalations.isNotEmpty) ...[
                         const SizedBox(height: 16),
                         Text(
-                          'Escalations & Messages',
+                          'Escalations',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -750,7 +718,6 @@ class HomeView extends GetView<HomeController> {
                       ],
 
                       const SizedBox(height: 16),
-                      // Show escalate button for both INVALID_COMPLAINT and CLOSED statuses
                       if (status == 'INVALID_COMPLAINT' || status == 'CLOSED') ...[
                         const SizedBox(height: 8),
                         Text(
