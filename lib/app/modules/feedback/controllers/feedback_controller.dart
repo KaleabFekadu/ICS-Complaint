@@ -51,12 +51,7 @@ class FeedbackController extends GetxController {
             code
             description
             icon
-            services {
-              id
-              name
-              description
-              draft
-            }
+            
           }
         }
       ''';
