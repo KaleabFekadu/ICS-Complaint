@@ -1134,6 +1134,11 @@ class CreateComplaintController extends GetxController {
       errorMessage.value = 'Please provide report details.'.tr;
       return;
     }
+    // Validate that files are provided if hasDocument is true
+    if (hasDocument.value && files.isEmpty) {
+      errorMessage.value = 'Please upload at least one file when attachments are selected.'.tr;
+      return;
+    }
 
     // Validate file extensions and sizes
     for (var file in files) {
@@ -1189,6 +1194,12 @@ class CreateComplaintController extends GetxController {
           }
           status
           created_at
+          attachments {  # Added to fetch attachment details
+            id
+            file_name
+            file_path
+            mime_type
+          }
         }
       }
     ''';
@@ -1353,6 +1364,22 @@ class CreateComplaintController extends GetxController {
           isDismissible: true,
         );
         return;
+      }
+
+      // Check if attachments were included in the response
+      if (files.isNotEmpty && (data['attachments'] == null || (data['attachments'] as List).isEmpty)) {
+        print('Warning: Files were uploaded but no attachments returned in response');
+        Get.snackbar(
+          'Warning'.tr,
+          'Complaint submitted, but attachments may not have been saved. Please verify with support.'.tr,
+          backgroundColor: Colors.orange,
+          colorText: Colors.white,
+          snackPosition: SnackPosition.TOP,
+          margin: const EdgeInsets.all(16),
+          borderRadius: 8,
+          duration: const Duration(seconds: 4),
+          isDismissible: true,
+        );
       }
 
       print('Complaint submitted successfully: $data');
