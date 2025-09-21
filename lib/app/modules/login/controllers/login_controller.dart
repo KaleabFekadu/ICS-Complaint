@@ -6,18 +6,20 @@ import '../../../routes/app_pages.dart';
 import '../../signup/views/signup_view.dart';
 
 class LoginController extends GetxController {
-  var emailError = ''.obs;
-  TextEditingController emailController = TextEditingController();
+  var phoneError = ''.obs;
+  final phoneController = TextEditingController();
   var passwordError = ''.obs;
-  TextEditingController passwordController = TextEditingController();
+  final passwordController = TextEditingController();
   var isPasswordHidden = true.obs;
   var isLoginLoading = false.obs;
   var isSignupLoading = false.obs;
   var rememberMe = false.obs;
+  var isPhoneValid = true.obs;
+  var isPhoneEmpty = false.obs;
 
   // Dio instance
   final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'http://196.189.247.250:8600/api/',
+    baseUrl: 'http://10.86.2.212:4400', // Verify this matches your backend
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 10),
   ));
@@ -25,143 +27,179 @@ class LoginController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    // Initialize controllers without clearing to avoid disposal issues
+    checkLoginStatus();
   }
 
   void togglePasswordVisibility() {
     isPasswordHidden.value = !isPasswordHidden.value;
   }
 
-  // Validate form inputs
-  bool _validateForm() {
-    bool hasErrors = false;
-
-    // Email Validation
-    if (emailController.text.trim().isEmpty) {
-      emailError.value = 'Email is required';
-      hasErrors = true;
-    } else if (!GetUtils.isEmail(emailController.text.trim())) {
-      emailError.value = 'Please enter a valid email';
-      hasErrors = true;
+  void validatePhoneNumber() {
+    final phone = phoneController.text.trim();
+    if (phone.isEmpty) {
+      isPhoneEmpty.value = true;
+      isPhoneValid.value = false;
+      phoneError.value = 'Phone number is required'.tr;
     } else {
-      emailError.value = '';
+      final phoneRegex = RegExp(r'^(?:\+251|0)?9\d{8}$');
+      isPhoneValid.value = phoneRegex.hasMatch(phone);
+      isPhoneEmpty.value = false;
+      phoneError.value = isPhoneValid.value ? '' : 'Please enter a valid phone number'.tr;
     }
-
-    // Password Validation
-    if (passwordController.text.isEmpty) {
-      passwordError.value = 'Password is required';
-      hasErrors = true;
-    } else if (passwordController.text.length < 8) {
-      passwordError.value = 'Password must be at least 8 characters';
-      hasErrors = true;
-    } else {
-      passwordError.value = '';
-    }
-
-    return !hasErrors;
   }
 
-  // Login with API
-  // Login with API
   Future<void> login() async {
-    if (!_validateForm()) {
+    validatePhoneNumber();
+    if (!isPhoneValid.value || phoneController.text.trim().isEmpty || passwordController.text.trim().isEmpty) {
       _showSnackBar(
-        'Error',
-        'Please fix the form errors before submitting.',
+        'Error'.tr,
+        'Please fix the form errors before submitting.'.tr,
         Colors.red,
       );
       return;
     }
 
-    // ===== STATIC USER LOGIN CHECK =====
-    const staticEmail = 'caleab@ics.et';
-    const staticPassword = 'kal1234567';
+    String phone = phoneController.text.trim();
+    final password = passwordController.text.trim();
 
-    if (emailController.text.trim() == staticEmail &&
-        passwordController.text.trim() == staticPassword) {
-      // Save dummy tokens for static login
-      await _saveTokens('static_access_token', 'static_refresh_token');
-
-      _showSnackBar(
-        'Success',
-        'Static user login successful!',
-        Colors.green,
-      );
-
-      await Future.delayed(const Duration(seconds: 1));
-      Get.offAllNamed(Routes.BOTTOM_NAV_HOME);
-      return; // Skip API login
+    // Normalize phone number formats to try
+    List<String> phoneFormats = [];
+    if (phone.startsWith('+2519')) {
+      phoneFormats.add(phone); // Original format
+      phoneFormats.add('0${phone.substring(5)}'); // Convert +2519 to 09
+    } else if (phone.startsWith('09')) {
+      phoneFormats.add(phone); // Original format
+      phoneFormats.add('+251${phone.substring(1)}'); // Convert 09 to +2519
+    } else {
+      phoneFormats.add(phone); // Use as is
     }
-    // ==================================
 
-    isLoginLoading.value = true;
+    String? errorMessage;
+    bool loginSuccess = false;
 
     try {
-      final response = await _dio.post(
-        'account/auth/login/',
-        data: {
-          'email': emailController.text.trim(),
-          'password': passwordController.text.trim(),
-        },
-      );
+      isLoginLoading.value = true;
 
-      if (response.statusCode == 200) {
-        final data = response.data;
-        final accessToken = data['access'];
-        final refreshToken = data['refresh'];
+      // Try each phone format
+      for (String phoneFormat in phoneFormats) {
+        try {
+          final response = await _dio.post(
+            '/graphql',
+            data: {
+              'query': '''
+              mutation MyMutation(\$input: LoginInput!) {
+                login(input: \$input) {
+                  token
+                  refresh_token
+                  user {
+                    name
+                    last_seen
+                    is_active
+                    username
+                    id
+                  }
+                }
+              }
+            ''',
+              'variables': {
+                'input': {
+                  'username': phoneFormat,
+                  'password': password,
+                },
+              },
+            },
+            options: Options(
+              headers: {'Content-Type': 'application/json'},
+            ),
+          );
 
-        // Save tokens to SharedPreferences
-        await _saveTokens(accessToken, refreshToken);
+          // Check response structure
+          if (response.data is! Map || !response.data.containsKey('data')) {
+            throw Exception('Invalid response structure: "data" key not found');
+          }
 
+          if (response.data['data'] is! Map || !response.data['data'].containsKey('login')) {
+            throw Exception('Invalid response structure: "login" key not found');
+          }
+
+          final data = response.data['data']['login'];
+
+          // Check for token and user data
+          if (data is! Map || data['token'] == null || data['user'] == null) {
+            throw Exception('Invalid response: token or user data missing');
+          }
+
+          final token = data['token'];
+          final user = data['user'];
+
+          // Validate user fields
+          if (user is! Map || user['id'] == null || user['name'] == null || user['username'] == null) {
+            throw Exception('Invalid user data: required fields missing');
+          }
+
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('access_token', token);
+          await prefs.setString('refresh_token', data['refresh_token'] ?? '');
+          await prefs.setString('customer_id', user['id'].toString());
+          await prefs.setString('full_name', user['name']);
+          await prefs.setString('phone_number', user['username']);
+          if (rememberMe.value) {
+            await prefs.setBool('remember_me', true);
+          }
+
+          _showSnackBar(
+            'Success'.tr,
+            'Login successful!'.tr,
+            Colors.green,
+          );
+
+          await Future.delayed(const Duration(seconds: 1));
+          Get.offAllNamed(Routes.BOTTOM_NAV_HOME);
+          loginSuccess = true;
+          break; // Exit loop on successful login
+        } catch (e) {
+          errorMessage = e.toString();
+          print('Attempt with $phoneFormat failed: $e');
+        }
+      }
+
+      // If login failed after trying all formats
+      if (!loginSuccess) {
+        String suggestionKey = 'Incorrect phone number or password.';
         _showSnackBar(
-          'Success',
-          'Login successful!',
-          Colors.green,
-        );
-
-        await Future.delayed(const Duration(seconds: 2));
-        Get.offAllNamed(Routes.BOTTOM_NAV_HOME);
-      } else {
-        _showSnackBar(
-          'Error',
-          'Unexpected response from server. Please try again.',
+          'Error'.tr,
+          suggestionKey.tr,
           Colors.red,
         );
       }
     } on DioException catch (e) {
-      // existing error handling...
-      String errorMessage = 'An error occurred. Please try again.';
-      if (e.response != null) {
-        if (e.response!.statusCode == 400) {
-          final responseData = e.response!.data;
-          if (responseData is Map && responseData.containsKey('non_field_errors')) {
-            if (responseData['non_field_errors'].contains('Invalid credentials')) {
-              errorMessage = 'No such user. Please check your email or password.';
-            } else {
-              errorMessage = 'Invalid input. Please check your credentials.';
-            }
-          } else {
-            errorMessage = 'Bad request. Please check your input.';
+      print('DioException: ${e.response?.data}');
+      String errorKey = 'Login failed. Please try again.';
+      if (e.response?.data != null) {
+        if (e.response!.data is String && e.response!.data.contains('MethodNotAllowedHttpException')) {
+          errorKey = 'Server error: POST method not supported at this endpoint. Please check the API URL.';
+        } else if (e.response!.data is Map) {
+          final errors = e.response!.data['errors'];
+          if (errors is List && errors.isNotEmpty && errors[0] is Map && errors[0].containsKey('message')) {
+            errorMessage = errors[0]['message'];
+          } else if (e.response!.data.containsKey('message')) {
+            errorMessage = e.response!.data['message'];
           }
-        } else if (e.response!.statusCode == 401) {
-          errorMessage = 'Unauthorized. Please check your credentials.';
-        } else {
-          errorMessage = 'Server error: ${e.response!.statusCode}';
         }
-      } else if (e.type == DioExceptionType.connectionTimeout) {
-        errorMessage = 'Connection timed out. Please check your internet.';
-      } else if (e.type == DioExceptionType.receiveTimeout) {
-        errorMessage = 'Server took too long to respond.';
       }
-
+      String suggestionKey = 'Incorrect phone number or password.';
       _showSnackBar(
-        'Error',
-        errorMessage,
+        'Error'.tr,
+        errorMessage != null ? 'Unexpected error: $errorMessage $suggestionKey'.tr : errorKey.tr,
         Colors.red,
       );
     } catch (e) {
+      print('Unexpected error: $e');
+      String suggestionKey = 'Incorrect phone number or password.';
       _showSnackBar(
-        'Error',
-        'Unexpected error: $e',
+        'Error'.tr,
+        'Unexpected error: $e $suggestionKey'.tr,
         Colors.red,
       );
     } finally {
@@ -169,18 +207,14 @@ class LoginController extends GetxController {
     }
   }
 
-
-  // Save tokens to SharedPreferences
-  Future<void> _saveTokens(String accessToken, String refreshToken) async {
+  Future<void> checkLoginStatus() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('access_token', accessToken);
-    await prefs.setString('refresh_token', refreshToken);
-    if (rememberMe.value) {
-      await prefs.setBool('remember_me', true);
+    final token = prefs.getString('access_token');
+    if (token != null) {
+      Get.offAllNamed(Routes.BOTTOM_NAV_HOME);
     }
   }
 
-  // Retrieve tokens (for later use in the app)
   Future<Map<String, String?>> getTokens() async {
     final prefs = await SharedPreferences.getInstance();
     return {
@@ -194,8 +228,7 @@ class LoginController extends GetxController {
   }
 
   void _showSnackBar(String title, String message, Color backgroundColor) {
-    // Ensure snackbar is shown even if another is already visible
-    Get.closeAllSnackbars(); // Close any existing snackbars
+    Get.closeAllSnackbars();
     Get.snackbar(
       title,
       message,
@@ -207,7 +240,6 @@ class LoginController extends GetxController {
       borderRadius: 8,
       isDismissible: true,
       animationDuration: const Duration(milliseconds: 300),
-      // Add overlay to ensure visibility
       overlayBlur: 0.5,
       overlayColor: Colors.black.withOpacity(0.2),
     );
@@ -216,8 +248,8 @@ class LoginController extends GetxController {
   void showHelpToast() {
     Get.closeAllSnackbars();
     Get.snackbar(
-      'Login Help',
-      'Use a valid email and password to log in. If you forgot your password, use the "Forgot Password" option.',
+      'Login Help'.tr,
+      'To log in, enter your phone number and password. If you forgot your password, use the "Forgot Password" option.'.tr,
       snackPosition: SnackPosition.TOP,
       backgroundColor: Colors.grey[800],
       colorText: Colors.white,
@@ -233,8 +265,7 @@ class LoginController extends GetxController {
 
   @override
   void onClose() {
-    emailController.dispose();
-    passwordController.dispose();
-    super.onClose(); // Call super last
+    // Avoid clearing controllers here to prevent disposal issues
+    super.onClose();
   }
 }

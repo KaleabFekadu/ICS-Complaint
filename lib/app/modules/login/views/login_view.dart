@@ -13,8 +13,8 @@ class LoginView extends GetView<LoginController> {
 
   @override
   Widget build(BuildContext context) {
-    LoginController controller = Get.put(LoginController());
-    // 🟦 Set status bar to blue with white icons
+    // Move Get.put to a higher scope or ensure it's only called once
+    // If using GetView, the controller is already managed by Get
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: TColors.primary,
       statusBarIconBrightness: Brightness.light,
@@ -34,25 +34,16 @@ class LoginView extends GetView<LoginController> {
                     width: double.infinity,
                     height: 280,
                     decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: const AssetImage('assets/logos/Head.png'),
-                        fit: BoxFit.cover,
-                        colorFilter: ColorFilter.mode(
-                          Colors.red.withOpacity(0.3), // Apply red tint to the image
-                          BlendMode.multiply, // Blend mode to enhance red vibe
-                        ),
-                      ),
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          Colors.grey.withOpacity(0.9), // Subtle red at the top
-                          Colors.grey.withOpacity(0.5), // Vibrant red at the bottom
+                          Colors.grey.withOpacity(0.9),
+                          Colors.grey.withOpacity(0.5),
                         ],
                       ),
                     ),
                   ),
-                  // Removed the second Container with color overlay to avoid masking the gradient
                   Positioned.fill(
                     child: Center(
                       child: Column(
@@ -94,13 +85,12 @@ class LoginView extends GetView<LoginController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Title with animation
                     AnimatedOpacity(
                       opacity: 1.0,
                       duration: const Duration(milliseconds: 600),
-                      child: const Text(
-                        'Sign in to your\nAccount',
-                        style: TextStyle(
+                      child: Text(
+                        'Sign in to your\nAccount'.tr,
+                        style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.w800,
                           color: Colors.black87,
@@ -110,24 +100,24 @@ class LoginView extends GetView<LoginController> {
                     ),
                     const SizedBox(height: 24),
 
-                    // 📧 Email Field
-                    // 📧 Email Field
+                    // 📱 Phone Number Field
                     AnimatedSlide(
                       offset: const Offset(0, 0),
                       duration: const Duration(milliseconds: 600),
                       curve: Curves.easeInOut,
                       child: Obx(() => TextField(
-                        controller: controller.emailController,
-                        keyboardType: TextInputType.emailAddress,
+                        controller: controller.phoneController,
+                        keyboardType: TextInputType.phone,
                         decoration: InputDecoration(
-                          hintText: 'Email',
+                          hintText: 'Phone Number'.tr,
                           prefixIcon: Icon(
-                            Iconsax.sms,
+                            Iconsax.call,
                             color: Colors.grey.shade600,
                           ),
                           filled: true,
                           fillColor: Colors.grey.shade100,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 18),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -146,10 +136,11 @@ class LoginView extends GetView<LoginController> {
                               width: 1.5,
                             ),
                           ),
-                          errorText: controller.emailError.value.isNotEmpty
-                              ? controller.emailError.value
+                          errorText: controller.phoneError.value.isNotEmpty
+                              ? controller.phoneError.value
                               : null,
                         ),
+                        onChanged: (value) => controller.validatePhoneNumber(),
                       )),
                     ),
                     const SizedBox(height: 16),
@@ -163,7 +154,7 @@ class LoginView extends GetView<LoginController> {
                         controller: controller.passwordController,
                         obscureText: controller.isPasswordHidden.value,
                         decoration: InputDecoration(
-                          hintText: 'Password',
+                          hintText: 'Password'.tr,
                           prefixIcon: Icon(
                             Iconsax.lock,
                             color: Colors.grey.shade600,
@@ -219,9 +210,9 @@ class LoginView extends GetView<LoginController> {
                           ),
                           activeColor: TColors.primary,
                         )),
-                        const Text(
-                          'Remember me',
-                          style: TextStyle(
+                        Text(
+                          'Remember me'.tr,
+                          style: const TextStyle(
                             fontSize: 14,
                             color: Colors.black87,
                           ),
@@ -229,10 +220,10 @@ class LoginView extends GetView<LoginController> {
                         const Spacer(),
                         TextButton(
                           onPressed: () {
-                            Get.to(ForgetView());
+                            Get.to(const ForgetView());
                           },
                           child: Text(
-                            'Forgot Password?',
+                            'Forgot Password?'.tr,
                             style: TextStyle(
                               color: TColors.primary,
                               fontWeight: FontWeight.w600,
@@ -245,14 +236,15 @@ class LoginView extends GetView<LoginController> {
                     const SizedBox(height: 28),
 
                     // 🔵 Log In Button
-                    // 🔵 Log In Button
                     AnimatedScale(
                       scale: 1.0,
                       duration: const Duration(milliseconds: 600),
                       child: SizedBox(
                         width: double.infinity,
                         child: Obx(() => ElevatedButton(
-                          onPressed: controller.isLoginLoading.value ? null : controller.login, // Use isLoginLoading
+                          onPressed: controller.isLoginLoading.value
+                              ? null
+                              : controller.login,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: TColors.primary,
                             foregroundColor: Colors.white,
@@ -261,9 +253,10 @@ class LoginView extends GetView<LoginController> {
                             ),
                             elevation: 3,
                             shadowColor: TColors.primary.withOpacity(0.4),
-                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            padding:
+                            const EdgeInsets.symmetric(vertical: 16),
                           ),
-                          child: controller.isLoginLoading.value // Use isLoginLoading
+                          child: controller.isLoginLoading.value
                               ? const SizedBox(
                             height: 24,
                             width: 24,
@@ -272,9 +265,9 @@ class LoginView extends GetView<LoginController> {
                               strokeWidth: 2.5,
                             ),
                           )
-                              : const Text(
-                            'Log In',
-                            style: TextStyle(
+                              : Text(
+                            'Log In'.tr,
+                            style: const TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 14,
                               color: Colors.white,
@@ -285,23 +278,28 @@ class LoginView extends GetView<LoginController> {
                     ),
                     const SizedBox(height: 10),
 
+                    // 🔵 Sign Up Button
                     AnimatedScale(
                       scale: 1.0,
                       duration: const Duration(milliseconds: 600),
                       child: SizedBox(
                         width: double.infinity,
                         child: Obx(() => OutlinedButton(
-                          onPressed: controller.isSignupLoading.value ? null : controller.signup, // Use isSignupLoading
+                          onPressed: controller.isSignupLoading.value
+                              ? null
+                              : controller.signup,
                           style: OutlinedButton.styleFrom(
                             backgroundColor: Colors.white,
                             foregroundColor: TColors.primary,
-                            side: BorderSide(color: TColors.primary, width: 1.8),
+                            side: BorderSide(
+                                color: TColors.primary, width: 1.8),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            padding:
+                            const EdgeInsets.symmetric(vertical: 16),
                           ),
-                          child: controller.isSignupLoading.value // Use isSignupLoading
+                          child: controller.isSignupLoading.value
                               ? const SizedBox(
                             height: 24,
                             width: 24,
@@ -310,9 +308,9 @@ class LoginView extends GetView<LoginController> {
                               color: TColors.primary,
                             ),
                           )
-                              : const Text(
-                            'Sign Up',
-                            style: TextStyle(
+                              : Text(
+                            'Sign Up'.tr,
+                            style: const TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 14,
                             ),
@@ -327,15 +325,15 @@ class LoginView extends GetView<LoginController> {
                       child: RichText(
                         textAlign: TextAlign.center,
                         text: TextSpan(
-                          text: 'By signing up, you agree to the ',
-                          style: TextStyle(
+                          text: 'By signing up, you agree to the '.tr,
+                          style: const TextStyle(
                             color: Colors.black54,
                             fontSize: 13,
                             height: 1.3,
                           ),
                           children: [
                             TextSpan(
-                              text: 'Terms of Service',
+                              text: 'Terms of Service'.tr,
                               style: const TextStyle(
                                 color: TColors.primary,
                                 fontWeight: FontWeight.w600,
@@ -345,14 +343,14 @@ class LoginView extends GetView<LoginController> {
                                 ..onTap = () {
                                   showCustomDialog(
                                     context,
-                                    'Terms of Service',
+                                    'Terms of Service'.tr,
                                     _termsOfServiceText,
                                   );
                                 },
                             ),
-                            const TextSpan(text: ' and '),
+                            TextSpan(text: ' and '.tr),
                             TextSpan(
-                              text: 'Data Processing Agreement',
+                              text: 'Data Processing Agreement'.tr,
                               style: const TextStyle(
                                 color: TColors.primary,
                                 fontWeight: FontWeight.w600,
@@ -362,7 +360,7 @@ class LoginView extends GetView<LoginController> {
                                 ..onTap = () {
                                   showCustomDialog(
                                     context,
-                                    'Data Processing Agreement',
+                                    'Data Processing Agreement'.tr,
                                     _dataProcessingText,
                                   );
                                 },
@@ -417,7 +415,6 @@ class LoginView extends GetView<LoginController> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Title with close button
               Row(
                 children: [
                   Expanded(
@@ -441,7 +438,6 @@ class LoginView extends GetView<LoginController> {
                 ],
               ),
               const SizedBox(height: 12),
-              // Scrollable content
               Expanded(
                 child: Scrollbar(
                   thumbVisibility: true,
@@ -479,7 +475,6 @@ class LoginView extends GetView<LoginController> {
                 ),
               ),
               const SizedBox(height: 20),
-              // Action buttons
               Row(
                 children: [
                   Expanded(
@@ -498,7 +493,7 @@ class LoginView extends GetView<LoginController> {
                         ),
                       ),
                       onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('Close'),
+                      child: Text('Close'.tr),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -519,9 +514,9 @@ class LoginView extends GetView<LoginController> {
                       onPressed: () {
                         // Add secondary action here
                       },
-                      child: const Text(
-                        'Learn More',
-                        style: TextStyle(color: TColors.primary),
+                      child: Text(
+                        'Learn More'.tr,
+                        style: const TextStyle(color: TColors.primary),
                       ),
                     ),
                   ),
