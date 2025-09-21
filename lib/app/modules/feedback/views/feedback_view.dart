@@ -93,18 +93,6 @@ class FeedbackView extends GetView<FeedbackController> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Branch Dropdown
-                    AnimatedOpacity(
-                      opacity: 1.0,
-                      duration: const Duration(milliseconds: 600),
-                      child: Text(
-                        'Select Branch'.tr,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ),
                     const SizedBox(height: 8),
                     // Branch Dropdown
                     AnimatedOpacity(

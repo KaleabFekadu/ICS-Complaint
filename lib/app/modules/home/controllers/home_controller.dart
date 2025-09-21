@@ -183,6 +183,8 @@ class HomeController extends GetxController {
     }
 
     try {
+      // In home_controller.dart, replace the query in fetchReports with this:
+
       final query = r'''
         query MyReportsByStatus($status: ReportStatusEnum) {
           my_reports(status: $status) {
@@ -194,7 +196,7 @@ class HomeController extends GetxController {
             report_place
             associated_parties
             is_complaint
-            category
+            report_category
             rating
             feedback_description
             first_name
