@@ -1,27 +1,168 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../utils/constants/config.dart';
 
 class FeedbackController extends GetxController {
-  var selectedBranch = ''.obs;
-  var selectedService = ''.obs;
+  var selectedBranchId = ''.obs; // Changed to store branch ID
+  var selectedServiceId = ''.obs; // Changed to store service ID
   var rating = 0.obs;
   var description = ''.obs;
   var isSubmitting = false.obs;
+  var isLoadingBranches = false.obs;
+  var isLoadingServices = false.obs;
+  var errorMessage = ''.obs;
 
-  final branches = ['Branch A', 'Branch B', 'Branch C'].obs;
-  final servicesByBranch = {
-    'Branch A': ['Service A1', 'Service A2', 'Service A3'],
-    'Branch B': ['Service B1', 'Service B2'],
-    'Branch C': ['Service C1', 'Service C2', 'Service C3', 'Service C4'],
-  }.obs;
+  final branches = <Map<String, dynamic>>[].obs; // Store branch data (id, name)
+  final services = <Map<String, dynamic>>[].obs; // Store service data (id, name)
 
-  List<String> getServicesForBranch(String branch) {
-    return servicesByBranch[branch] ?? [];
+  @override
+  void onInit() {
+    super.onInit();
+    fetchBranches();
+  }
+
+  Future<void> fetchBranches() async {
+    isLoadingBranches.value = true;
+    errorMessage.value = '';
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('access_token');
+      if (token == null || token.isEmpty) {
+        errorMessage.value = 'Please log in to fetch branches.'.tr;
+        Get.offAllNamed('/login');
+        return;
+      }
+
+      final client = GraphQLClient(
+        link: HttpLink(
+          '${Config.baseUrl}/graphql',
+          defaultHeaders: {'Authorization': 'Bearer $token'},
+        ),
+        cache: GraphQLCache(),
+      );
+
+      const query = r'''
+        query GetAllBranchesWithServices {
+          all_branches {
+            id
+            name
+            code
+            description
+            icon
+            services {
+              id
+              name
+              description
+              draft
+            }
+          }
+        }
+      ''';
+
+      final result = await client.query(
+        QueryOptions(
+          document: gql(query),
+          fetchPolicy: FetchPolicy.networkOnly,
+          errorPolicy: ErrorPolicy.all,
+        ),
+      );
+
+      if (result.hasException) {
+        errorMessage.value = 'Failed to load branches: ${result.exception.toString()}'.tr;
+        return;
+      }
+
+      final data = result.data?['all_branches'] as List<dynamic>?;
+      if (data != null) {
+        branches.assignAll(data.cast<Map<String, dynamic>>());
+        // Cache services for each branch
+        services.clear();
+        selectedBranchId.value = '';
+        selectedServiceId.value = '';
+      } else {
+        errorMessage.value = 'No branches found.'.tr;
+      }
+    } catch (e) {
+      errorMessage.value = 'Error fetching branches: $e'.tr;
+    } finally {
+      isLoadingBranches.value = false;
+    }
+  }
+
+  Future<void> fetchServicesForBranch(String branchId) async {
+    if (branchId.isEmpty) {
+      services.clear();
+      selectedServiceId.value = '';
+      return;
+    }
+
+    isLoadingServices.value = true;
+    errorMessage.value = '';
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('access_token');
+      if (token == null || token.isEmpty) {
+        errorMessage.value = 'Please log in to fetch services.'.tr;
+        Get.offAllNamed('/login');
+        return;
+      }
+
+      final client = GraphQLClient(
+        link: HttpLink(
+          '${Config.baseUrl}/graphql',
+          defaultHeaders: {'Authorization': 'Bearer $token'},
+        ),
+        cache: GraphQLCache(),
+      );
+
+      const query = r'''
+        query GetBranchWithServices($branchId: ID!) {
+          branch(id: $branchId) {
+            id
+            name
+            services {
+              id
+              name
+              description
+              draft
+            }
+          }
+        }
+      ''';
+
+      final result = await client.query(
+        QueryOptions(
+          document: gql(query),
+          variables: {'branchId': branchId},
+          fetchPolicy: FetchPolicy.networkOnly,
+          errorPolicy: ErrorPolicy.all,
+        ),
+      );
+
+      if (result.hasException) {
+        errorMessage.value = 'Failed to load services: ${result.exception.toString()}'.tr;
+        return;
+      }
+
+      final data = result.data?['branch'] as Map<String, dynamic>?;
+      if (data != null && data['services'] != null) {
+        services.assignAll((data['services'] as List<dynamic>).cast<Map<String, dynamic>>().where((service) => !(service['draft'] ?? false)).toList());
+        selectedServiceId.value = '';
+      } else {
+        errorMessage.value = 'No services found for this branch.'.tr;
+        services.clear();
+      }
+    } catch (e) {
+      errorMessage.value = 'Error fetching services: $e'.tr;
+    } finally {
+      isLoadingServices.value = false;
+    }
   }
 
   Future<void> submitFeedback() async {
-    if (selectedBranch.value.isEmpty) {
+    if (selectedBranchId.value.isEmpty) {
       Get.snackbar(
         'Error'.tr,
         'Please select a branch.'.tr,
@@ -35,7 +176,7 @@ class FeedbackController extends GetxController {
       );
       return;
     }
-    if (selectedService.value.isEmpty) {
+    if (selectedServiceId.value.isEmpty) {
       Get.snackbar(
         'Error'.tr,
         'Please select a service.'.tr,
@@ -80,7 +221,6 @@ class FeedbackController extends GetxController {
 
     isSubmitting.value = true;
     try {
-      // Check if user is logged in
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('access_token');
       if (token == null || token.isEmpty) {
@@ -99,8 +239,7 @@ class FeedbackController extends GetxController {
         return;
       }
 
-      // TODO: Integrate API call here for submitting feedback
-      // For now, simulate success
+      // TODO: Integrate API call for submitting feedback
       await Future.delayed(const Duration(seconds: 1)); // Simulate API delay
 
       Get.snackbar(
@@ -116,8 +255,8 @@ class FeedbackController extends GetxController {
       );
 
       // Reset fields
-      selectedBranch.value = '';
-      selectedService.value = '';
+      selectedBranchId.value = '';
+      selectedServiceId.value = '';
       rating.value = 0;
       description.value = '';
     } catch (e) {

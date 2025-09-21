@@ -10,7 +10,7 @@ class FeedbackView extends GetView<FeedbackController> {
 
   @override
   Widget build(BuildContext context) {
-    // Set system UI overlay style to match LoginView
+    FeedbackController controller = Get.put(FeedbackController());
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: TColors.primary,
       statusBarIconBrightness: Brightness.light,
@@ -106,24 +106,39 @@ class FeedbackView extends GetView<FeedbackController> {
                       ),
                     ),
                     const SizedBox(height: 8),
+                    // Branch Dropdown
+                    AnimatedOpacity(
+                      opacity: 1.0,
+                      duration: const Duration(milliseconds: 600),
+                      child: Text(
+                        'Select Branch'.tr,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
                     Obx(() => AnimatedSlide(
                       offset: const Offset(0, 0),
                       duration: const Duration(milliseconds: 600),
                       curve: Curves.easeInOut,
                       child: DropdownButtonFormField<String>(
-                        value: controller.selectedBranch.value.isEmpty
+                        value: controller.selectedBranchId.value.isEmpty
                             ? null
-                            : controller.selectedBranch.value,
+                            : controller.selectedBranchId.value,
                         decoration: InputDecoration(
-                          hintText: 'Choose branch'.tr,
+                          hintText: controller.isLoadingBranches.value
+                              ? 'Loading branches...'.tr
+                              : 'Choose branch'.tr,
                           prefixIcon: Icon(
                             Iconsax.location,
                             color: Colors.grey.shade600,
                           ),
                           filled: true,
                           fillColor: Colors.grey.shade100,
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 18),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -142,24 +157,30 @@ class FeedbackView extends GetView<FeedbackController> {
                               width: 1.5,
                             ),
                           ),
+                          errorText: controller.errorMessage.value.isEmpty
+                              ? null
+                              : controller.errorMessage.value,
                         ),
                         items: controller.branches.map((branch) {
                           return DropdownMenuItem<String>(
-                            value: branch,
-                            child: Text(branch),
+                            value: branch['id'].toString(),
+                            child: Text(branch['name']),
                           );
                         }).toList(),
-                        onChanged: (value) {
+                        onChanged: controller.isLoadingBranches.value
+                            ? null
+                            : (value) {
                           if (value != null) {
-                            controller.selectedBranch.value = value;
-                            controller.selectedService.value = '';
+                            controller.selectedBranchId.value = value;
+                            controller.selectedServiceId.value = '';
+                            controller.fetchServicesForBranch(value);
                           }
                         },
                       ),
                     )),
                     const SizedBox(height: 20),
 
-                    // Service Dropdown
+// Service Dropdown
                     AnimatedOpacity(
                       opacity: 1.0,
                       duration: const Duration(milliseconds: 600),
@@ -178,19 +199,22 @@ class FeedbackView extends GetView<FeedbackController> {
                       duration: const Duration(milliseconds: 600),
                       curve: Curves.easeInOut,
                       child: DropdownButtonFormField<String>(
-                        value: controller.selectedService.value.isEmpty
+                        value: controller.selectedServiceId.value.isEmpty
                             ? null
-                            : controller.selectedService.value,
+                            : controller.selectedServiceId.value,
                         decoration: InputDecoration(
-                          hintText: 'Choose service'.tr,
+                          hintText: controller.isLoadingServices.value
+                              ? 'Loading services...'.tr
+                              : controller.selectedBranchId.value.isEmpty
+                              ? 'Select a branch first'.tr
+                              : 'Choose service'.tr,
                           prefixIcon: Icon(
                             Iconsax.task,
                             color: Colors.grey.shade600,
                           ),
                           filled: true,
                           fillColor: Colors.grey.shade100,
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 18),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -209,28 +233,26 @@ class FeedbackView extends GetView<FeedbackController> {
                               width: 1.5,
                             ),
                           ),
+                          errorText: controller.errorMessage.value.isEmpty
+                              ? null
+                              : controller.errorMessage.value,
                         ),
-                        items: controller
-                            .getServicesForBranch(
-                            controller.selectedBranch.value)
-                            .map((service) {
+                        items: controller.services.map((service) {
                           return DropdownMenuItem<String>(
-                            value: service,
-                            child: Text(service),
+                            value: service['id'].toString(),
+                            child: Text(service['name']),
                           );
                         }).toList(),
-                        onChanged: controller.selectedBranch.value.isEmpty
+                        onChanged: controller.isLoadingServices.value || controller.selectedBranchId.value.isEmpty
                             ? null
                             : (value) {
                           if (value != null) {
-                            controller.selectedService.value = value;
+                            controller.selectedServiceId.value = value;
                           }
                         },
                       ),
                     )),
                     const SizedBox(height: 20),
-
-                    // Rating
                     // Rating
                     AnimatedOpacity(
                       opacity: 1.0,

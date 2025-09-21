@@ -187,7 +187,6 @@ class HomeController extends GetxController {
         query MyReportsByStatus($status: ReportStatusEnum) {
           my_reports(status: $status) {
             id
-            description
             institution_name
             responsible_person
             responsible_person_phone
@@ -195,6 +194,9 @@ class HomeController extends GetxController {
             report_place
             associated_parties
             is_complaint
+            category
+            rating
+            feedback_description
             first_name
             father_name
             grand_father_name
