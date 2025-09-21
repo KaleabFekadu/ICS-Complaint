@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -11,18 +10,19 @@ class ProfileView extends GetView<ProfileController> {
 
   @override
   Widget build(BuildContext context) {
-    // Ensure ProfileController is initialized
+    ProfileController controller = Get.put(ProfileController());
     ValueNotifier<String> selectedLanguage = ValueNotifier('English');
 
-    Get.put(ProfileController());
     return Scaffold(
       backgroundColor: const Color(0xFFF9FAFB),
       appBar: AppBar(
         automaticallyImplyLeading: true,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
-        title: const Text('Settings',
-            style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18)),
+        title: const Text(
+          'Settings',
+          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
+        ),
         elevation: 0.4,
         centerTitle: true,
       ),
@@ -34,41 +34,44 @@ class ProfileView extends GetView<ProfileController> {
               children: [
                 _buildProfileHeader(),
                 const SizedBox(height: 24),
-                _buildTile(Iconsax.profile_circle, 'Edit Profile', () {}),
+                _buildTile(Iconsax.profile_circle, 'Edit Profile'.tr, () {}),
                 _buildTile(
                   Iconsax.lock,
-                  'Change Password',
+                  'Change Password'.tr,
                       () => _showChangePasswordBottomSheet(context),
                 ),
                 const SizedBox(height: 24),
-                const Text("Preferences",
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey)),
+                Text(
+                  "Preferences".tr,
+                  style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey),
+                ),
                 const SizedBox(height: 8),
                 _buildTile(
                   Iconsax.language_square,
-                  'Language',
+                  'Language'.tr,
                       () => _showLanguageBottomSheet(context, selectedLanguage),
                 ),
-                _buildTile(Iconsax.moon, 'Dark Mode', () {}),
+                _buildTile(Iconsax.moon, 'Dark Mode'.tr, () {}),
                 const SizedBox(height: 24),
-                const Text("Support",
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey)),
+                Text(
+                  "Support".tr,
+                  style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey),
+                ),
                 const SizedBox(height: 8),
                 _buildTile(
                   Iconsax.security_card,
-                  'Privacy Policy',
+                  'Privacy Policy'.tr,
                       () {
                     showModalBottomSheet(
                       context: context,
                       isScrollControlled: true,
-                      backgroundColor: Colors
-                          .transparent, // make background transparent for rounded corners effect
+                      backgroundColor: Colors.transparent,
                       builder: (context) => DraggableScrollableSheet(
                         expand: false,
                         initialChildSize: 0.75,
@@ -78,8 +81,8 @@ class ProfileView extends GetView<ProfileController> {
                           return Container(
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: const BorderRadius.vertical(
-                                  top: Radius.circular(24)),
+                              borderRadius:
+                              const BorderRadius.vertical(top: Radius.circular(24)),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withOpacity(0.1),
@@ -95,7 +98,6 @@ class ProfileView extends GetView<ProfileController> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  // Drag handle
                                   Center(
                                     child: Container(
                                       width: 48,
@@ -108,7 +110,7 @@ class ProfileView extends GetView<ProfileController> {
                                     ),
                                   ),
                                   Text(
-                                    "Privacy Policy",
+                                    "Privacy Policy".tr,
                                     style: const TextStyle(
                                       fontSize: 24,
                                       fontWeight: FontWeight.bold,
@@ -117,42 +119,43 @@ class ProfileView extends GetView<ProfileController> {
                                     ),
                                   ),
                                   const SizedBox(height: 16),
-
                                   _policySection(
                                     title:
-                                    "Welcome to the CRRSA (Civil Registration and Residency Service Agency) application.",
+                                    "Welcome to the CRRSA (Civil Registration and Residency Service Agency) application."
+                                        .tr,
                                     content:
-                                    "We are committed to protecting your privacy and ensuring that your personal data is handled securely. By using this application, you agree to the collection and use of your information in accordance with this policy.",
+                                    "We are committed to protecting your privacy and ensuring that your personal data is handled securely. By using this application, you agree to the collection and use of your information in accordance with this policy."
+                                        .tr,
                                   ),
-
                                   _policySection(
-                                    title: "Information Collection",
+                                    title: "Information Collection".tr,
                                     content:
-                                    "We collect personal details such as your full name, date of birth, residency details, and identification information strictly for registration and residency services.",
+                                    "We collect personal details such as your full name, date of birth, residency details, and identification information strictly for registration and residency services."
+                                        .tr,
                                   ),
-
                                   _policySection(
-                                    title: "Information Use",
+                                    title: "Information Use".tr,
                                     content:
-                                    "Your data will be used only for official CRRSA services and will not be shared with third parties without your consent, unless required by law.",
+                                    "Your data will be used only for official CRRSA services and will not be shared with third parties without your consent, unless required by law."
+                                        .tr,
                                   ),
-
                                   _policySection(
-                                    title: "Data Security",
+                                    title: "Data Security".tr,
                                     content:
-                                    "We use advanced security measures to protect your information from unauthorized access.",
+                                    "We use advanced security measures to protect your information from unauthorized access."
+                                        .tr,
                                   ),
-
                                   _policySection(
-                                    title: "User Rights",
+                                    title: "User Rights".tr,
                                     content:
-                                    "You have the right to request corrections or deletion of your personal data in accordance with applicable regulations.",
+                                    "You have the right to request corrections or deletion of your personal data in accordance with applicable regulations."
+                                        .tr,
                                   ),
-
                                   const SizedBox(height: 12),
                                   Center(
                                     child: Text(
-                                      "Thank you for trusting CRRSA with your personal information.",
+                                      "Thank you for trusting CRRSA with your personal information."
+                                          .tr,
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: Colors.grey.shade700,
@@ -172,16 +175,16 @@ class ProfileView extends GetView<ProfileController> {
                     );
                   },
                 ),
-                _buildTile(Iconsax.info_circle, 'About App', () {
-                  //Get.to(() => const AboutView());
+                _buildTile(Iconsax.info_circle, 'About App'.tr, () {
+                  // Get.to(() => const AboutView());
                 }),
                 const SizedBox(height: 24),
                 const Divider(),
                 _buildTile(
                   Iconsax.logout,
-                  'Logout',
+                  'Logout'.tr,
                       () {
-                    controller.logout(); // Call logout from ProfileController
+                    controller.logout();
                   },
                   iconColor: Colors.red,
                   textColor: Colors.red,
@@ -227,8 +230,7 @@ class ProfileView extends GetView<ProfileController> {
 
   void _showLanguageBottomSheet(
       BuildContext context, ValueNotifier<String> selectedLanguage) {
-    final bool isDarkMode =
-        MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
 
     showModalBottomSheet(
       context: context,
@@ -241,8 +243,7 @@ class ProfileView extends GetView<ProfileController> {
           valueListenable: selectedLanguage,
           builder: (context, value, child) {
             return Container(
-              padding:
-              const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -261,7 +262,7 @@ class ProfileView extends GetView<ProfileController> {
                   const SizedBox(height: 12),
                   Center(
                     child: Text(
-                      'Select Language',
+                      'Select Language'.tr,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -317,8 +318,7 @@ class ProfileView extends GetView<ProfileController> {
   }
 
   void _showChangePasswordBottomSheet(BuildContext context) {
-    final bool isDarkMode =
-        MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
 
     final currentPasswordController = TextEditingController();
     final newPasswordController = TextEditingController();
@@ -341,13 +341,11 @@ class ProfileView extends GetView<ProfileController> {
             bottom: MediaQuery.of(context).viewInsets.bottom,
           ),
           child: Container(
-            padding:
-            const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
+            padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Drag Handle
                 Center(
                   child: Container(
                     width: 50,
@@ -360,11 +358,9 @@ class ProfileView extends GetView<ProfileController> {
                   ),
                 ),
                 const SizedBox(height: 12),
-
-                // Title
                 Center(
                   child: Text(
-                    'Change Password',
+                    'Change Password'.tr,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -374,13 +370,11 @@ class ProfileView extends GetView<ProfileController> {
                   ),
                 ),
                 const SizedBox(height: 20),
-
-                // Current Password
                 ValueListenableBuilder<bool>(
                   valueListenable: showCurrent,
                   builder: (context, show, child) {
                     return _buildPasswordField(
-                      label: "Current Password",
+                      label: "Current Password".tr,
                       controller: currentPasswordController,
                       obscureText: !show,
                       isDarkMode: isDarkMode,
@@ -389,13 +383,11 @@ class ProfileView extends GetView<ProfileController> {
                   },
                 ),
                 const SizedBox(height: 12),
-
-                // New Password
                 ValueListenableBuilder<bool>(
                   valueListenable: showNew,
                   builder: (context, show, child) {
                     return _buildPasswordField(
-                      label: "New Password",
+                      label: "New Password".tr,
                       controller: newPasswordController,
                       obscureText: !show,
                       isDarkMode: isDarkMode,
@@ -404,13 +396,11 @@ class ProfileView extends GetView<ProfileController> {
                   },
                 ),
                 const SizedBox(height: 12),
-
-                // Confirm Password
                 ValueListenableBuilder<bool>(
                   valueListenable: showConfirm,
                   builder: (context, show, child) {
                     return _buildPasswordField(
-                      label: "Confirm Password",
+                      label: "Confirm Password".tr,
                       controller: confirmPasswordController,
                       obscureText: !show,
                       isDarkMode: isDarkMode,
@@ -419,8 +409,6 @@ class ProfileView extends GetView<ProfileController> {
                   },
                 ),
                 const SizedBox(height: 20),
-
-                // Save Button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -435,9 +423,9 @@ class ProfileView extends GetView<ProfileController> {
                       // TODO: handle password change logic
                       Navigator.pop(context);
                     },
-                    child: const Text(
-                      "Save Password",
-                      style: TextStyle(
+                    child: Text(
+                      "Save Password".tr,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
@@ -524,8 +512,7 @@ class ProfileView extends GetView<ProfileController> {
                 : null,
             boxShadow: [
               BoxShadow(
-                color:
-                isDarkMode ? Colors.black26 : Colors.grey.withOpacity(0.1),
+                color: isDarkMode ? Colors.black26 : Colors.grey.withOpacity(0.1),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -576,12 +563,11 @@ class ProfileView extends GetView<ProfileController> {
           width: 70,
           height: 70,
           decoration: BoxDecoration(
-            color:
-            TColors.primary.withOpacity(0.1), // light background circle
+            color: TColors.primary.withOpacity(0.1),
             shape: BoxShape.circle,
           ),
           child: Icon(
-            Iconsax.profile_circle, // Iconsax profile icon
+            Iconsax.profile_circle,
             size: 50,
             color: TColors.primary,
           ),
@@ -593,11 +579,13 @@ class ProfileView extends GetView<ProfileController> {
             Text(
               controller.userName.value,
               style: const TextStyle(
-                  fontSize: 18, fontWeight: FontWeight.w600),
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
-              controller.userEmail.value,
+              controller.userPhone.value, // Changed from userEmail to userPhone
               style: const TextStyle(color: Colors.grey),
             ),
           ],
@@ -612,169 +600,16 @@ class ProfileView extends GetView<ProfileController> {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(vertical: 2),
       leading: Icon(icon, color: iconColor, size: 22),
-      title: Text(title,
-          style: TextStyle(
-              color: textColor, fontSize: 16, fontWeight: FontWeight.w500)),
+      title: Text(
+        title,
+        style: TextStyle(
+          color: textColor,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
       trailing: const Icon(Iconsax.arrow_right_3, size: 18, color: Colors.grey),
       onTap: onTap,
-    );
-  }
-}
-
-
-class _IDInfoRow extends StatelessWidget {
-  final String label;
-  final String value;
-  final bool isDarkMode;
-  final BuildContext context;
-
-  const _IDInfoRow({
-    required this.label,
-    required this.value,
-    required this.isDarkMode,
-    required this.context,
-  });
-
-  void _copyToClipboard() {
-    Clipboard.setData(ClipboardData(text: value));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('$label copied to clipboard'),
-        duration: const Duration(seconds: 2),
-        backgroundColor: isDarkMode ? Colors.grey[800] : Colors.grey[200],
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: isDarkMode ? Colors.white70 : Colors.grey[700],
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    color: isDarkMode ? Colors.white : Colors.black87,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          IconButton(
-            icon: Icon(
-              Icons.copy,
-              size: 20,
-              color: isDarkMode ? Colors.white70 : Colors.grey[700],
-            ),
-            onPressed: _copyToClipboard,
-            tooltip: 'Copy $label',
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _IDCardFlipper extends StatefulWidget {
-  final bool isDarkMode;
-
-  const _IDCardFlipper({required this.isDarkMode});
-
-  @override
-  _IDCardFlipperState createState() => _IDCardFlipperState();
-}
-
-class _IDCardFlipperState extends State<_IDCardFlipper> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
-  bool _isFront = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 600),
-      vsync: this,
-    );
-    _animation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeInOut,
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _flipCard() {
-    if (_controller.isAnimating) return;
-    setState(() {
-      _isFront = !_isFront;
-    });
-    if (_isFront) {
-      _controller.reverse();
-    } else {
-      _controller.forward();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: _flipCard,
-      child: AnimatedBuilder(
-        animation: _animation,
-        builder: (context, child) {
-          final isFrontVisible = _animation.value <= 0.5;
-          final angle = _animation.value * pi;
-          return Transform(
-            transform: Matrix4.identity()
-              ..setEntry(3, 2, 0.001) // Add perspective
-              ..rotateY(angle),
-            alignment: Alignment.center,
-            child: Center(
-              child: isFrontVisible
-                  ? Image.asset(
-                'assets/logos/IMG_2479 (1).JPG',
-                key: const ValueKey(true),
-                height: 220,
-                fit: BoxFit.contain,
-              )
-                  : Transform(
-                transform: Matrix4.identity()..rotateY(pi),
-                alignment: Alignment.center,
-                child: Image.asset(
-                  'assets/logos/IMG_2480 (1).JPG', // Fixed asset path
-                  key: const ValueKey(false),
-                  height: 220,
-                  fit: BoxFit.contain,
-                ),
-              ),
-            ),
-          );
-        },
-      ),
     );
   }
 }

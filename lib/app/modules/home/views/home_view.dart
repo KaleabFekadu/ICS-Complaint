@@ -8,6 +8,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:ics_complaint/app/modules/create_complaint/views/create_complaint_view.dart';
 import 'package:intl/intl.dart';
 import '../../../utils/constants/colors.dart';
+import '../../feedback/views/feedback_view.dart';
 import '../controllers/home_controller.dart';
 
 class TColorss {
@@ -285,49 +286,7 @@ class HomeView extends GetView<HomeController> {
           ],
         );
       }),
-      floatingActionButton: Obx(() {
-        return controller.selectedIndex.value == 0
-            ? AnimatedScale(
-          duration: const Duration(milliseconds: 250),
-          scale: 1.0,
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 22), // 👈 move inward
-            child: SizedBox(
-              height: 46,
-              child: FloatingActionButton.extended(
-                heroTag: 'home_fab',
-                onPressed: () {
-                  Get.to(CreateComplaintView());
-                },
-                icon: Icon(
-                  Iconsax.add,
-                  color: TColors.primary,
-                  size: 20,
-                ),
-                label: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 2),
-                  child: Text(
-                    'Create Complaint'.tr,
-                    style: TextStyle(
-                      color: TColors.primary,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-                backgroundColor: Colors.white,
-                foregroundColor: TColors.primary,
-                elevation: 1,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  side: BorderSide(color: TColors.primary, width: 1.0),
-                ),
-              ),
-            ),
-          ),
-        )
-            : const SizedBox.shrink();
-      }),
+      floatingActionButton: const FabMenu(),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
@@ -1801,5 +1760,150 @@ class HomeView extends GetView<HomeController> {
     } catch (e) {
       return '-';
     }
+  }
+}
+class FabMenu extends StatefulWidget {
+  const FabMenu({Key? key}) : super(key: key);
+
+  @override
+  State<FabMenu> createState() => _FabMenuState();
+}
+
+class _FabMenuState extends State<FabMenu> with SingleTickerProviderStateMixin {
+  bool _isOpen = false;
+  late final AnimationController _animationController;
+  late final HomeController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 250),
+      vsync: this,
+    );
+    controller = Get.find<HomeController>();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  void _toggle() {
+    setState(() => _isOpen = !_isOpen);
+    if (_isOpen) {
+      _animationController.forward();
+    } else {
+      _animationController.reverse();
+    }
+  }
+
+  Widget _buildChildFab({
+    required String heroTag,
+    required IconData icon,
+    required String label,
+    required VoidCallback onPressed,
+  }) {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: FloatingActionButton.extended(
+        heroTag: heroTag,
+        onPressed: () {
+          _toggle();
+          onPressed();
+        },
+        icon: Icon(icon, size: 20, color: TColors.primary),
+        label: Text(
+          label,
+          style: TextStyle(
+            color: TColors.primary,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 3,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(color: TColors.primary.withOpacity(0.6)),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      if (controller.selectedIndex.value != 0) {
+        return const SizedBox.shrink();
+      }
+
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 22, right: 12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            // Feedback FAB
+            SizeTransition(
+              sizeFactor: CurvedAnimation(
+                parent: _animationController,
+                curve: Curves.easeOut,
+              ),
+              axisAlignment: -1.0,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: _buildChildFab(
+                  heroTag: 'fab_feedback',
+                  icon: Iconsax.information,
+                  label: 'Feedback'.tr,
+                  onPressed: () => Get.to(FeedbackView()),
+                ),
+              ),
+            ),
+
+            // Create Complaint FAB
+            SizeTransition(
+              sizeFactor: CurvedAnimation(
+                parent: _animationController,
+                curve: Curves.easeOut,
+              ),
+              axisAlignment: -1.0,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: _buildChildFab(
+                  heroTag: 'fab_complaint',
+                  icon: Iconsax.receipt,
+                  label: 'Create Complaint'.tr,
+                  onPressed: () => Get.to(CreateComplaintView()),
+                ),
+              ),
+            ),
+
+            // Main FAB
+            FloatingActionButton(
+              heroTag: 'fab_main',
+              onPressed: _toggle,
+              backgroundColor: TColors.primary,
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                transitionBuilder: (child, anim) =>
+                    RotationTransition(turns: anim, child: child),
+                child: Icon(
+                  _isOpen ? Icons.close : Icons.add,
+                  key: ValueKey(_isOpen),
+                  color: Colors.white,
+                  size: 26,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    });
   }
 }

@@ -14,6 +14,7 @@ abstract class Routes {
   static const PROFILE = _Paths.PROFILE;
   static const QRSCANNER = _Paths.QRSCANNER;
   static const CREATE_COMPLAINT = _Paths.CREATE_COMPLAINT;
+  static const FEEDBACK = _Paths.FEEDBACK;
 }
 
 abstract class _Paths {
@@ -29,4 +30,5 @@ abstract class _Paths {
   static const PROFILE = '/profile';
   static const QRSCANNER = '/qrscanner';
   static const CREATE_COMPLAINT = '/create-complaint';
+  static const FEEDBACK = '/feedback';
 }

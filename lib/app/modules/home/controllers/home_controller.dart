@@ -76,10 +76,11 @@ class HomeController extends GetxController {
 
   Future<String?> _getToken() async {
     final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token');
+    final token = prefs.getString('access_token'); // Changed from 'token' to 'access_token'
     if (token == null || token.isEmpty) {
-      errorMessage.value = 'Please log in to access reports.';
+      errorMessage.value = 'Please log in to access reports.'.tr; // Added .tr for localization
       hasToken.value = false;
+      Get.offAllNamed('/login'); // Navigate to login if no token
       return null;
     }
     hasToken.value = true;
@@ -90,6 +91,19 @@ class HomeController extends GetxController {
     final token = await _getToken();
     if (token != null) {
       await fetchReports(token);
+    } else {
+      // Optional: Show a snackbar to inform the user
+      Get.snackbar(
+        'Error'.tr,
+        'Please log in to access reports.'.tr,
+        backgroundColor: TColorss.error,
+        colorText: TColorss.surface,
+        snackPosition: SnackPosition.TOP,
+        borderRadius: 12,
+        margin: const EdgeInsets.all(16),
+        duration: const Duration(seconds: 4),
+        icon: const Icon(Iconsax.warning_2, color: TColorss.surface),
+      );
     }
   }
 
@@ -169,6 +183,10 @@ class HomeController extends GetxController {
     }
 
     try {
+      // In home_controller.dart, replace the query in fetchReports with this:
+
+      // In home_controller.dart, replace the query in fetchReports with this:
+
       final query = r'''
         query MyReportsByStatus($status: ReportStatusEnum) {
           my_reports(status: $status) {
@@ -176,69 +194,52 @@ class HomeController extends GetxController {
             description
             institution_name
             responsible_person
+            responsible_person_phone
             responsible_person_address
+            report_place
+            associated_parties
             is_complaint
+            category
+            rating
+            feedback_description
             first_name
             father_name
             grand_father_name
-            report_place
-            incident_time
+            service_date
             share_contact
             status
-            closed
-            created_at
-            ticket_number
-            company_name
-            room_name
-            staff_name
-            attachments
-            findings
-            ticket_created_at
-            called_at
-            served_date
-            served
-            closing_remark
-            verification_remark
-            fake_reason
-            acceptance_remark
-            reportCategory {
+            service {
               id
               name
+              description
             }
-            requests {
+            branch {
               id
-              complaint_report_id
-              requested_by_id
-              requested_at
-              message
-              status
-              responded_by_id
-              responded_at
-              response_message
-              response_attachment
-              attachment
-              requestedBy {
-                id
-                name
-              }
-              respondedBy {
-                id
-                name
-              }
+              name
+              code
+              description
             }
+            attachments
+            findings
+            created_at
             complaintReportEscalations {
               id
               message
               file
               response_message
-              responded_by_id
               created_at
-              updated_at
               user {
                 id
                 name
               }
-              responder {
+            }
+            requests {
+              id
+              message
+              status
+              responded_at
+              response_message
+              respondedBy {
                 id
                 name
               }
