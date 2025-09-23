@@ -804,7 +804,7 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                 margin: const EdgeInsets.symmetric(horizontal: 4),
                 padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                 decoration: BoxDecoration(
-                  color: isSelected ? TColorss.primary : Colors.grey.shade200,
+                  color: isSelected ? TColorss.primary : Colors.grey.shade500,
                   borderRadius: BorderRadius.circular(10),
                   boxShadow: isSelected
                       ? [
@@ -821,7 +821,7 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                   children: [
                     Icon(
                       tab.icon,
-                      color: isSelected ? TColorss.surface : TColorss.textSecondary,
+                      color: isSelected ? TColorss.surface : Colors.white,
                       size: 20,
                     ),
                     const SizedBox(width: 6),
@@ -830,7 +830,7 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                         tab.uploadTitle.split(' ')[0],
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          color: isSelected ? TColorss.surface : TColorss.textSecondary,
+                          color: isSelected ? TColorss.surface : Colors.white,
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
                         ),
