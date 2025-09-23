@@ -19,7 +19,7 @@ class LoginController extends GetxController {
 
   // Dio instance
   final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'http://10.169.15.212:4400', // Verify this matches your backend
+    baseUrl: 'http://196.190.220.154:4400', // Verify this matches your backend
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 10),
   ));

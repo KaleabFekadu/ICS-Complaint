@@ -325,12 +325,13 @@ class FeedbackView extends GetView<FeedbackController> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Obx(() => AnimatedSlide(
+                    AnimatedSlide(
                       offset: const Offset(0, 0),
                       duration: const Duration(milliseconds: 600),
                       curve: Curves.easeInOut,
                       child: TextField(
                         maxLines: 4,
+                        controller: controller.descriptionController, // ✅ no need for Obx
                         decoration: InputDecoration(
                           hintText: 'Write your feedback...'.tr,
                           prefixIcon: Icon(
@@ -339,8 +340,7 @@ class FeedbackView extends GetView<FeedbackController> {
                           ),
                           filled: true,
                           fillColor: Colors.grey.shade100,
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 18),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -360,12 +360,8 @@ class FeedbackView extends GetView<FeedbackController> {
                             ),
                           ),
                         ),
-                        onChanged: (value) => controller.description.value = value,
-                        controller: TextEditingController(
-                          text: controller.description.value,
-                        ),
                       ),
-                    )),
+                    ),
                     const SizedBox(height: 30),
 
                     // Submit Button

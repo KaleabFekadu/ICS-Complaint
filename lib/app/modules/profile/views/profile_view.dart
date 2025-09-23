@@ -34,13 +34,13 @@ class ProfileView extends GetView<ProfileController> {
               children: [
                 _buildProfileHeader(),
                 const SizedBox(height: 24),
-                _buildTile(Iconsax.profile_circle, 'Edit Profile'.tr, () {}),
-                _buildTile(
-                  Iconsax.lock,
-                  'Change Password'.tr,
-                      () => _showChangePasswordBottomSheet(context),
-                ),
-                const SizedBox(height: 24),
+                // _buildTile(Iconsax.profile_circle, 'Edit Profile'.tr, () {}),
+                // _buildTile(
+                //   Iconsax.lock,
+                //   'Change Password'.tr,
+                //       () => _showChangePasswordBottomSheet(context),
+                // ),
+                // const SizedBox(height: 24),
                 Text(
                   "Preferences".tr,
                   style: const TextStyle(
@@ -52,7 +52,7 @@ class ProfileView extends GetView<ProfileController> {
                 _buildTile(
                   Iconsax.language_square,
                   'Language'.tr,
-                      () => _showLanguageBottomSheet(context, selectedLanguage),
+                  () => _showLanguageBottomSheet(context, selectedLanguage),
                 ),
                 _buildTile(Iconsax.moon, 'Dark Mode'.tr, () {}),
                 const SizedBox(height: 24),
@@ -67,7 +67,7 @@ class ProfileView extends GetView<ProfileController> {
                 _buildTile(
                   Iconsax.security_card,
                   'Privacy Policy'.tr,
-                      () {
+                  () {
                     showModalBottomSheet(
                       context: context,
                       isScrollControlled: true,
@@ -81,8 +81,8 @@ class ProfileView extends GetView<ProfileController> {
                           return Container(
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius:
-                              const BorderRadius.vertical(top: Radius.circular(24)),
+                              borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(24)),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withOpacity(0.1),
@@ -121,35 +121,35 @@ class ProfileView extends GetView<ProfileController> {
                                   const SizedBox(height: 16),
                                   _policySection(
                                     title:
-                                    "Welcome to the CRRSA (Civil Registration and Residency Service Agency) application."
-                                        .tr,
+                                        "Welcome to the CRRSA (Civil Registration and Residency Service Agency) application."
+                                            .tr,
                                     content:
-                                    "We are committed to protecting your privacy and ensuring that your personal data is handled securely. By using this application, you agree to the collection and use of your information in accordance with this policy."
-                                        .tr,
+                                        "We are committed to protecting your privacy and ensuring that your personal data is handled securely. By using this application, you agree to the collection and use of your information in accordance with this policy."
+                                            .tr,
                                   ),
                                   _policySection(
                                     title: "Information Collection".tr,
                                     content:
-                                    "We collect personal details such as your full name, date of birth, residency details, and identification information strictly for registration and residency services."
-                                        .tr,
+                                        "We collect personal details such as your full name, date of birth, residency details, and identification information strictly for registration and residency services."
+                                            .tr,
                                   ),
                                   _policySection(
                                     title: "Information Use".tr,
                                     content:
-                                    "Your data will be used only for official CRRSA services and will not be shared with third parties without your consent, unless required by law."
-                                        .tr,
+                                        "Your data will be used only for official CRRSA services and will not be shared with third parties without your consent, unless required by law."
+                                            .tr,
                                   ),
                                   _policySection(
                                     title: "Data Security".tr,
                                     content:
-                                    "We use advanced security measures to protect your information from unauthorized access."
-                                        .tr,
+                                        "We use advanced security measures to protect your information from unauthorized access."
+                                            .tr,
                                   ),
                                   _policySection(
                                     title: "User Rights".tr,
                                     content:
-                                    "You have the right to request corrections or deletion of your personal data in accordance with applicable regulations."
-                                        .tr,
+                                        "You have the right to request corrections or deletion of your personal data in accordance with applicable regulations."
+                                            .tr,
                                   ),
                                   const SizedBox(height: 12),
                                   Center(
@@ -183,8 +183,121 @@ class ProfileView extends GetView<ProfileController> {
                 _buildTile(
                   Iconsax.logout,
                   'Logout'.tr,
-                      () {
-                    controller.logout();
+                  () {
+                    Get.dialog(
+                      Dialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        insetPadding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 24),
+                        child: Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 12,
+                                offset: const Offset(0, 6),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Icon
+                              Container(
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: Colors.red.withOpacity(0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Iconsax.logout,
+                                    color: Colors.red, size: 36),
+                              ),
+                              const SizedBox(height: 16),
+
+                              // Title
+                              Text(
+                                'Confirm Logout'.tr,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+
+                              // Message
+                              Text(
+                                'Are you sure you want to log out?'.tr,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.grey.shade700,
+                                  height: 1.4,
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+
+                              // Buttons
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Expanded(
+                                    child: OutlinedButton(
+                                      style: OutlinedButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 14),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        side: BorderSide(
+                                            color: Colors.grey.shade300),
+                                      ),
+                                      onPressed: () => Get.back(),
+                                      child: Text(
+                                        'Cancel'.tr,
+                                        style: TextStyle(
+                                            color: Colors.grey.shade700),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.red,
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 14),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        Get.back();
+                                        controller.logout();
+                                      },
+                                      child: Text(
+                                        'Logout'.tr,
+                                        style: const TextStyle(
+                                            color: Colors.white),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      barrierDismissible: false,
+                    );
                   },
                   iconColor: Colors.red,
                   textColor: Colors.red,
@@ -230,7 +343,8 @@ class ProfileView extends GetView<ProfileController> {
 
   void _showLanguageBottomSheet(
       BuildContext context, ValueNotifier<String> selectedLanguage) {
-    final bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final bool isDarkMode =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
 
     showModalBottomSheet(
       context: context,
@@ -243,7 +357,8 @@ class ProfileView extends GetView<ProfileController> {
           valueListenable: selectedLanguage,
           builder: (context, value, child) {
             return Container(
-              padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
+              padding:
+                  const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -318,7 +433,8 @@ class ProfileView extends GetView<ProfileController> {
   }
 
   void _showChangePasswordBottomSheet(BuildContext context) {
-    final bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final bool isDarkMode =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
 
     final currentPasswordController = TextEditingController();
     final newPasswordController = TextEditingController();
@@ -341,7 +457,8 @@ class ProfileView extends GetView<ProfileController> {
             bottom: MediaQuery.of(context).viewInsets.bottom,
           ),
           child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
+            padding:
+                const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -506,13 +623,14 @@ class ProfileView extends GetView<ProfileController> {
             borderRadius: BorderRadius.circular(12),
             border: isSelected
                 ? Border.all(
-              color: isDarkMode ? TColors.white : TColors.secondary,
-              width: 0.5,
-            )
+                    color: isDarkMode ? TColors.white : TColors.secondary,
+                    width: 0.5,
+                  )
                 : null,
             boxShadow: [
               BoxShadow(
-                color: isDarkMode ? Colors.black26 : Colors.grey.withOpacity(0.1),
+                color:
+                    isDarkMode ? Colors.black26 : Colors.grey.withOpacity(0.1),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -532,12 +650,12 @@ class ProfileView extends GetView<ProfileController> {
                 ),
                 child: isSelected
                     ? Center(
-                  child: Icon(
-                    Icons.check,
-                    size: 16,
-                    color: isDarkMode ? TColors.white : TColors.primary,
-                  ),
-                )
+                        child: Icon(
+                          Icons.check,
+                          size: 16,
+                          color: isDarkMode ? TColors.white : TColors.primary,
+                        ),
+                      )
                     : null,
               ),
               const SizedBox(width: 16),
@@ -558,41 +676,42 @@ class ProfileView extends GetView<ProfileController> {
 
   Widget _buildProfileHeader() {
     return Obx(() => Row(
-      children: [
-        Container(
-          width: 70,
-          height: 70,
-          decoration: BoxDecoration(
-            color: TColors.primary.withOpacity(0.1),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(
-            Iconsax.profile_circle,
-            size: 50,
-            color: TColors.primary,
-          ),
-        ),
-        const SizedBox(width: 16),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              controller.userName.value,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
+            Container(
+              width: 70,
+              height: 70,
+              decoration: BoxDecoration(
+                color: TColors.primary.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Iconsax.profile_circle,
+                size: 50,
+                color: TColors.primary,
               ),
             ),
-            const SizedBox(height: 4),
-            Text(
-              controller.userPhone.value, // Changed from userEmail to userPhone
-              style: const TextStyle(color: Colors.grey),
+            const SizedBox(width: 16),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  controller.userName.value,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  controller
+                      .userPhone.value, // Changed from userEmail to userPhone
+                  style: const TextStyle(color: Colors.grey),
+                ),
+              ],
             ),
+            const Spacer(),
           ],
-        ),
-        const Spacer(),
-      ],
-    ));
+        ));
   }
 
   Widget _buildTile(IconData icon, String title, VoidCallback onTap,

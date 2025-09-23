@@ -5,7 +5,6 @@ import 'package:iconsax/iconsax.dart';
 import '../../../utils/constants/colors.dart';
 import '../../qrscanner/controllers/qrscanner_controller.dart';
 import '../controllers/create_complaint_controller.dart';
-import 'package:intl/intl.dart';
 import 'dart:io';
 
 class TColorss {
@@ -794,23 +793,25 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
         children: List.generate(controller.tabs.length, (index) {
           final tab = controller.tabs[index];
           final isSelected = controller.selectedTab.value == index;
+
           return Expanded(
             child: GestureDetector(
               onTap: () => controller.selectedTab.value = index,
-              child: Container(
-                // Remove SlideInDown widget or ensure it's not causing key conflicts
-                key: ValueKey('tab_$index'), // Add unique key for each tab
+              child: AnimatedContainer(
+                key: ValueKey('tab_$index'),
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeInOut,
                 margin: const EdgeInsets.symmetric(horizontal: 4),
-                padding: const EdgeInsets.symmetric(vertical: 12),
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                 decoration: BoxDecoration(
-                  color: isSelected ? TColorss.primary : TColorss.surface,
-                  borderRadius: BorderRadius.circular(8),
+                  color: isSelected ? TColorss.primary : Colors.grey.shade200,
+                  borderRadius: BorderRadius.circular(10),
                   boxShadow: isSelected
                       ? [
                     BoxShadow(
                       color: TColorss.primary.withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
+                      blurRadius: 6,
+                      offset: const Offset(0, 3),
                     ),
                   ]
                       : [],
@@ -823,13 +824,16 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                       color: isSelected ? TColorss.surface : TColorss.textSecondary,
                       size: 20,
                     ),
-                    const SizedBox(width: 4),
-                    Text(
-                      tab.uploadTitle.split(' ')[0],
-                      style: TextStyle(
-                        color: isSelected ? TColorss.surface : TColorss.textSecondary,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        tab.uploadTitle.split(' ')[0],
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: isSelected ? TColorss.surface : TColorss.textSecondary,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                        ),
                       ),
                     ),
                   ],
@@ -841,6 +845,7 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
       ),
     );
   }
+
 
   Widget _buildUploadContainer(UploadTab tabContent) {
     return Container(

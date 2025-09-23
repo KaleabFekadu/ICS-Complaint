@@ -15,6 +15,8 @@ class FeedbackController extends GetxController {
   var isLoadingBranches = false.obs;
   var isLoadingServices = false.obs;
   var errorMessage = ''.obs;
+  late TextEditingController descriptionController;
+
 
   final branches = <Map<String, dynamic>>[].obs;
   final services = <Map<String, dynamic>>[].obs;
@@ -23,6 +25,17 @@ class FeedbackController extends GetxController {
   void onInit() {
     super.onInit();
     fetchBranches();
+    descriptionController = TextEditingController();
+    // keep them in sync
+    descriptionController.addListener(() {
+      description.value = descriptionController.text;
+    });
+  }
+
+  @override
+  void onClose() {
+    descriptionController.dispose();
+    super.onClose();
   }
 
   Future<void> fetchBranches() async {
@@ -297,13 +310,13 @@ class FeedbackController extends GetxController {
 
       final input = {
         'description': 'Feedback for $serviceName at $branchName',
-        'category': 'FEEDBACK',
+        'category': 'feedback',
         'service_id': selectedServiceId.value,
         'branch_id': selectedBranchId.value,
         'rating': rating.value,
         'feedback_description': description.value.trim(),
         'institution_name': branchName,
-        'report_place': '$branchName, Addis Ababa',
+        'report_place': serviceName,
         'service_date': serviceDate, // This will now be "2025-09-21 14:30:45"
         'share_contact': false,
         'is_complaint': false,

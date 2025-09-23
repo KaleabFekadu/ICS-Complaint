@@ -1176,33 +1176,28 @@ class CreateComplaintController extends GetxController {
       final now = DateTime.now().toUtc();
       final serviceDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
 
+      // Replace the query in your submitComplaint method with this:
       const query = r'''
-      mutation CreateCorruptionReport($input: CorruptionReportCreateInput!) {
-        createCorruptionReport(input: $input) {
-          id
-          description
-          category
-          rating
-          feedback_description
-          service {
-            id
-            name
-          }
-          branch {
-            id
-            name
-          }
-          status
-          created_at
-          attachments {  # Added to fetch attachment details
-            id
-            file_name
-            file_path
-            mime_type
-          }
-        }
+  mutation CreateCorruptionReport($input: CorruptionReportCreateInput!) {
+    createCorruptionReport(input: $input) {
+      id
+      description
+      category
+      rating
+      feedback_description
+      service {
+        id
+        name
       }
-    ''';
+      branch {
+        id
+        name
+      }
+      status
+      created_at
+    }
+  }
+''';
 
       final input = {
         'description': detail.value.trim(),
@@ -1216,16 +1211,16 @@ class CreateComplaintController extends GetxController {
         'staff_id': ticketNumber.value.isNotEmpty ? ticketNumber.value : null,
         'institution_name': isQrScanned && staffInfo['branch'] != null && staffInfo['branch']['name'] != null
             ? staffInfo['branch']['name'].toString()
-            : null,
+            : 'Unknown Institution', // Provide default value
         'responsible_person': isQrScanned && staffInfo['name'] != null
             ? staffInfo['name'].toString()
-            : null,
+            : 'Unknown Person', // Provide default value instead of null
         'responsible_person_phone': isQrScanned && staffInfo['phone_number'] != null
             ? staffInfo['phone_number'].toString()
-            : null,
+            : 'Unknown Phone', // Provide default value
         'responsible_person_address': isQrScanned && staffInfo['branch'] != null && staffInfo['branch']['description'] != null
             ? staffInfo['branch']['description'].toString()
-            : null,
+            : 'Unknown Address', // Provide default value
         'report_place': branchName,
         'associated_parties': null,
         'region_id': null,
