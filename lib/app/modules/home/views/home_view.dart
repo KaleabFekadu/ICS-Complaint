@@ -530,7 +530,7 @@ class HomeView extends GetView<HomeController> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                report['institution_name'] ?? '-',
+                                report['report_place'] ?? '-',
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
@@ -671,17 +671,17 @@ class HomeView extends GetView<HomeController> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildDetailRow('Track Number', report['id']?.toString() ?? '-'),
-                      _buildDetailRow('Institution Name', report['institution_name'] ?? '-'),
+                      //_buildDetailRow('Institution Name', report['institution_name'] ?? '-'),
                       _buildDetailRow('Responsible Person', report['responsible_person'] ?? '-'),
-                      _buildDetailRow('Phone', report['responsible_person_phone'] ?? '-'),
-                      _buildDetailRow('Address', report['responsible_person_address'] ?? '-'),
+                      //_buildDetailRow('Phone', report['responsible_person_phone'] ?? '-'),
+                      //_buildDetailRow('Address', report['responsible_person_address'] ?? '-'),
                       _buildDetailRow('Report Place', report['report_place'] ?? '-'),
                       _buildDetailRow('Associated Parties', report['associated_parties'] ?? '-'),
                       _buildDetailRow('First Name', report['first_name'] ?? '-'),
                       _buildDetailRow('Father\'s Name', report['father_name'] ?? '-'),
                       _buildDetailRow('Grandfather\'s Name', report['grand_father_name'] ?? '-'),
-                      _buildDetailRow('Service Date', _formatDateTime(report['service_date'])),
-                      _buildDetailRow('Share Contact', report['share_contact'] == true ? 'Yes' : 'No'),
+                      //_buildDetailRow('Service Date', _formatDateTime(report['service_date'])),
+                      //_buildDetailRow('Share Contact', report['share_contact'] == true ? 'Yes' : 'No'),
                       _buildDetailRow('Status', status, color: _getStatusColor(status)),
                       _buildDetailRow('Service', report['service']?['name'] ?? '-'),
                       _buildDetailRow('Branch', report['branch']?['name'] ?? '-'),

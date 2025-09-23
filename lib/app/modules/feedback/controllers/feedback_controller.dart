@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:ics_complaint/app/modules/bottom_nav_home/views/bottom_nav_home_view.dart';
 import 'package:ics_complaint/app/modules/home/views/home_view.dart';
 import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -408,7 +409,7 @@ class FeedbackController extends GetxController {
       description.value = '';
 
       // Navigate back to previous screen
-      Get.to(HomeView());
+      Get.to(BottomNavHomeView());
     } catch (e) {
       print('Unexpected error during submission: $e');
       Get.snackbar(
