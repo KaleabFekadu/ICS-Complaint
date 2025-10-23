@@ -1,17 +1,12 @@
 name: ics_complaint
 description: "A new Flutter project."
 
-
-publish_to: 'none'
-
+publish_to: "none"
 
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.5.4
-
-
-
+  sdk: ^3.5.0
 
 dependencies:
   flutter:
@@ -56,26 +51,16 @@ dependencies:
   #flutter_quill: ^10.7.6
   #flutter_quill_extensions: ^11.0.0
 
-
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-
-
   flutter_lints: ^4.0.0
 
-
-
 flutter:
-
-
-
-
   uses-material-design: true
-
 
   assets:
     - assets/logos/logo_2.png
@@ -83,9 +68,6 @@ flutter:
     - assets/logos/2346699_315780-P8VAIG-9.jpg
     - assets/logos/Screenshot 2025-09-04 at 11.18.19 in the morning.jpg
     - assets/logos/banner passport .53c1e5d2.jpg
-
-
-
 
   fonts:
     - family: Poppins
@@ -111,13 +93,3 @@ flutter:
           weight: 700
         - asset: assets/fonts/Nokia Pureheadline Light.ttf
           weight: 300
-
-
-
-
-
-
-
-
-
-

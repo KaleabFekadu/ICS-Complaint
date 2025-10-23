@@ -17,6 +17,7 @@ class _QrscannerViewState extends State<QrscannerView>
   bool _hasPermission = false;
   MobileScannerController? _cameraController;
   bool _isCameraActive = false;
+  bool _hasScanned = false; // New flag to prevent multiple scans
 
   @override
   bool get wantKeepAlive => false; // Don't keep alive when not visible
@@ -24,6 +25,7 @@ class _QrscannerViewState extends State<QrscannerView>
   @override
   void initState() {
     super.initState();
+    _hasScanned = false; // Reset flag on init
     _checkPermission();
   }
 
@@ -114,7 +116,8 @@ class _QrscannerViewState extends State<QrscannerView>
               onPressed: _checkPermission,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.redAccent,
-                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -148,7 +151,9 @@ class _QrscannerViewState extends State<QrscannerView>
               controller: _cameraController,
               onDetect: (capture) {
                 final List<Barcode> barcodes = capture.barcodes;
-                if (barcodes.isNotEmpty) {
+                if (barcodes.isNotEmpty && !_hasScanned) {
+                  // Check flag to prevent multiples
+                  _hasScanned = true; // Set flag
                   final first = barcodes.first;
                   if (first.rawValue != null) {
                     controller.setScannedCode(first.rawValue!);
@@ -161,17 +166,23 @@ class _QrscannerViewState extends State<QrscannerView>
                       margin: const EdgeInsets.all(16),
                       borderRadius: 12,
                     );
+                    _stopCamera(); // Stop camera immediately after scan
+                    // Navigate after a brief delay to show snackbar/value
+                    Future.delayed(const Duration(milliseconds: 1500), () {
+                      Get.toNamed(
+                          '/create-complaint'); // Adjust route name if different
+                    });
                   }
                 }
               },
             ),
           _ScannerOverlay(),
           const _AnimatedLaserLine(),
-          Positioned(
+          const Positioned(
             bottom: 140,
             left: 0,
             right: 0,
-            child: const Text(
+            child: Text(
               "Align the QR code within the frame to scan",
               style: TextStyle(
                 color: Colors.white70,
@@ -183,28 +194,28 @@ class _QrscannerViewState extends State<QrscannerView>
           ),
           Obx(() => controller.scannedCode.isNotEmpty
               ? Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-              margin: const EdgeInsets.all(24),
-              padding: const EdgeInsets.symmetric(
-                vertical: 16,
-                horizontal: 24,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.75),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Text(
-                controller.scannedCode.value,
-                style: const TextStyle(
-                  color: Colors.greenAccent,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          )
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    margin: const EdgeInsets.all(24),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 16,
+                      horizontal: 24,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.75),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Text(
+                      controller.scannedCode.value,
+                      style: const TextStyle(
+                        color: Colors.greenAccent,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                )
               : const SizedBox()),
         ],
       ),
