@@ -22,21 +22,21 @@ class SignupController extends GetxController {
   var isLoading = false.obs;
 
   final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'http://196.190.220.154:4400',
+    baseUrl: 'https://complaint-api.digitalics.gov.et',
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 10),
     headers: {'Content-Type': 'application/json'},
     // Add this to handle 404 responses more gracefully
     validateStatus: (status) => status! < 500,
-  ))..interceptors.add(LogInterceptor(
-    request: true,
-    requestHeader: true,
-    requestBody: true,
-    responseHeader: true,
-    responseBody: true,
-    error: true,
-  ));
-
+  ))
+    ..interceptors.add(LogInterceptor(
+      request: true,
+      requestHeader: true,
+      requestBody: true,
+      responseHeader: true,
+      responseBody: true,
+      error: true,
+    ));
 
   void togglePasswordVisibility() {
     isPasswordHidden.value = !isPasswordHidden.value;
@@ -103,9 +103,9 @@ class SignupController extends GetxController {
     print('📱 Original phone: $phone');
 
     if (phone.startsWith('0')) {
-      phone = '+251' + phone.substring(1);
+      phone = '+251${phone.substring(1)}';
     } else if (!phone.startsWith('+251') && phone.startsWith('9')) {
-      phone = '+251' + phone;
+      phone = '+251$phone';
     }
     print('📱 Formatted phone: $phone');
 
@@ -121,7 +121,8 @@ class SignupController extends GetxController {
   ''',
         'variables': {
           'input': {
-            'name': '${fullNameController.text.trim()} ${lastNameController.text.trim()}',
+            'name':
+                '${fullNameController.text.trim()} ${lastNameController.text.trim()}',
             'username': phone,
             'password': passwordController.text.trim(),
             'password_confirmation': confirmPasswordController.text.trim(),
@@ -131,13 +132,15 @@ class SignupController extends GetxController {
 
       print('📤 Sending request with data: ${jsonEncode(requestData)}');
 
-      final response = await _dio.post(
+      final response = await _dio
+          .post(
         '/graphql',
         data: requestData,
         options: Options(
           headers: {'Content-Type': 'application/json'},
         ),
-      ).timeout(const Duration(seconds: 15), onTimeout: () {
+      )
+          .timeout(const Duration(seconds: 15), onTimeout: () {
         throw DioException(
           requestOptions: RequestOptions(path: '/graphql'),
           error: 'Request timed out',
@@ -164,7 +167,8 @@ class SignupController extends GetxController {
               errorMessage.toLowerCase().contains('username') ||
               errorMessage.toLowerCase().contains('exist') ||
               errorMessage.toLowerCase().contains('already')) {
-            errorMessage = 'This phone number is already registered. Please log in or reset your password.';
+            errorMessage =
+                'This phone number is already registered. Please log in or reset your password.';
           }
         }
         throw Exception(errorMessage);
@@ -194,7 +198,8 @@ class SignupController extends GetxController {
             message.toLowerCase().contains('username') ||
             message.toLowerCase().contains('exist') ||
             message.toLowerCase().contains('already')) {
-          errorMessage = 'This phone number is already registered. Please log in or reset your password.';
+          errorMessage =
+              'This phone number is already registered. Please log in or reset your password.';
         }
         throw Exception(errorMessage);
       }
@@ -213,9 +218,8 @@ class SignupController extends GetxController {
       print('🟢 Signup successful');
 
       // Redirect to login with phone number
-      Get.off(() => LoginView(), arguments: {"phone_number": phone});
+      Get.off(() => const LoginView(), arguments: {"phone_number": phone});
       print('🔄 Redirecting to login');
-
     } on DioException catch (e) {
       print('🔴 Dio Error: ${e.toString()}');
       print('🔴 Error Type: ${e.type}');
@@ -236,11 +240,12 @@ class SignupController extends GetxController {
                 errorMessage.toLowerCase().contains('username') ||
                 errorMessage.toLowerCase().contains('exist') ||
                 errorMessage.toLowerCase().contains('already')) {
-              errorMessage = 'This phone number is already registered. Please log in or reset your password.';
+              errorMessage =
+                  'This phone number is already registered. Please log in or reset your password.';
             }
           }
-        }
-        else if (e.response!.data is Map && e.response!.data.containsKey('message')) {
+        } else if (e.response!.data is Map &&
+            e.response!.data.containsKey('message')) {
           errorMessage = e.response!.data['message'];
 
           // Check if it's a duplicate phone number error
@@ -248,10 +253,10 @@ class SignupController extends GetxController {
               errorMessage.toLowerCase().contains('username') ||
               errorMessage.toLowerCase().contains('exist') ||
               errorMessage.toLowerCase().contains('already')) {
-            errorMessage = 'This phone number is already registered. Please log in or reset your password.';
+            errorMessage =
+                'This phone number is already registered. Please log in or reset your password.';
           }
-        }
-        else if (e.response!.data is String) {
+        } else if (e.response!.data is String) {
           errorMessage = e.response!.data;
 
           // Check if it's a duplicate phone number error
@@ -259,7 +264,8 @@ class SignupController extends GetxController {
               errorMessage.toLowerCase().contains('username') ||
               errorMessage.toLowerCase().contains('exist') ||
               errorMessage.toLowerCase().contains('already')) {
-            errorMessage = 'This phone number is already registered. Please log in or reset your password.';
+            errorMessage =
+                'This phone number is already registered. Please log in or reset your password.';
           }
         }
       }
@@ -280,7 +286,8 @@ class SignupController extends GetxController {
           errorMessage.toLowerCase().contains('username') ||
           errorMessage.toLowerCase().contains('exist') ||
           errorMessage.toLowerCase().contains('already')) {
-        errorMessage = 'This phone number is already registered. Please log in or reset your password.';
+        errorMessage =
+            'This phone number is already registered. Please log in or reset your password.';
       } else {
         errorMessage = 'Signup failed. Please try again.';
       }
@@ -403,7 +410,8 @@ class SignupController extends GetxController {
               ),
             ),
             GestureDetector(
-              onTap: () => ScaffoldMessenger.of(Get.context!).hideCurrentSnackBar(),
+              onTap: () =>
+                  ScaffoldMessenger.of(Get.context!).hideCurrentSnackBar(),
               child: Icon(
                 Icons.close,
                 color: Colors.white.withOpacity(0.7),
