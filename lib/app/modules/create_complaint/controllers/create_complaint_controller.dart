@@ -91,6 +91,7 @@ class CreateComplaintController extends GetxController {
     'png',
     'mp4',
     'mp3',
+    'aac',
     'wav',
     'pdf',
     'doc',
@@ -995,7 +996,7 @@ class CreateComplaintController extends GetxController {
     final allowedExtensions = {
           0: ['jpg', 'jpeg', 'png'],
           1: ['mp4', 'mov', 'avi'],
-          2: ['mp3', 'wav', 'm4a'],
+          2: ['mp3', 'wav', 'm4a', 'aac'],
           3: [
             'jpg',
             'jpeg',
@@ -1319,7 +1320,7 @@ class CreateComplaintController extends GetxController {
             firstName.value.isNotEmpty ? firstName.value : 'Anonymous',
         'father_name': lastName.value.isNotEmpty ? lastName.value : null,
         'grand_father_name': surname.value.isNotEmpty ? surname.value : null,
-        'files': files.isNotEmpty
+        'attachments': files.isNotEmpty
             ? List.generate(files.length, (index) => null)
             : [],
       };
@@ -1330,7 +1331,7 @@ class CreateComplaintController extends GetxController {
       );
 
       request.headers['Authorization'] = 'Bearer $token';
-      // request.headers['Content-Type'] = 'multipart/form-data';
+      request.headers['Content-Type'] = 'multipart/form-data';
 
       final operations = {
         'query': query,
@@ -1338,10 +1339,10 @@ class CreateComplaintController extends GetxController {
       };
 
       // Construct the map field as an array of arrays with a single string path
-      final map = <String, List<String>>{};
-      for (var i = 0; i < files.length; i++) {
-        map['file$i'] = ['variables.input.attachments.$i'];
-      }
+      final map = files.isNotEmpty
+          ? List.generate(
+              files.length, (i) => ['file$i', 'variables.input.attachments.$i'])
+          : [];
 
       request.fields['operations'] = jsonEncode(operations);
       request.fields['map'] = jsonEncode(map);
