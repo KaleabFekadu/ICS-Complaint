@@ -25,9 +25,6 @@ class HomeController extends GetxController {
   final PageController newsPageController = PageController();
   var selectedIndex = 0.obs;
 
-
-
-
   List<String> announcements = [
     'Public Hearing Scheduled',
     'Citizen Feedback Initiative',
@@ -76,9 +73,11 @@ class HomeController extends GetxController {
 
   Future<String?> _getToken() async {
     final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('access_token'); // Changed from 'token' to 'access_token'
+    final token = prefs
+        .getString('access_token'); // Changed from 'token' to 'access_token'
     if (token == null || token.isEmpty) {
-      errorMessage.value = 'Please log in to access reports.'.tr; // Added .tr for localization
+      errorMessage.value =
+          'Please log in to access reports.'.tr; // Added .tr for localization
       hasToken.value = false;
       Get.offAllNamed('/login'); // Navigate to login if no token
       return null;
@@ -187,7 +186,7 @@ class HomeController extends GetxController {
 
       // In home_controller.dart, replace the query in fetchReports with this:
 
-      final query = r'''
+      const query = r'''
         query MyReportsByStatus($status: ReportStatusEnum) {
           my_reports(status: $status) {
             id
@@ -215,8 +214,18 @@ class HomeController extends GetxController {
               code
               description
             }
-            attachments
-            findings
+            attachments {
+              filename
+              mime_type
+              size
+              url
+            }
+            findings {
+              filename
+              mime_type
+              size
+              url
+            }
             created_at
             complaintReportEscalations {
               id
@@ -284,40 +293,50 @@ class HomeController extends GetxController {
         final rawData = result.data?['my_reports'] as List<dynamic>?;
         print('Raw response for status $status: $rawData');
         if (rawData != null) {
-          final filteredReports = rawData.map((report) {
-            final reportMap = Map<String, dynamic>.from(report as Map<String, dynamic>);
-            final reportId = reportMap['id'].toString();
-            final reportStatus = (reportMap['status'] ?? '').toString().toUpperCase();
+          final filteredReports = rawData
+              .map((report) {
+                final reportMap =
+                    Map<String, dynamic>.from(report as Map<String, dynamic>);
+                final reportId = reportMap['id'].toString();
+                final reportStatus =
+                    (reportMap['status'] ?? '').toString().toUpperCase();
 
-            if (reportIds.contains(reportId)) {
-              print('Skipping duplicate report ID: $reportId for status $status');
-              return null;
-            }
+                if (reportIds.contains(reportId)) {
+                  print(
+                      'Skipping duplicate report ID: $reportId for status $status');
+                  return null;
+                }
 
-            if (reportStatus != status) {
-              print('Skipping report ID $reportId with mismatched status $reportStatus for queried status $status');
-              return null;
-            }
+                if (reportStatus != status) {
+                  print(
+                      'Skipping report ID $reportId with mismatched status $reportStatus for queried status $status');
+                  return null;
+                }
 
-            if (reportStatus.isEmpty) {
-              print('Warning: Skipping report ID $reportId with empty status');
-              return null;
-            }
-            if (!validStatuses.contains(reportStatus)) {
-              print('Warning: Skipping report ID $reportId with invalid status "$reportStatus"');
-              return null;
-            }
+                if (reportStatus.isEmpty) {
+                  print(
+                      'Warning: Skipping report ID $reportId with empty status');
+                  return null;
+                }
+                if (!validStatuses.contains(reportStatus)) {
+                  print(
+                      'Warning: Skipping report ID $reportId with invalid status "$reportStatus"');
+                  return null;
+                }
 
-            reportIds.add(reportId);
-            return reportMap;
-          }).where((report) => report != null).toList();
+                reportIds.add(reportId);
+                return reportMap;
+              })
+              .where((report) => report != null)
+              .toList();
 
           allReports.addAll(filteredReports.cast<Map<String, dynamic>>());
         }
       }
 
       if (allReports.isEmpty && failedStatuses.length == validStatuses.length) {
-        print('No valid reports found. Attempting to fetch all reports without status filter...');
+        print(
+            'No valid reports found. Attempting to fetch all reports without status filter...');
         final result = await client.query(
           QueryOptions(
             document: gql(query),
@@ -335,30 +354,39 @@ class HomeController extends GetxController {
           final rawData = result.data?['my_reports'] as List<dynamic>?;
           print('Fallback query raw response: $rawData');
           if (rawData != null) {
-            final filteredReports = rawData.map((report) {
-              final reportMap = Map<String, dynamic>.from(report as Map<String, dynamic>);
-              final reportId = reportMap['id'].toString();
-              final reportStatus = (reportMap['status'] ?? '').toString().toUpperCase();
+            final filteredReports = rawData
+                .map((report) {
+                  final reportMap =
+                      Map<String, dynamic>.from(report as Map<String, dynamic>);
+                  final reportId = reportMap['id'].toString();
+                  final reportStatus =
+                      (reportMap['status'] ?? '').toString().toUpperCase();
 
-              if (reportIds.contains(reportId)) {
-                print('Skipping duplicate report ID: $reportId in fallback query');
-                return null;
-              }
+                  if (reportIds.contains(reportId)) {
+                    print(
+                        'Skipping duplicate report ID: $reportId in fallback query');
+                    return null;
+                  }
 
-              if (reportStatus.isEmpty) {
-                print('Warning: Skipping report ID $reportId with empty status');
-                return null;
-              }
-              if (!validStatuses.contains(reportStatus)) {
-                print('Warning: Skipping report ID $reportId with invalid status "$reportStatus"');
-                return null;
-              }
+                  if (reportStatus.isEmpty) {
+                    print(
+                        'Warning: Skipping report ID $reportId with empty status');
+                    return null;
+                  }
+                  if (!validStatuses.contains(reportStatus)) {
+                    print(
+                        'Warning: Skipping report ID $reportId with invalid status "$reportStatus"');
+                    return null;
+                  }
 
-              reportIds.add(reportId);
-              return reportMap;
-            }).where((report) => report != null).toList();
+                  reportIds.add(reportId);
+                  return reportMap;
+                })
+                .where((report) => report != null)
+                .toList();
 
-            print('Fetched ${filteredReports.length} valid reports from fallback query');
+            print(
+                'Fetched ${filteredReports.length} valid reports from fallback query');
             allReports.addAll(filteredReports.cast<Map<String, dynamic>>());
           }
         }
@@ -366,9 +394,11 @@ class HomeController extends GetxController {
 
       print('Total unique reports fetched: ${allReports.length}');
       if (allReports.isEmpty && cachedReports.isEmpty) {
-        errorMessage.value = 'No valid reports found. Please check your connection or try again.';
+        errorMessage.value =
+            'No valid reports found. Please check your connection or try again.';
       } else if (failedStatuses.isNotEmpty) {
-        errorMessage.value = 'Some reports could not be loaded for statuses: ${failedStatuses.join(', ')}.';
+        errorMessage.value =
+            'Some reports could not be loaded for statuses: ${failedStatuses.join(', ')}.';
       }
 
       reports.assignAll(allReports);
@@ -496,7 +526,6 @@ class HomeController extends GetxController {
     }
   }
 
-
   void navigateToLogin() {
     Get.toNamed('/login');
   }
@@ -526,9 +555,9 @@ class HomeController extends GetxController {
 
     // Validate report status - UPDATED to allow both INVALID_COMPLAINT and CLOSED
     final report =
-    reports.firstWhereOrNull((r) => r['id'].toString() == reportId);
+        reports.firstWhereOrNull((r) => r['id'].toString() == reportId);
     final status =
-    report != null ? (report['status'] ?? '').toString().toUpperCase() : '';
+        report != null ? (report['status'] ?? '').toString().toUpperCase() : '';
 
     if (report == null ||
         (status != 'INVALID_COMPLAINT' && status != 'CLOSED')) {
@@ -722,14 +751,15 @@ class HomeController extends GetxController {
     final filtered = reports.where((report) {
       final status = (report['status'] ?? '').toString().toUpperCase();
       final requests = (report['requests'] as List<dynamic>?)
-          ?.cast<Map<String, dynamic>>() ??
+              ?.cast<Map<String, dynamic>>() ??
           [];
       final hasPendingRequests =
-      requests.any((req) => req['status'] == 'PENDING');
+          requests.any((req) => req['status'] == 'PENDING');
 
       switch (currentTab.value) {
         case 'pending':
-          return status == 'PENDING' && (hasPendingRequests || requests.isEmpty);
+          return status == 'PENDING' &&
+              (hasPendingRequests || requests.isEmpty);
         case 'accepted':
           return status == 'ACCEPTED';
         case 'closed':

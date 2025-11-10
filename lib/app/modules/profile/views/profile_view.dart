@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../utils/constants/colors.dart';
 import '../controllers/profile_controller.dart';
 
 class ProfileView extends GetView<ProfileController> {
-  const ProfileView({super.key});
+  @override
+  final ProfileController controller = Get.put(ProfileController());
+  ProfileView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -54,8 +57,8 @@ class ProfileView extends GetView<ProfileController> {
                   'Language'.tr,
                   () => _showLanguageBottomSheet(context, selectedLanguage),
                 ),
-                _buildTile(Iconsax.moon, 'Dark Mode'.tr, () {}),
-                const SizedBox(height: 24),
+                // _buildTile(Iconsax.moon, 'Dark Mode'.tr, () {}),
+                // const SizedBox(height: 24),
                 Text(
                   "Support".tr,
                   style: const TextStyle(
@@ -175,8 +178,8 @@ class ProfileView extends GetView<ProfileController> {
                     );
                   },
                 ),
-                _buildTile(Iconsax.info_circle, 'About App'.tr, () {
-                  // Get.to(() => const AboutView());
+                _buildTile(Iconsax.info_circle, 'About Us'.tr, () {
+                   _launchURL('https://ics.gov.et');
                 }),
                 const SizedBox(height: 24),
                 const Divider(),
@@ -730,5 +733,13 @@ class ProfileView extends GetView<ProfileController> {
       trailing: const Icon(Iconsax.arrow_right_3, size: 18, color: Colors.grey),
       onTap: onTap,
     );
+  }
+}
+
+
+Future<void> _launchURL(String urlString) async {
+  final Uri url = Uri.parse(urlString);
+  if (!await launchUrl(url)) {
+    throw 'Could not launch $url';
   }
 }

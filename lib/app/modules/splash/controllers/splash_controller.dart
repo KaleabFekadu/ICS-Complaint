@@ -9,31 +9,28 @@ import '../../../utils/loader/loaders.dart';
 class SplashController extends GetxController {
   final GetStorage storage = GetStorage();
   RxBool isDarkMode = false.obs;
-
   bool get isDarkModeValue => isDarkMode.value; // Centralized getter
 
   @override
   void onInit() {
     super.onInit();
     print("SplashController is ready");
-    _checkConnectivity(); // Check for internet connectivity
   }
 
   @override
   void onReady() {
     super.onReady();
+    _checkConnectivity(); // Move connectivity check to onReady to ensure widget is built
   }
-
-
 
   // Method to check internet connectivity
   Future<void> _checkConnectivity() async {
     var connectivityResult = await Connectivity().checkConnectivity();
-
     if (connectivityResult == ConnectivityResult.none) {
-      // No internet connection
-      TLoaders.errorSnackBar(title: 'No Internet Connection', message: 'Please check your internet connection');
-
+      // No internet connection - show snackbar after ensuring context is ready
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        TLoaders.errorSnackBar(title: 'No Internet Connection', message: 'Please check your internet connection');
+      });
       // Re-check connectivity after some time
       Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
         if (result != ConnectivityResult.none) {
@@ -48,16 +45,12 @@ class SplashController extends GetxController {
   }
 
   Future<void> _checkNavigation() async {
-
     // Check for token first
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('access_token');
-
     bool hasCompletedOnboarding = storage.read('onboarding_completed') ?? false;
     //bool hasCompletedLanguageSelection = storage.read('language_first_completed') ?? false;
     bool hasCompletedRealLanguageSelection = storage.read('language_selection_completed') ?? false;
-
-
     Future.delayed(const Duration(milliseconds: 100), () {
       if (token != null && token.isNotEmpty) {
         print("Token found, navigating to Home");

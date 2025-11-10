@@ -25,34 +25,34 @@ class SplashView extends StatelessWidget {
                 children: [
                   Image.asset(
                     'assets/logos/logo_2.png',
-                    width:390,
+                    width: 390,
                     fit: BoxFit.cover,
                   ),
                   SizedBox(height: 20),
                   Spacer(),
                   SizedBox(height: 20),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(height: 2),
-                      Text(
-                        'Developed by Ethiopian Artificial Intelligence Institute',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.black,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      Text(
-                        '© ${DateTime.now().year} Immigration and Citizenship Service - ETHIOPIA. All rights reserved.',
-                        style: TextStyle(
-                          fontSize: 8,
-                          color: TColors.black,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
+                  // Column(
+                  //   crossAxisAlignment: CrossAxisAlignment.center,
+                  //   children: [
+                  //     SizedBox(height: 2),
+                  //     Text(
+                  //       'Developed by Ethiopian Artificial Intelligence Institute',
+                  //       style: TextStyle(
+                  //         fontSize: 11,
+                  //         color: Colors.black,
+                  //       ),
+                  //       textAlign: TextAlign.center,
+                  //     ),
+                  //     Text(
+                  //       '© ${DateTime.now().year} Immigration and Citizenship Service - ETHIOPIA. All rights reserved.',
+                  //       style: TextStyle(
+                  //         fontSize: 8,
+                  //         color: TColors.black,
+                  //       ),
+                  //       textAlign: TextAlign.center,
+                  //     ),
+                  //   ],
+                  // ),
                 ],
               ),
             ),

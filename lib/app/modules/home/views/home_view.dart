@@ -31,17 +31,10 @@ class HomeView extends GetView<HomeController> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: FadeInDown(
-          duration: const Duration(milliseconds: 400),
-          child: Text(
-            'Immigration And Citizenship Service'.tr,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: TColorss.textPrimary,
-              letterSpacing: 0.5,
-            ),
-          ),
+        title: Image.asset(
+          'assets/logos/mainlogo.png',
+          width: 250,
+          fit: BoxFit.scaleDown,
         ),
         centerTitle: true,
         backgroundColor: TColorss.background,
@@ -63,55 +56,9 @@ class HomeView extends GetView<HomeController> {
           );
         }
 
-        if (controller.errorMessage.isNotEmpty) {
-          return Center(
-            child: FadeInUp(
-              duration: const Duration(milliseconds: 600),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Iconsax.warning_2,
-                    size: 64,
-                    color: TColorss.error,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    controller.errorMessage.value,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      color: TColorss.error,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 24),
-                  ZoomIn(
-                    duration: const Duration(milliseconds: 400),
-                    child: ElevatedButton(
-                      onPressed: controller.checkTokenAndFetchReports,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: TColorss.primary,
-                        foregroundColor: TColorss.surface,
-                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        elevation: 2,
-                        textStyle: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      child: const Text('Retry'),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }
-
         return Column(
           children: [
+            // Announcements Section - Always visible
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
               child: Container(
@@ -129,7 +76,7 @@ class HomeView extends GetView<HomeController> {
                   ],
                 ),
                 padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -209,79 +156,51 @@ class HomeView extends GetView<HomeController> {
             ),
             const SizedBox(height: 16),
             Obx(() => Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                controller.announcements.length,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(
+                    controller.announcements.length,
                     (dotIndex) => GestureDetector(
-                  onTap: () => controller.announcementsPageController
-                      .jumpToPage(dotIndex),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    height: 4,
-                    width:
-                    controller.currentPage.value == dotIndex ? 28 : 8,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      color: controller.currentPage.value == dotIndex
-                          ? TColors.black
-                          : Colors.grey.withOpacity(0.4),
-                      boxShadow: controller.currentPage.value == dotIndex
-                          ? [
-                        BoxShadow(
-                          color: TColors.primary.withOpacity(0.3),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
+                      onTap: () => controller.announcementsPageController
+                          .jumpToPage(dotIndex),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        height: 4,
+                        width:
+                            controller.currentPage.value == dotIndex ? 28 : 8,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: controller.currentPage.value == dotIndex
+                              ? TColors.black
+                              : Colors.grey.withOpacity(0.4),
+                          boxShadow: controller.currentPage.value == dotIndex
+                              ? [
+                                  BoxShadow(
+                                    color: TColors.primary.withOpacity(0.3),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ]
+                              : [],
                         ),
-                      ]
-                          : [],
-                    ),
-                    transform: Matrix4.identity()
-                      ..scale(
-                        controller.currentPage.value == dotIndex
-                            ? 1.1
-                            : 1.0,
+                        transform: Matrix4.identity()
+                          ..scale(
+                            controller.currentPage.value == dotIndex
+                                ? 1.1
+                                : 1.0,
+                          ),
+                        transformAlignment: Alignment.center,
                       ),
-                    transformAlignment: Alignment.center,
+                    ),
                   ),
-                ),
-              ),
-            )),
+                )),
             const SizedBox(height: 20),
             _buildTabBar(context),
+
+            // Reports Section with Error Handling
             Expanded(
-              child: RefreshIndicator(
-                onRefresh: controller.refreshReports,
-                color: TColorss.primary,
-                child: controller.reports.isEmpty
-                    ? Center(
-                  child: FadeInUp(
-                    duration: const Duration(milliseconds: 600),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Iconsax.stickynote,
-                          size: 64,
-                          color: TColorss.textSecondary,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'No Reports Available',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
-                            color: TColorss.textSecondary,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-                    : _buildReportList(context),
-              ),
+              child: _buildReportsSection(context),
             ),
           ],
         );
@@ -289,6 +208,99 @@ class HomeView extends GetView<HomeController> {
       floatingActionButton: const FabMenu(),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
+  }
+
+  Widget _buildReportsSection(BuildContext context) {
+    return Obx(() {
+      // Show error only for reports section
+      if (controller.errorMessage.isNotEmpty) {
+        return Container(
+          height: 200, // Fixed height for error container
+          child: Center(
+            child: FadeInUp(
+              duration: const Duration(milliseconds: 600),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Iconsax.warning_2,
+                    size: 48,
+                    color: TColorss.error,
+                  ),
+                  const SizedBox(height: 12),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 24.0),
+                    child: Text(
+                      "Unable to load reports",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: TColorss.error,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ZoomIn(
+                    duration: const Duration(milliseconds: 400),
+                    child: ElevatedButton(
+                      onPressed: controller.checkTokenAndFetchReports,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: TColorss.primary,
+                        foregroundColor: TColorss.surface,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                        elevation: 2,
+                        textStyle: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      child: const Text('Retry'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      }
+
+      // Normal reports content
+      return RefreshIndicator(
+        onRefresh: controller.refreshReports,
+        color: TColorss.primary,
+        child: controller.reports.isEmpty
+            ? Center(
+                child: FadeInUp(
+                  duration: const Duration(milliseconds: 600),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Iconsax.stickynote,
+                        size: 64,
+                        color: TColorss.textSecondary,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'No Reports Available',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                          color: TColorss.textSecondary,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            : _buildReportList(context),
+      );
+    });
   }
 
   Widget _buildTabBar(BuildContext context) {
@@ -326,7 +338,7 @@ class HomeView extends GetView<HomeController> {
     ];
 
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      // padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: TColorss.surface,
         boxShadow: [
@@ -344,14 +356,15 @@ class HomeView extends GetView<HomeController> {
           final tab = entry.value;
           return Expanded(
             child: Obx(
-                  () => GestureDetector(
+              () => GestureDetector(
                 onTap: () => controller.changeTab(tab['value'] as String),
                 child: FadeIn(
                   duration: const Duration(milliseconds: 400),
                   delay: Duration(milliseconds: 100 * index),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 300),
-                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
                     decoration: BoxDecoration(
                       color: controller.currentTab.value == tab['value']
                           ? (tab['color'] as Color).withOpacity(0.1)
@@ -372,9 +385,10 @@ class HomeView extends GetView<HomeController> {
                           tab['label'] as String,
                           style: TextStyle(
                             fontSize: 10,
-                            fontWeight: controller.currentTab.value == tab['value']
-                                ? FontWeight.w600
-                                : FontWeight.w500,
+                            fontWeight:
+                                controller.currentTab.value == tab['value']
+                                    ? FontWeight.w600
+                                    : FontWeight.w500,
                             color: controller.currentTab.value == tab['value']
                                 ? tab['color'] as Color
                                 : TColorss.textSecondary,
@@ -437,12 +451,13 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  // In home_view.dart, replace the _buildReportCard method with this:
-
   Widget _buildReportCard(BuildContext context, Map<String, dynamic> report) {
     final status = (report['status'] ?? 'UNKNOWN').toString().toUpperCase();
-    final requests = (report['requests'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
-    final hasPendingRequests = requests.any((req) => req['status'] == 'PENDING');
+    final requests =
+        (report['requests'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ??
+            [];
+    final hasPendingRequests =
+        requests.any((req) => req['status'] == 'PENDING');
 
     Color statusColor;
     IconData statusIcon;
@@ -557,7 +572,8 @@ class HomeView extends GetView<HomeController> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
                             color: statusColor.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(8),
@@ -605,7 +621,10 @@ class HomeView extends GetView<HomeController> {
                       shape: BoxShape.circle,
                     ),
                     child: Text(
-                      requests.where((req) => req['status'] == 'PENDING').length.toString(),
+                      requests
+                          .where((req) => req['status'] == 'PENDING')
+                          .length
+                          .toString(),
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 12,
@@ -621,13 +640,16 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  // In home_view.dart, replace the _showReportModal method with this:
-
   void _showReportModal(BuildContext context, Map<String, dynamic> report) {
     final status = (report['status'] ?? 'UNKNOWN').toString().toUpperCase();
-    final requests = (report['requests'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
-    final escalations = (report['complaintReportEscalations'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
-    final hasPendingRequests = requests.any((req) => req['status'] == 'PENDING');
+    final requests =
+        (report['requests'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ??
+            [];
+    final escalations = (report['complaintReportEscalations'] as List<dynamic>?)
+            ?.cast<Map<String, dynamic>>() ??
+        [];
+    final hasPendingRequests =
+        requests.any((req) => req['status'] == 'PENDING');
 
     showModalBottomSheet(
       context: context,
@@ -659,7 +681,8 @@ class HomeView extends GetView<HomeController> {
                       ),
                     ),
                     IconButton(
-                      icon: Icon(Iconsax.close_circle, color: TColorss.textSecondary),
+                      icon: Icon(Iconsax.close_circle,
+                          color: TColorss.textSecondary),
                       onPressed: () => Navigator.pop(context),
                     ),
                   ],
@@ -670,24 +693,39 @@ class HomeView extends GetView<HomeController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildDetailRow('Track Number', report['id']?.toString() ?? '-'),
+                      _buildDetailRow(
+                          'Track Number', report['id']?.toString() ?? '-'),
                       //_buildDetailRow('Institution Name', report['institution_name'] ?? '-'),
-                      _buildDetailRow('Responsible Person', report['responsible_person'] ?? '-'),
+                      _buildDetailRow('Responsible Person',
+                          report['responsible_person'] ?? '-'),
                       //_buildDetailRow('Phone', report['responsible_person_phone'] ?? '-'),
                       //_buildDetailRow('Address', report['responsible_person_address'] ?? '-'),
-                      _buildDetailRow('Report Place', report['report_place'] ?? '-'),
-                      _buildDetailRow('Associated Parties', report['associated_parties'] ?? '-'),
-                      _buildDetailRow('First Name', report['first_name'] ?? '-'),
-                      _buildDetailRow('Father\'s Name', report['father_name'] ?? '-'),
-                      _buildDetailRow('Grandfather\'s Name', report['grand_father_name'] ?? '-'),
+                      _buildDetailRow(
+                          'Report Place', report['report_place'] ?? '-'),
+                      _buildDetailRow('Associated Parties',
+                          report['associated_parties'] ?? '-'),
+                      _buildDetailRow(
+                          'First Name', report['first_name'] ?? '-'),
+                      _buildDetailRow(
+                          'Father\'s Name', report['father_name'] ?? '-'),
+                      _buildDetailRow('Grandfather\'s Name',
+                          report['grand_father_name'] ?? '-'),
                       //_buildDetailRow('Service Date', _formatDateTime(report['service_date'])),
                       //_buildDetailRow('Share Contact', report['share_contact'] == true ? 'Yes' : 'No'),
-                      _buildDetailRow('Status', status, color: _getStatusColor(status)),
-                      _buildDetailRow('Service', report['service']?['name'] ?? '-'),
-                      _buildDetailRow('Branch', report['branch']?['name'] ?? '-'),
+                      _buildDetailRow('Status', status,
+                          color: _getStatusColor(status)),
+                      _buildDetailRow(
+                          'Service', report['service']?['name'] ?? '-'),
+                      _buildDetailRow(
+                          'Branch', report['branch']?['name'] ?? '-'),
                       const Divider(color: TColorss.textSecondary),
-                      _buildDetailRow('Findings', report['findings']?.isEmpty ?? true ? '-' : report['findings'].join(', ')),
-                      _buildDetailRow('Created At', _formatDateTime(report['created_at'])),
+                      _buildDetailRow(
+                          'Findings',
+                          report['findings']?.isEmpty ?? true
+                              ? '-'
+                              : report['findings'].join(', ')),
+                      _buildDetailRow(
+                          'Created At', _formatDateTime(report['created_at'])),
 
                       if (requests.isNotEmpty) ...[
                         const SizedBox(height: 16),
@@ -700,7 +738,10 @@ class HomeView extends GetView<HomeController> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        ...requests.map((request) => _buildRequestCard(context, request)).toList(),
+                        ...requests
+                            .map((request) =>
+                                _buildRequestCard(context, request))
+                            .toList(),
                       ],
 
                       if (escalations.isNotEmpty) ...[
@@ -714,11 +755,15 @@ class HomeView extends GetView<HomeController> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        ...escalations.map((escalation) => _buildEscalationCard(context, escalation)).toList(),
+                        ...escalations
+                            .map((escalation) =>
+                                _buildEscalationCard(context, escalation))
+                            .toList(),
                       ],
 
                       const SizedBox(height: 16),
-                      if (status == 'INVALID_COMPLAINT' || status == 'CLOSED') ...[
+                      if (status == 'INVALID_COMPLAINT' ||
+                          status == 'CLOSED') ...[
                         const SizedBox(height: 8),
                         Text(
                           status == 'INVALID_COMPLAINT'
@@ -734,19 +779,22 @@ class HomeView extends GetView<HomeController> {
                         ZoomIn(
                           duration: const Duration(milliseconds: 400),
                           child: ElevatedButton.icon(
-                            onPressed: () => _showAppealDialog(context, report['id'].toString()),
+                            onPressed: () => _showAppealDialog(
+                                context, report['id'].toString()),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: TColorss.accent,
                               foregroundColor: TColorss.surface,
                               minimumSize: const Size(double.infinity, 48),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8)),
                               elevation: 2,
                               textStyle: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            icon: const Icon(Iconsax.message_question, size: 20),
+                            icon:
+                                const Icon(Iconsax.message_question, size: 20),
                             label: const Text('Escalate Report'),
                           ),
                         ),
@@ -762,12 +810,14 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-
-  Widget _buildEscalationCard(BuildContext context, Map<String, dynamic> escalation) {
+  Widget _buildEscalationCard(
+      BuildContext context, Map<String, dynamic> escalation) {
     final user = escalation['user'] as Map<String, dynamic>? ?? {};
     final responder = escalation['responder'] as Map<String, dynamic>? ?? {};
-    final hasResponse = escalation['response_message'] != null && (escalation['response_message'] as String).isNotEmpty;
-    final hasFile = escalation['file'] != null && (escalation['file'] as String).isNotEmpty;
+    final hasResponse = escalation['response_message'] != null &&
+        (escalation['response_message'] as String).isNotEmpty;
+    final hasFile =
+        escalation['file'] != null && (escalation['file'] as String).isNotEmpty;
 
     return SlideInUp(
       duration: const Duration(milliseconds: 400),
@@ -821,14 +871,14 @@ class HomeView extends GetView<HomeController> {
                       ),
                     ),
                     const SizedBox(width: 8),
-
                   ],
                 ),
 
                 const SizedBox(height: 16),
 
                 // Original message
-                if (escalation['message'] != null && (escalation['message'] as String).isNotEmpty) ...[
+                if (escalation['message'] != null &&
+                    (escalation['message'] as String).isNotEmpty) ...[
                   Text(
                     'Message:',
                     style: TextStyle(
@@ -990,7 +1040,6 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-
   Widget _buildRequestCard(BuildContext context, Map<String, dynamic> request) {
     final isPending = request['status'] == 'PENDING';
     // Use GetX to persist the controller state
@@ -1037,7 +1086,9 @@ class HomeView extends GetView<HomeController> {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
-                          color: isPending ? TColorss.primary : TColorss.textPrimary,
+                          color: isPending
+                              ? TColorss.primary
+                              : TColorss.textPrimary,
                           letterSpacing: 0.5,
                         ),
                       ),
@@ -1053,10 +1104,10 @@ class HomeView extends GetView<HomeController> {
                             color: isPending ? TColorss.surface : Colors.white,
                           ),
                         ),
-                        backgroundColor: isPending
-                            ? TColorss.primary
-                            : Colors.green,
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        backgroundColor:
+                            isPending ? TColorss.primary : Colors.green,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                           side: BorderSide(
@@ -1174,96 +1225,102 @@ class HomeView extends GetView<HomeController> {
                   ),
                   const SizedBox(height: 16),
                   Obx(() => Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ZoomIn(
-                        duration: const Duration(milliseconds: 400),
-                        child: ElevatedButton.icon(
-                          onPressed: () async {
-                            final result = await FilePicker.platform.pickFiles();
-                            if (result != null) {
-                              selectedFile.value = result.files.first;
-                              selectedFileName.value = result.files.first.name;
-                            }
-                          },
-                          icon: const Icon(Iconsax.document_upload, size: 22),
-                          label: const Text('Attach File'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: TColorss.primary,
-                            foregroundColor: TColorss.surface,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 14,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            elevation: 3,
-                            shadowColor: TColorss.textPrimary.withOpacity(0.2),
-                            textStyle: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.3,
-                            ),
-                          ),
-                        ),
-                      ),
-                      if (selectedFileName.value.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 16),
-                          child: ZoomIn(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ZoomIn(
                             duration: const Duration(milliseconds: 400),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 10,
-                              ),
-                              decoration: BoxDecoration(
-                                color: TColorss.surfaceSecondary.withOpacity(0.8),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: TColorss.textPrimary.withOpacity(0.2),
-                                  width: 1,
+                            child: ElevatedButton.icon(
+                              onPressed: () async {
+                                final result =
+                                    await FilePicker.platform.pickFiles();
+                                if (result != null) {
+                                  selectedFile.value = result.files.first;
+                                  selectedFileName.value =
+                                      result.files.first.name;
+                                }
+                              },
+                              icon:
+                                  const Icon(Iconsax.document_upload, size: 22),
+                              label: const Text('Attach File'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: TColorss.primary,
+                                foregroundColor: TColorss.surface,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 14,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                elevation: 3,
+                                shadowColor:
+                                    TColorss.textPrimary.withOpacity(0.2),
+                                textStyle: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 0.3,
                                 ),
                               ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Iconsax.document,
-                                    size: 20,
-                                    color: TColorss.textPrimary,
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: Text(
-                                      'Selected: ${selectedFileName.value}',
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        color: TColorss.textPrimary,
-                                        letterSpacing: 0.2,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  IconButton(
-                                    icon: Icon(
-                                      Iconsax.trash,
-                                      size: 20,
-                                      color: TColorss.error,
-                                    ),
-                                    onPressed: () {
-                                      selectedFile.value = null;
-                                      selectedFileName.value = '';
-                                    },
-                                  ),
-                                ],
-                              ),
                             ),
                           ),
-                        ),
-                    ],
-                  )),
+                          if (selectedFileName.value.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 16),
+                              child: ZoomIn(
+                                duration: const Duration(milliseconds: 400),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 10,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: TColorss.surfaceSecondary
+                                        .withOpacity(0.8),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color:
+                                          TColorss.textPrimary.withOpacity(0.2),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Iconsax.document,
+                                        size: 20,
+                                        color: TColorss.textPrimary,
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: Text(
+                                          'Selected: ${selectedFileName.value}',
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                            color: TColorss.textPrimary,
+                                            letterSpacing: 0.2,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon: Icon(
+                                          Iconsax.trash,
+                                          size: 20,
+                                          color: TColorss.error,
+                                        ),
+                                        onPressed: () {
+                                          selectedFile.value = null;
+                                          selectedFileName.value = '';
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      )),
                   const SizedBox(height: 16),
                   ZoomIn(
                     duration: const Duration(milliseconds: 400),
@@ -1378,39 +1435,43 @@ class HomeView extends GetView<HomeController> {
               ),
               const SizedBox(height: 8),
               Obx(() => TextField(
-                controller: appealController,
-                maxLines: 4,
-                maxLength: 500,
-                onChanged: (value) => charCount.value = value.length,
-                decoration: InputDecoration(
-                  hintText: 'Enter your appeal message',
-                  hintStyle: TextStyle(color: TColorss.textSecondary),
-                  filled: true,
-                  fillColor: TColorss.surfaceSecondary,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide.none,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide.none,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: TColorss.primary, width: 1.5),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                  counterText: '${charCount.value}/500',
-                  counterStyle: TextStyle(
-                    color: charCount.value > 500 ? TColorss.error : TColorss.textSecondary,
-                  ),
-                ),
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: TColorss.textPrimary,
-                ),
-                textInputAction: TextInputAction.done,
-              )),
+                    controller: appealController,
+                    maxLines: 4,
+                    maxLength: 500,
+                    onChanged: (value) => charCount.value = value.length,
+                    decoration: InputDecoration(
+                      hintText: 'Enter your appeal message',
+                      hintStyle: TextStyle(color: TColorss.textSecondary),
+                      filled: true,
+                      fillColor: TColorss.surfaceSecondary,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide.none,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide:
+                            BorderSide(color: TColorss.primary, width: 1.5),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 16),
+                      counterText: '${charCount.value}/500',
+                      counterStyle: TextStyle(
+                        color: charCount.value > 500
+                            ? TColorss.error
+                            : TColorss.textSecondary,
+                      ),
+                    ),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: TColorss.textPrimary,
+                    ),
+                    textInputAction: TextInputAction.done,
+                  )),
               const SizedBox(height: 16),
               ZoomIn(
                 duration: const Duration(milliseconds: 400),
@@ -1434,12 +1495,15 @@ class HomeView extends GetView<HomeController> {
                             borderRadius: 12,
                             margin: const EdgeInsets.all(16),
                             duration: const Duration(seconds: 4),
-                            icon: const Icon(Iconsax.warning_2, color: TColorss.surface),
+                            icon: const Icon(Iconsax.warning_2,
+                                color: TColorss.surface),
                           );
                           return;
                         }
-                        final extension = file.name.split('.').last.toLowerCase();
-                        if (!['pdf', 'jpg', 'jpeg', 'png'].contains(extension)) {
+                        final extension =
+                            file.name.split('.').last.toLowerCase();
+                        if (!['pdf', 'jpg', 'jpeg', 'png']
+                            .contains(extension)) {
                           Get.snackbar(
                             'Error',
                             'Invalid file type. Only PDF, JPG, JPEG, or PNG files are allowed.',
@@ -1449,7 +1513,8 @@ class HomeView extends GetView<HomeController> {
                             borderRadius: 12,
                             margin: const EdgeInsets.all(16),
                             duration: const Duration(seconds: 4),
-                            icon: const Icon(Iconsax.warning_2, color: TColorss.surface),
+                            icon: const Icon(Iconsax.warning_2,
+                                color: TColorss.surface),
                           );
                           return;
                         }
@@ -1466,14 +1531,16 @@ class HomeView extends GetView<HomeController> {
                         borderRadius: 12,
                         margin: const EdgeInsets.all(16),
                         duration: const Duration(seconds: 4),
-                        icon: const Icon(Iconsax.warning_2, color: TColorss.surface),
+                        icon: const Icon(Iconsax.warning_2,
+                            color: TColorss.surface),
                       );
                     }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: TColorss.primary,
                     foregroundColor: TColorss.surface,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
                     elevation: 2,
                     textStyle: const TextStyle(
                       fontSize: 14,
@@ -1486,31 +1553,32 @@ class HomeView extends GetView<HomeController> {
               ),
               const SizedBox(height: 8),
               Obx(() => Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      selectedFileName.value.isEmpty
-                          ? 'No file selected (optional)'
-                          : 'Selected: ${selectedFileName.value}',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: selectedFileName.value.isEmpty
-                            ? TColorss.textSecondary
-                            : TColorss.textPrimary,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          selectedFileName.value.isEmpty
+                              ? 'No file selected (optional)'
+                              : 'Selected: ${selectedFileName.value}',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: selectedFileName.value.isEmpty
+                                ? TColorss.textSecondary
+                                : TColorss.textPrimary,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  if (selectedFileName.value.isNotEmpty)
-                    IconButton(
-                      icon: Icon(Iconsax.trash, color: TColorss.error, size: 20),
-                      onPressed: () {
-                        selectedFile.value = null;
-                        selectedFileName.value = '';
-                      },
-                    ),
-                ],
-              )),
+                      if (selectedFileName.value.isNotEmpty)
+                        IconButton(
+                          icon: Icon(Iconsax.trash,
+                              color: TColorss.error, size: 20),
+                          onPressed: () {
+                            selectedFile.value = null;
+                            selectedFileName.value = '';
+                          },
+                        ),
+                    ],
+                  )),
             ],
           ),
         ),
@@ -1532,51 +1600,53 @@ class HomeView extends GetView<HomeController> {
           ZoomIn(
             duration: const Duration(milliseconds: 400),
             child: Obx(() => ElevatedButton(
-              onPressed: controller.isLoading.value
-                  ? null
-                  : () {
-                if (appealController.text.trim().isEmpty) {
-                  Get.snackbar(
-                    'Error',
-                    'Please enter an appeal message.',
-                    backgroundColor: TColorss.error,
-                    colorText: TColorss.surface,
-                    snackPosition: SnackPosition.BOTTOM,
-                    borderRadius: 12,
-                    margin: const EdgeInsets.all(16),
-                    duration: const Duration(seconds: 4),
-                    icon: const Icon(Iconsax.warning_2, color: TColorss.surface),
-                  );
-                  return;
-                }
-                controller.appealReport(
-                  reportId,
-                  appealController.text.trim(),
-                  selectedFile.value,
-                );
-                Navigator.pop(context);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: TColorss.accent,
-                foregroundColor: TColorss.surface,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                elevation: 2,
-                textStyle: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              child: controller.isLoading.value
-                  ? SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(
-                  color: TColorss.surface,
-                  strokeWidth: 2,
-                ),
-              )
-                  : const Text('Submit Appeal'),
-            )),
+                  onPressed: controller.isLoading.value
+                      ? null
+                      : () {
+                          if (appealController.text.trim().isEmpty) {
+                            Get.snackbar(
+                              'Error',
+                              'Please enter an appeal message.',
+                              backgroundColor: TColorss.error,
+                              colorText: TColorss.surface,
+                              snackPosition: SnackPosition.BOTTOM,
+                              borderRadius: 12,
+                              margin: const EdgeInsets.all(16),
+                              duration: const Duration(seconds: 4),
+                              icon: const Icon(Iconsax.warning_2,
+                                  color: TColorss.surface),
+                            );
+                            return;
+                          }
+                          controller.appealReport(
+                            reportId,
+                            appealController.text.trim(),
+                            selectedFile.value,
+                          );
+                          Navigator.pop(context);
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: TColorss.accent,
+                    foregroundColor: TColorss.surface,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                    elevation: 2,
+                    textStyle: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  child: controller.isLoading.value
+                      ? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            color: TColorss.surface,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Text('Submit Appeal'),
+                )),
           ),
         ],
       ),
@@ -1729,6 +1799,7 @@ class HomeView extends GetView<HomeController> {
     }
   }
 }
+
 class FabMenu extends StatefulWidget {
   const FabMenu({Key? key}) : super(key: key);
 

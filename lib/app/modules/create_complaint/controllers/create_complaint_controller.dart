@@ -71,10 +71,30 @@ class CreateComplaintController extends GetxController {
   static const int maxFileSize = 500 * 1024 * 1024; // 500MB in bytes
   static const int maxFileCount = 5;
   static const List<String> allowedExtensions = [
-    'jpg', 'jpeg', 'png', 'mp4', 'mov', 'avi', 'mp3', 'wav', 'm4a', 'aac', 'pdf', 'doc', 'docx'
+    'jpg',
+    'jpeg',
+    'png',
+    'mp4',
+    'mov',
+    'avi',
+    'mp3',
+    'wav',
+    'm4a',
+    'aac',
+    'pdf',
+    'doc',
+    'docx'
   ];
   static const List<String> backendAllowedExtensions = [
-    'jpg', 'jpeg', 'png', 'mp4', 'mp3', 'wav', 'pdf', 'doc', 'docx'
+    'jpg',
+    'jpeg',
+    'png',
+    'mp4',
+    'mp3',
+    'wav',
+    'pdf',
+    'doc',
+    'docx'
   ];
 
   String get formattedTime {
@@ -116,7 +136,6 @@ class CreateComplaintController extends GetxController {
     ),
   ];
 
-
   @override
   void onInit() async {
     super.onInit();
@@ -126,7 +145,8 @@ class CreateComplaintController extends GetxController {
     final args = Get.arguments as Map<String, dynamic>?;
     childCategoryId = args?['child_category'] as String?;
     categoryId = args?['category'] as String?;
-    categoryName.value = args?['category_name'] as String? ?? 'Unknown Category';
+    categoryName.value =
+        args?['category_name'] as String? ?? 'Unknown Category';
 
     ticketNumberController.text = ticketNumber.value;
     firstNameController.text = firstName.value;
@@ -134,11 +154,15 @@ class CreateComplaintController extends GetxController {
     surnameController.text = surname.value;
     descriptionController.text = detail.value;
 
-    ticketNumberController.addListener(() => ticketNumber.value = ticketNumberController.text);
-    firstNameController.addListener(() => firstName.value = firstNameController.text);
-    lastNameController.addListener(() => lastName.value = lastNameController.text);
+    ticketNumberController
+        .addListener(() => ticketNumber.value = ticketNumberController.text);
+    firstNameController
+        .addListener(() => firstName.value = firstNameController.text);
+    lastNameController
+        .addListener(() => lastName.value = lastNameController.text);
     surnameController.addListener(() => surname.value = surnameController.text);
-    descriptionController.addListener(() => detail.value = descriptionController.text);
+    descriptionController
+        .addListener(() => detail.value = descriptionController.text);
 
     await _initAudioRecorder();
     await _initAudioPlayer();
@@ -203,20 +227,24 @@ class CreateComplaintController extends GetxController {
       }
     ''';
 
-      final result = await client.query(
+      final result = await client
+          .query(
         QueryOptions(
           document: gql(query),
           variables: {'id': staffId},
           fetchPolicy: FetchPolicy.networkOnly,
           errorPolicy: ErrorPolicy.all,
         ),
-      ).timeout(Duration(seconds: 15), onTimeout: () {
+      )
+          .timeout(Duration(seconds: 15), onTimeout: () {
         throw TimeoutException('Request timed out after 15 seconds');
       });
 
       if (result.hasException) {
         print('GraphQL Error: ${result.exception.toString()}');
-        errorMessage.value = 'Failed to load staff information: ${result.exception.toString()}'.tr;
+        errorMessage.value =
+            'Failed to load staff information: ${result.exception.toString()}'
+                .tr;
         return;
       }
 
@@ -255,8 +283,6 @@ class CreateComplaintController extends GetxController {
     ticketNumber.value = '';
     errorMessage.value = '';
   }
-
-
 
   // Modify resetForm() to include new properties
   void resetForm() {
@@ -324,19 +350,22 @@ class CreateComplaintController extends GetxController {
     }
   ''';
 
-      final result = await client.query(
+      final result = await client
+          .query(
         QueryOptions(
           document: gql(query),
           fetchPolicy: FetchPolicy.networkOnly,
           errorPolicy: ErrorPolicy.all,
         ),
-      ).timeout(Duration(seconds: 15), onTimeout: () {
+      )
+          .timeout(Duration(seconds: 15), onTimeout: () {
         throw TimeoutException('Request timed out after 15 seconds');
       });
 
       if (result.hasException) {
         print('GraphQL Error Details: ${result.exception.toString()}');
-        errorMessage.value = 'Failed to load branches: ${result.exception.toString()}'.tr;
+        errorMessage.value =
+            'Failed to load branches: ${result.exception.toString()}'.tr;
         return;
       }
 
@@ -349,7 +378,9 @@ class CreateComplaintController extends GetxController {
             'code': branch['code']?.toString() ?? '',
             'description': branch['description']?.toString() ?? '',
             'icon': branch['icon']?.toString() ?? '',
-            'services': (branch['services'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [],
+            'services': (branch['services'] as List<dynamic>?)
+                    ?.cast<Map<String, dynamic>>() ??
+                [],
           };
         }).toList());
         if (staffInfo.isEmpty) {
@@ -420,7 +451,8 @@ class CreateComplaintController extends GetxController {
 
       if (result.hasException) {
         print('GraphQL Error: ${result.exception.toString()}');
-        errorMessage.value = 'Failed to load services: ${result.exception.toString()}'.tr;
+        errorMessage.value =
+            'Failed to load services: ${result.exception.toString()}'.tr;
         return;
       }
 
@@ -589,7 +621,7 @@ class CreateComplaintController extends GetxController {
     final isGranted = await _requestPermissions(type);
     if (!isGranted) {
       errorMessage.value =
-      'Permission denied for $type. Please enable it in settings.';
+          'Permission denied for $type. Please enable it in settings.';
       openAppSettings();
       isFilePickerActive.value = false;
       return;
@@ -603,7 +635,8 @@ class CreateComplaintController extends GetxController {
       if (media != null) {
         // Check file count limit
         if (files.length + links.length >= maxFileCount) {
-          errorMessage.value = 'You can upload a maximum of $maxFileCount files.'.tr;
+          errorMessage.value =
+              'You can upload a maximum of $maxFileCount files.'.tr;
           isFilePickerActive.value = false;
           return;
         }
@@ -611,7 +644,8 @@ class CreateComplaintController extends GetxController {
         // Check file size
         final fileSize = await media.length();
         if (fileSize > maxFileSize) {
-          errorMessage.value = 'File "${media.name}" exceeds the 500MB size limit.'.tr;
+          errorMessage.value =
+              'File "${media.name}" exceeds the 500MB size limit.'.tr;
           isFilePickerActive.value = false;
           return;
         }
@@ -619,7 +653,9 @@ class CreateComplaintController extends GetxController {
         // Check file extension against backend requirements
         final extension = media.path.split('.').last.toLowerCase();
         if (!backendAllowedExtensions.contains(extension)) {
-          errorMessage.value = 'File type "$extension" is not supported. Please use: ${backendAllowedExtensions.join(', ')}'.tr;
+          errorMessage.value =
+              'File type "$extension" is not supported. Please use: ${backendAllowedExtensions.join(', ')}'
+                  .tr;
           isFilePickerActive.value = false;
           return;
         }
@@ -651,7 +687,7 @@ class CreateComplaintController extends GetxController {
     final isGranted = await _requestPermissions('Gallery');
     if (!isGranted) {
       errorMessage.value =
-      'Permission denied for gallery access. Please enable it in settings.';
+          'Permission denied for gallery access. Please enable it in settings.';
       openAppSettings();
       isFilePickerActive.value = false;
       return;
@@ -659,9 +695,9 @@ class CreateComplaintController extends GetxController {
 
     try {
       final allowedExtensions = {
-        0: ['jpg', 'jpeg', 'png'], // Photo Upload
-        1: ['mp4', 'mov', 'avi'], // Video Upload
-      }[tabIndex] ??
+            0: ['jpg', 'jpeg', 'png'], // Photo Upload
+            1: ['mp4', 'mov', 'avi'], // Video Upload
+          }[tabIndex] ??
           ['jpg', 'jpeg', 'png'];
 
       final XFile? media = await (tabIndex == 0
@@ -672,14 +708,15 @@ class CreateComplaintController extends GetxController {
         final extension = media.path.split('.').last.toLowerCase();
         if (!allowedExtensions.contains(extension)) {
           errorMessage.value =
-          'Invalid file format. Allowed formats: ${allowedExtensions.join(', ')}';
+              'Invalid file format. Allowed formats: ${allowedExtensions.join(', ')}';
           isFilePickerActive.value = false;
           return;
         }
 
         // Check file count limit
         if (files.length + links.length >= maxFileCount) {
-          errorMessage.value = 'You can upload a maximum of $maxFileCount files.'.tr;
+          errorMessage.value =
+              'You can upload a maximum of $maxFileCount files.'.tr;
           isFilePickerActive.value = false;
           return;
         }
@@ -687,14 +724,17 @@ class CreateComplaintController extends GetxController {
         // Check file size
         final fileSize = await media.length();
         if (fileSize > maxFileSize) {
-          errorMessage.value = 'File "${media.name}" exceeds the 500MB size limit.'.tr;
+          errorMessage.value =
+              'File "${media.name}" exceeds the 500MB size limit.'.tr;
           isFilePickerActive.value = false;
           return;
         }
 
         // Check file extension against backend requirements
         if (!backendAllowedExtensions.contains(extension)) {
-          errorMessage.value = 'File type "$extension" is not supported. Please use: ${backendAllowedExtensions.join(', ')}'.tr;
+          errorMessage.value =
+              'File type "$extension" is not supported. Please use: ${backendAllowedExtensions.join(', ')}'
+                  .tr;
           isFilePickerActive.value = false;
           return;
         }
@@ -730,13 +770,15 @@ class CreateComplaintController extends GetxController {
 
       // Check file limit - use consistent message
       if (files.length + links.length >= maxFileCount) {
-        errorMessage.value = 'You can upload a maximum of $maxFileCount files.'.tr;
+        errorMessage.value =
+            'You can upload a maximum of $maxFileCount files.'.tr;
         return;
       }
 
       // Get storage directory
       final directory = await getTemporaryDirectory();
-      final path = '${directory.path}/recording_${DateTime.now().millisecondsSinceEpoch}.aac';
+      final path =
+          '${directory.path}/recording_${DateTime.now().millisecondsSinceEpoch}.aac';
 
       // Determine supported codec
       Codec codec = Codec.aacADTS;
@@ -834,7 +876,6 @@ class CreateComplaintController extends GetxController {
     }
   }
 
-
   Future<void> stopPlayback() async {
     try {
       await _audioPlayer.stopPlayer();
@@ -891,7 +932,7 @@ class CreateComplaintController extends GetxController {
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       padding:
-                      EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -907,7 +948,8 @@ class CreateComplaintController extends GetxController {
 
                       if (links.length + files.length >= 5) {
                         errorMessage.value =
-                            'You can add a maximum of 5 items (files and links).'.tr;
+                            'You can add a maximum of 5 items (files and links).'
+                                .tr;
                         Navigator.pop(context); // closes dialog without result
                         return;
                       }
@@ -951,12 +993,38 @@ class CreateComplaintController extends GetxController {
     }
 
     final allowedExtensions = {
-      0: ['jpg', 'jpeg', 'png'],
-      1: ['mp4', 'mov', 'avi'],
-      2: ['mp3', 'wav', 'm4a'],
-      3: ['jpg', 'jpeg', 'png', 'mp4', 'mov', 'avi', 'mp3', 'wav', 'txt', 'pdf', 'doc', 'docx'],
-    }[tabIndex] ??
-        ['jpg', 'jpeg', 'png', 'mp4', 'mov', 'avi', 'mp3', 'wav', 'txt', 'pdf', 'doc', 'docx'];
+          0: ['jpg', 'jpeg', 'png'],
+          1: ['mp4', 'mov', 'avi'],
+          2: ['mp3', 'wav', 'm4a'],
+          3: [
+            'jpg',
+            'jpeg',
+            'png',
+            'mp4',
+            'mov',
+            'avi',
+            'mp3',
+            'wav',
+            'txt',
+            'pdf',
+            'doc',
+            'docx'
+          ],
+        }[tabIndex] ??
+        [
+          'jpg',
+          'jpeg',
+          'png',
+          'mp4',
+          'mov',
+          'avi',
+          'mp3',
+          'wav',
+          'txt',
+          'pdf',
+          'doc',
+          'docx'
+        ];
 
     try {
       final result = await FilePicker.platform.pickFiles(
@@ -970,7 +1038,8 @@ class CreateComplaintController extends GetxController {
 
         // Check file count limit
         if (files.length + newFiles.length + links.length > maxFileCount) {
-          errorMessage.value = 'You can upload a maximum of $maxFileCount files.'.tr;
+          errorMessage.value =
+              'You can upload a maximum of $maxFileCount files.'.tr;
           isFilePickerActive.value = false;
           return;
         }
@@ -979,7 +1048,8 @@ class CreateComplaintController extends GetxController {
         for (var file in newFiles) {
           // Check file size
           if (file.size > maxFileSize) {
-            errorMessage.value = 'File "${file.name}" exceeds the 500MB size limit.'.tr;
+            errorMessage.value =
+                'File "${file.name}" exceeds the 500MB size limit.'.tr;
             isFilePickerActive.value = false;
             return;
           }
@@ -987,7 +1057,9 @@ class CreateComplaintController extends GetxController {
           // Check file extension against backend requirements
           final extension = file.extension?.toLowerCase() ?? '';
           if (!backendAllowedExtensions.contains(extension)) {
-            errorMessage.value = 'File type "$extension" is not supported. Please use: ${backendAllowedExtensions.join(', ')}'.tr;
+            errorMessage.value =
+                'File type "$extension" is not supported. Please use: ${backendAllowedExtensions.join(', ')}'
+                    .tr;
             isFilePickerActive.value = false;
             return;
           }
@@ -1057,7 +1129,8 @@ class CreateComplaintController extends GetxController {
       );
 
       if (result.hasException) {
-        errorMessage.value = 'Failed to verify ticket: ${result.exception.toString()}'.tr;
+        errorMessage.value =
+            'Failed to verify ticket: ${result.exception.toString()}'.tr;
         return;
       }
 
@@ -1117,7 +1190,8 @@ class CreateComplaintController extends GetxController {
   // Submit complaint
   Future<void> submitComplaint() async {
     final qrController = Get.find<QrscannerController>();
-    final isQrScanned = qrController.scannedCode.isNotEmpty && staffInfo.isNotEmpty;
+    final isQrScanned =
+        qrController.scannedCode.isNotEmpty && staffInfo.isNotEmpty;
 
     // Validate inputs
     if (!isQrScanned) {
@@ -1136,7 +1210,8 @@ class CreateComplaintController extends GetxController {
     }
     // Validate that files are provided if hasDocument is true
     if (hasDocument.value && files.isEmpty) {
-      errorMessage.value = 'Please upload at least one file when attachments are selected.'.tr;
+      errorMessage.value =
+          'Please upload at least one file when attachments are selected.'.tr;
       return;
     }
 
@@ -1144,11 +1219,15 @@ class CreateComplaintController extends GetxController {
     for (var file in files) {
       final extension = file.extension?.toLowerCase() ?? '';
       if (!backendAllowedExtensions.contains(extension)) {
-        errorMessage.value = 'File type "$extension" is not supported. Please remove it and try again.'.tr;
+        errorMessage.value =
+            'File type "$extension" is not supported. Please remove it and try again.'
+                .tr;
         return;
       }
       if (file.size > maxFileSize) {
-        errorMessage.value = 'File "${file.name}" exceeds the 500MB size limit. Please remove it and try again.'.tr;
+        errorMessage.value =
+            'File "${file.name}" exceeds the 500MB size limit. Please remove it and try again.'
+                .tr;
         return;
       }
     }
@@ -1166,7 +1245,7 @@ class CreateComplaintController extends GetxController {
       }
 
       final selectedBranch = branches.firstWhere(
-            (branch) => branch['id'].toString() == selectedBranchId.value,
+        (branch) => branch['id'].toString() == selectedBranchId.value,
         orElse: () => {'name': 'Unknown Branch'},
       );
       final branchName = isQrScanned
@@ -1202,23 +1281,32 @@ class CreateComplaintController extends GetxController {
       final input = {
         'description': detail.value.trim(),
         'category': 'complaint',
-        'service_id': isQrScanned && staffInfo['service'] != null && staffInfo['service']['id'] != null
+        'service_id': isQrScanned &&
+                staffInfo['service'] != null &&
+                staffInfo['service']['id'] != null
             ? staffInfo['service']['id'].toString()
             : selectedServiceId.value,
-        'branch_id': isQrScanned && staffInfo['branch'] != null && staffInfo['branch']['id'] != null
+        'branch_id': isQrScanned &&
+                staffInfo['branch'] != null &&
+                staffInfo['branch']['id'] != null
             ? staffInfo['branch']['id'].toString()
             : selectedBranchId.value,
         'staff_id': ticketNumber.value.isNotEmpty ? ticketNumber.value : null,
-        'institution_name': isQrScanned && staffInfo['branch'] != null && staffInfo['branch']['name'] != null
+        'institution_name': isQrScanned &&
+                staffInfo['branch'] != null &&
+                staffInfo['branch']['name'] != null
             ? staffInfo['branch']['name'].toString()
             : 'Unknown Institution', // Provide default value
         'responsible_person': isQrScanned && staffInfo['name'] != null
             ? staffInfo['name'].toString()
             : 'Unknown Person', // Provide default value instead of null
-        'responsible_person_phone': isQrScanned && staffInfo['phone_number'] != null
-            ? staffInfo['phone_number'].toString()
-            : 'Unknown Phone', // Provide default value
-        'responsible_person_address': isQrScanned && staffInfo['branch'] != null && staffInfo['branch']['description'] != null
+        'responsible_person_phone':
+            isQrScanned && staffInfo['phone_number'] != null
+                ? staffInfo['phone_number'].toString()
+                : 'Unknown Phone', // Provide default value
+        'responsible_person_address': isQrScanned &&
+                staffInfo['branch'] != null &&
+                staffInfo['branch']['description'] != null
             ? staffInfo['branch']['description'].toString()
             : 'Unknown Address', // Provide default value
         'report_place': branchName,
@@ -1227,10 +1315,13 @@ class CreateComplaintController extends GetxController {
         'service_date': serviceDate,
         'share_contact': contactMe.value,
         'is_complaint': true,
-        'first_name': firstName.value.isNotEmpty ? firstName.value : 'Anonymous',
+        'first_name':
+            firstName.value.isNotEmpty ? firstName.value : 'Anonymous',
         'father_name': lastName.value.isNotEmpty ? lastName.value : null,
         'grand_father_name': surname.value.isNotEmpty ? surname.value : null,
-        'attachments': files.isNotEmpty ? List.generate(files.length, (index) => null) : [],
+        'files': files.isNotEmpty
+            ? List.generate(files.length, (index) => null)
+            : [],
       };
 
       final request = http.MultipartRequest(
@@ -1239,7 +1330,7 @@ class CreateComplaintController extends GetxController {
       );
 
       request.headers['Authorization'] = 'Bearer $token';
-      request.headers['Content-Type'] = 'multipart/form-data';
+      // request.headers['Content-Type'] = 'multipart/form-data';
 
       final operations = {
         'query': query,
@@ -1247,9 +1338,10 @@ class CreateComplaintController extends GetxController {
       };
 
       // Construct the map field as an array of arrays with a single string path
-      final map = files.isNotEmpty
-          ? List.generate(files.length, (i) => ['file$i', 'variables.input.attachments.$i'])
-          : [];
+      final map = <String, List<String>>{};
+      for (var i = 0; i < files.length; i++) {
+        map['file$i'] = ['variables.input.attachments.$i'];
+      }
 
       request.fields['operations'] = jsonEncode(operations);
       request.fields['map'] = jsonEncode(map);
@@ -1262,7 +1354,8 @@ class CreateComplaintController extends GetxController {
           return;
         }
         final fileData = await File(file.path!).readAsBytes();
-        final mimeType = lookupMimeType(file.path!) ?? 'application/octet-stream';
+        final mimeType =
+            lookupMimeType(file.path!) ?? 'application/octet-stream';
         request.files.add(
           http.MultipartFile.fromBytes(
             'file$i',
@@ -1286,17 +1379,31 @@ class CreateComplaintController extends GetxController {
       print('Raw server response: $responseBody');
 
       if (responseBody.trim().startsWith('<html')) {
-        String errorMsg = 'Server returned an HTML response instead of JSON. Please check the server configuration or URL.'.tr;
-        if (response.statusCode == 401 || response.statusCode == 403) {
-          errorMsg = 'Authentication error: Invalid or expired token. Please log in again.'.tr;
+        String errorMsg;
+
+        if (response.statusCode == 413) {
+          errorMsg =
+              'The attached file is too large. Please upload a smaller file.'
+                  .tr;
+        } else if (response.statusCode == 401 || response.statusCode == 403) {
+          errorMsg =
+              'Authentication error: Invalid or expired token. Please log in again.'
+                  .tr;
           await prefs.remove('access_token');
           Get.offAllNamed('/login');
         } else if (response.statusCode == 404) {
-          errorMsg = 'GraphQL endpoint not found. Please verify the URL: ${Config.baseUrl}/graphql'.tr;
+          errorMsg =
+              'Service not found. Please verify the system configuration.'.tr;
         } else if (response.statusCode >= 500) {
-          errorMsg = 'Server error: Please try again later or contact support.'.tr;
+          errorMsg =
+              'Server error: Please try again later or contact support.'.tr;
+        } else {
+          errorMsg = 'Unexpected server response. Please try again later.'.tr;
         }
-        print('Submission error: $errorMsg (Status code: ${response.statusCode})');
+
+        print(
+            'Submission error: $errorMsg (Status code: ${response.statusCode})');
+
         Get.snackbar(
           'Error'.tr,
           errorMsg,
@@ -1314,20 +1421,27 @@ class CreateComplaintController extends GetxController {
       final result = jsonDecode(responseBody);
 
       if (response.statusCode != 200 || result.containsKey('errors')) {
-        String errorMsg = 'Failed to submit complaint: ${result['errors']?.toString() ?? response.reasonPhrase}'.tr;
+        String errorMsg =
+            'Failed to submit complaint: ${result['errors']?.toString() ?? response.reasonPhrase}'
+                .tr;
         if (result['errors'] != null && result['errors'].isNotEmpty) {
           errorMsg = result['errors'][0]['message'];
-          if (errorMsg.toLowerCase().contains('unauthorized') || errorMsg.toLowerCase().contains('token')) {
+          if (errorMsg.toLowerCase().contains('unauthorized') ||
+              errorMsg.toLowerCase().contains('token')) {
             await prefs.remove('access_token');
             Get.offAllNamed('/login');
             errorMsg = 'Session expired. Please log in again.'.tr;
-          } else if (errorMsg.toLowerCase().contains('service_id') || errorMsg.toLowerCase().contains('branch_id')) {
-            errorMsg = 'Invalid branch or service selected. Please try again.'.tr;
+          } else if (errorMsg.toLowerCase().contains('service_id') ||
+              errorMsg.toLowerCase().contains('branch_id')) {
+            errorMsg =
+                'Invalid branch or service selected. Please try again.'.tr;
           } else if (errorMsg.toLowerCase().contains('service_date')) {
             errorMsg = 'Invalid date format. Please try again.'.tr;
           }
         } else if (response.statusCode != 200) {
-          errorMsg = 'Network error: ${response.reasonPhrase} (Status code: ${response.statusCode})'.tr;
+          errorMsg =
+              'Network error: ${response.reasonPhrase} (Status code: ${response.statusCode})'
+                  .tr;
         }
         print('Submission error: $errorMsg');
         Get.snackbar(
@@ -1344,7 +1458,8 @@ class CreateComplaintController extends GetxController {
         return;
       }
 
-      final data = result['data']?['createCorruptionReport'] as Map<String, dynamic>?;
+      final data =
+          result['data']?['createCorruptionReport'] as Map<String, dynamic>?;
       if (data == null) {
         print('Submission error: No data returned from server');
         Get.snackbar(
@@ -1362,11 +1477,15 @@ class CreateComplaintController extends GetxController {
       }
 
       // Check if attachments were included in the response
-      if (files.isNotEmpty && (data['attachments'] == null || (data['attachments'] as List).isEmpty)) {
-        print('Warning: Files were uploaded but no attachments returned in response');
+      if (files.isNotEmpty &&
+          (data['attachments'] == null ||
+              (data['attachments'] as List).isEmpty)) {
+        print(
+            'Warning: Files were uploaded but no attachments returned in response');
         Get.snackbar(
           'Warning'.tr,
-          'Complaint submitted, but attachments may not have been saved. Please verify with support.'.tr,
+          'Complaint submitted, but attachments may not have been saved. Please verify with support.'
+              .tr,
           backgroundColor: Colors.orange,
           colorText: Colors.white,
           snackPosition: SnackPosition.TOP,
@@ -1379,7 +1498,8 @@ class CreateComplaintController extends GetxController {
 
       print('Complaint submitted successfully: $data');
       Get.dialog(
-        _buildSuccessPopup(data['id'], ticketNumber.value.isNotEmpty ? ticketNumber.value : 'N/A'),
+        _buildSuccessPopup(data['id'],
+            ticketNumber.value.isNotEmpty ? ticketNumber.value : 'N/A'),
         barrierDismissible: false,
         barrierColor: Colors.black.withOpacity(0.3),
         transitionDuration: Duration(milliseconds: 300),
@@ -1391,8 +1511,11 @@ class CreateComplaintController extends GetxController {
     } catch (e) {
       print('Unexpected error during submission: $e');
       String errorMsg = 'Failed to submit complaint: $e'.tr;
-      if (e is FormatException && e.toString().contains('Unexpected character')) {
-        errorMsg = 'Server returned invalid response format (possibly HTML). Please check the server configuration or URL.'.tr;
+      if (e is FormatException &&
+          e.toString().contains('Unexpected character')) {
+        errorMsg =
+            'Server returned invalid response format (possibly HTML). Please check the server configuration or URL.'
+                .tr;
       }
       Get.snackbar(
         'Error'.tr,
@@ -1409,7 +1532,6 @@ class CreateComplaintController extends GetxController {
       isLoading.value = false;
     }
   }
-
 
   Widget _buildSuccessPopup(String reportId, String ticketNumber) {
     return Dialog(
@@ -1461,11 +1583,12 @@ class CreateComplaintController extends GetxController {
             SizedBox(height: 24),
             _buildInfoRow('Track Number:', reportId),
             SizedBox(height: 12),
-           // _buildInfoRow('Ticket Number:', ticketNumber),
-           // SizedBox(height: 24),
+            // _buildInfoRow('Ticket Number:', ticketNumber),
+            // SizedBox(height: 24),
             Row(
               children: [
-                Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 20),
+                Icon(Icons.warning_amber_rounded,
+                    color: Colors.orange, size: 20),
                 SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -1500,10 +1623,9 @@ class CreateComplaintController extends GetxController {
                 ElevatedButton(
                   onPressed: () {
                     Get.back();
-                    Get.offAllNamed('/bottom-nav-home',
-                        arguments: {
-                          'success_message': 'Report is successfully added.'
-                        });
+                    Get.offAllNamed('/bottom-nav-home', arguments: {
+                      'success_message': 'Report is successfully added.'
+                    });
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green.shade600,

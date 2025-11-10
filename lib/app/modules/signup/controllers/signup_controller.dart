@@ -22,7 +22,7 @@ class SignupController extends GetxController {
   var isLoading = false.obs;
 
   final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'https://complaint-api.digitalics.gov.et',
+    baseUrl: Config.baseUrl,
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 10),
     headers: {'Content-Type': 'application/json'},
@@ -218,7 +218,7 @@ class SignupController extends GetxController {
       print('🟢 Signup successful');
 
       // Redirect to login with phone number
-      Get.off(() => const LoginView(), arguments: {"phone_number": phone});
+      Get.off(() =>  LoginView(), arguments: {"phone_number": phone});
       print('🔄 Redirecting to login');
     } on DioException catch (e) {
       print('🔴 Dio Error: ${e.toString()}');

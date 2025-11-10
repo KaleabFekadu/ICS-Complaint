@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ics_complaint/app/modules/login/controllers/login_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../login/views/login_view.dart';
 
@@ -73,10 +74,11 @@ class ProfileController extends GetxController {
       );
 
       // Delay navigation to ensure snackbar is visible
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 1));
 
       // Navigate to LoginView and clear navigation stack
-      Get.offAll(() => const LoginView());
+  
+      Get.offAll(() =>  LoginView());
     } catch (e) {
       // Handle any errors during logout
       Get.snackbar(

@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ics_complaint/app/utils/constants/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../routes/app_pages.dart';
 import '../../signup/views/signup_view.dart';
@@ -19,7 +20,7 @@ class LoginController extends GetxController {
 
   // Dio instance
   final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'http://196.190.220.154:4400', // Verify this matches your backend
+    baseUrl: Config.baseUrl, // Verify this matches your backend
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 10),
   ));
@@ -45,13 +46,16 @@ class LoginController extends GetxController {
       final phoneRegex = RegExp(r'^(?:\+251|0)?9\d{8}$');
       isPhoneValid.value = phoneRegex.hasMatch(phone);
       isPhoneEmpty.value = false;
-      phoneError.value = isPhoneValid.value ? '' : 'Please enter a valid phone number'.tr;
+      phoneError.value =
+          isPhoneValid.value ? '' : 'Please enter a valid phone number'.tr;
     }
   }
 
   Future<void> login() async {
     validatePhoneNumber();
-    if (!isPhoneValid.value || phoneController.text.trim().isEmpty || passwordController.text.trim().isEmpty) {
+    if (!isPhoneValid.value ||
+        phoneController.text.trim().isEmpty ||
+        passwordController.text.trim().isEmpty) {
       _showSnackBar(
         'Error'.tr,
         'Please fix the form errors before submitting.'.tr,
@@ -83,6 +87,9 @@ class LoginController extends GetxController {
 
       // Try each phone format
       for (String phoneFormat in phoneFormats) {
+        // Reset errorMessage for this attempt
+        errorMessage = null;
+
         try {
           final response = await _dio.post(
             '/graphql',
@@ -114,36 +121,71 @@ class LoginController extends GetxController {
             ),
           );
 
-          // Check response structure
-          if (response.data is! Map || !response.data.containsKey('data')) {
-            throw Exception('Invalid response structure: "data" key not found');
+          // Check if response is a valid map
+          if (response.data is! Map) {
+            errorMessage = 'Invalid response: not a map';
+            print('Attempt with $phoneFormat failed: $errorMessage');
+            continue;
           }
 
-          if (response.data['data'] is! Map || !response.data['data'].containsKey('login')) {
-            throw Exception('Invalid response structure: "login" key not found');
+          final responseMap = response.data as Map;
+
+          // Handle GraphQL errors
+          if (responseMap.containsKey('errors')) {
+            final errors = responseMap['errors'];
+            String? msg;
+            if (errors is List && errors.isNotEmpty) {
+              final firstError = errors[0];
+              if (firstError is Map && firstError['message'] != null) {
+                msg = firstError['message'].toString();
+              }
+            }
+            errorMessage = msg ?? 'Login failed';
+            print('Attempt with $phoneFormat failed: $errorMessage');
+            continue;
           }
 
-          final data = response.data['data']['login'];
-
-          // Check for token and user data
-          if (data is! Map || data['token'] == null || data['user'] == null) {
-            throw Exception('Invalid response: token or user data missing');
+          // Check for data
+          if (!responseMap.containsKey('data')) {
+            errorMessage = 'Invalid response structure: "data" key not found';
+            print('Attempt with $phoneFormat failed: $errorMessage');
+            continue;
           }
 
-          final token = data['token'];
-          final user = data['user'];
+          final data = responseMap['data'];
+          if (data is! Map || !data.containsKey('login')) {
+            errorMessage = 'Invalid response structure: "login" key not found';
+            print('Attempt with $phoneFormat failed: $errorMessage');
+            continue;
+          }
+
+          final loginData = data['login'];
+          if (loginData is! Map || loginData['token'] == null || loginData['user'] == null) {
+            errorMessage = 'Invalid response: token or user data missing';
+            print('Attempt with $phoneFormat failed: $errorMessage');
+            continue;
+          }
+
+          final token = loginData['token'];
+          final user = loginData['user'];
 
           // Validate user fields
-          if (user is! Map || user['id'] == null || user['name'] == null || user['username'] == null) {
-            throw Exception('Invalid user data: required fields missing');
+          if (user is! Map ||
+              user['id'] == null ||
+              user['name'] == null ||
+              user['username'] == null) {
+            errorMessage = 'Invalid user data: required fields missing';
+            print('Attempt with $phoneFormat failed: $errorMessage');
+            continue;
           }
 
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('access_token', token);
-          await prefs.setString('refresh_token', data['refresh_token'] ?? '');
+          await prefs.setString('refresh_token', loginData['refresh_token'] ?? '');
           await prefs.setString('customer_id', user['id'].toString());
           await prefs.setString('full_name', user['name']);
           await prefs.setString('phone_number', user['username']);
+
           if (rememberMe.value) {
             await prefs.setBool('remember_me', true);
           }
@@ -153,53 +195,37 @@ class LoginController extends GetxController {
             'Login successful!'.tr,
             Colors.green,
           );
-
           await Future.delayed(const Duration(seconds: 1));
           Get.offAllNamed(Routes.BOTTOM_NAV_HOME);
           loginSuccess = true;
           break; // Exit loop on successful login
+        } on DioException catch (dioError) {
+          errorMessage = dioError.message ?? 'Network error occurred';
+          print('DioException with $phoneFormat: ${dioError.response?.data}');
+          print('Attempt with $phoneFormat failed: $errorMessage');
+          // Continue to next format on Dio errors (e.g., network issues might be transient)
         } catch (e) {
           errorMessage = e.toString();
-          print('Attempt with $phoneFormat failed: $e');
+          print('Unexpected error with $phoneFormat: $e');
+          print('Attempt with $phoneFormat failed: $errorMessage');
+          // Continue to next format
         }
       }
 
       // If login failed after trying all formats
       if (!loginSuccess) {
-        String suggestionKey = 'Incorrect phone number or password.';
+        final displayMessage = errorMessage ?? 'Incorrect phone number or password.'.tr;
         _showSnackBar(
           'Error'.tr,
-          suggestionKey.tr,
+          displayMessage,
           Colors.red,
         );
       }
-    } on DioException catch (e) {
-      print('DioException: ${e.response?.data}');
-      String errorKey = 'Login failed. Please try again.';
-      if (e.response?.data != null) {
-        if (e.response!.data is String && e.response!.data.contains('MethodNotAllowedHttpException')) {
-          errorKey = 'Server error: POST method not supported at this endpoint. Please check the API URL.';
-        } else if (e.response!.data is Map) {
-          final errors = e.response!.data['errors'];
-          if (errors is List && errors.isNotEmpty && errors[0] is Map && errors[0].containsKey('message')) {
-            errorMessage = errors[0]['message'];
-          } else if (e.response!.data.containsKey('message')) {
-            errorMessage = e.response!.data['message'];
-          }
-        }
-      }
-      String suggestionKey = 'Incorrect phone number or password.';
-      _showSnackBar(
-        'Error'.tr,
-        errorMessage != null ? 'Unexpected error: $errorMessage $suggestionKey'.tr : errorKey.tr,
-        Colors.red,
-      );
     } catch (e) {
-      print('Unexpected error: $e');
-      String suggestionKey = 'Incorrect phone number or password.';
+      print('Unexpected error in login: $e');
       _showSnackBar(
         'Error'.tr,
-        'Unexpected error: $e $suggestionKey'.tr,
+        'Unexpected error: $e. Please try again.'.tr,
         Colors.red,
       );
     } finally {
@@ -228,7 +254,8 @@ class LoginController extends GetxController {
   }
 
   void _showSnackBar(String title, String message, Color backgroundColor) {
-    Get.closeAllSnackbars();
+    // Use closeCurrentSnackbar instead of closeAllSnackbars to avoid LateInitializationError
+    Get.closeCurrentSnackbar();
     Get.snackbar(
       title,
       message,
@@ -246,10 +273,12 @@ class LoginController extends GetxController {
   }
 
   void showHelpToast() {
-    Get.closeAllSnackbars();
+    // Use closeCurrentSnackbar here as well
+    Get.closeCurrentSnackbar();
     Get.snackbar(
       'Login Help'.tr,
-      'To log in, enter your phone number and password. If you forgot your password, use the "Forgot Password" option.'.tr,
+      'To log in, enter your phone number and password. If you forgot your password, use the "Forgot Password" option.'
+          .tr,
       snackPosition: SnackPosition.TOP,
       backgroundColor: Colors.grey[800],
       colorText: Colors.white,
@@ -265,7 +294,6 @@ class LoginController extends GetxController {
 
   @override
   void onClose() {
-    // Avoid clearing controllers here to prevent disposal issues
     super.onClose();
   }
 }

@@ -19,9 +19,9 @@ class BottomNavHomeView extends GetView<BottomNavHomeController> {
       body: Obx(() {
         return IndexedStack(
           index: controller.selectedIndex.value,
-          children: const [
-            HomeView(),
-            QrscannerView(), // QR Scanner Screen
+          children: [
+            const HomeView(),
+            const QrscannerView(), // QR Scanner Screen
             ProfileView(),
           ],
         );
@@ -43,7 +43,8 @@ class BottomNavHomeView extends GetView<BottomNavHomeController> {
           shape: const CircularNotchedRectangle(),
           notchMargin: 8,
           elevation: 8,
-          color: TColors.primary.withOpacity(0.1), // White background for light mode
+          color: TColors.primary
+              .withOpacity(0.1), // White background for light mode
           child: SizedBox(
             height: 60, // Prevent overflow
             child: Row(
@@ -88,7 +89,7 @@ class BottomNavHomeView extends GetView<BottomNavHomeController> {
       onTap: () => controller.changeTab(index),
       child: Container(
         height: 60,
-        width: 140,
+        width: 100,
         decoration: BoxDecoration(
           border: Border.all(
             color: isSelected ? selectedColor : Colors.transparent,
@@ -110,8 +111,7 @@ class BottomNavHomeView extends GetView<BottomNavHomeController> {
               style: TextStyle(
                   color: isSelected ? selectedColor : unselectedColor,
                   fontSize: 12,
-                  fontWeight: FontWeight.w600
-              ),
+                  fontWeight: FontWeight.w600),
               overflow: TextOverflow.ellipsis,
             ),
           ],

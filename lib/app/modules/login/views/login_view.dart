@@ -9,7 +9,8 @@ import '../../forget/views/forget_view.dart';
 import '../controllers/login_controller.dart';
 
 class LoginView extends GetView<LoginController> {
-  const LoginView({super.key});
+  final LoginController controller = Get.put(LoginController());
+  LoginView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +28,6 @@ class LoginView extends GetView<LoginController> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              // 🔷 Header with background image, gradient overlay, and logo
               Stack(
                 children: [
                   Container(
@@ -70,7 +70,8 @@ class LoginView extends GetView<LoginController> {
               // ⚪ Form container with subtle shadow and rounded top
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
                 decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -106,42 +107,43 @@ class LoginView extends GetView<LoginController> {
                       duration: const Duration(milliseconds: 600),
                       curve: Curves.easeInOut,
                       child: Obx(() => TextField(
-                        controller: controller.phoneController,
-                        keyboardType: TextInputType.phone,
-                        decoration: InputDecoration(
-                          hintText: 'Phone Number'.tr,
-                          prefixIcon: Icon(
-                            Iconsax.call,
-                            color: Colors.grey.shade600,
-                          ),
-                          filled: true,
-                          fillColor: Colors.grey.shade100,
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 18),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: Colors.grey.shade300,
-                              width: 1,
+                            controller: controller.phoneController,
+                            keyboardType: TextInputType.phone,
+                            decoration: InputDecoration(
+                              hintText: 'Phone Number'.tr,
+                              prefixIcon: Icon(
+                                Iconsax.call,
+                                color: Colors.grey.shade600,
+                              ),
+                              filled: true,
+                              fillColor: Colors.grey.shade100,
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 18),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Colors.grey.shade300,
+                                  width: 1,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(
+                                  color: TColors.primary,
+                                  width: 1.5,
+                                ),
+                              ),
+                              errorText: controller.phoneError.value.isNotEmpty
+                                  ? controller.phoneError.value
+                                  : null,
                             ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
-                              color: TColors.primary,
-                              width: 1.5,
-                            ),
-                          ),
-                          errorText: controller.phoneError.value.isNotEmpty
-                              ? controller.phoneError.value
-                              : null,
-                        ),
-                        onChanged: (value) => controller.validatePhoneNumber(),
-                      )),
+                            onChanged: (value) =>
+                                controller.validatePhoneNumber(),
+                          )),
                     ),
                     const SizedBox(height: 16),
 
@@ -151,50 +153,51 @@ class LoginView extends GetView<LoginController> {
                       duration: const Duration(milliseconds: 600),
                       curve: Curves.easeInOut,
                       child: Obx(() => TextField(
-                        controller: controller.passwordController,
-                        obscureText: controller.isPasswordHidden.value,
-                        decoration: InputDecoration(
-                          hintText: 'Password'.tr,
-                          prefixIcon: Icon(
-                            Iconsax.lock,
-                            color: Colors.grey.shade600,
-                          ),
-                          filled: true,
-                          fillColor: Colors.grey.shade100,
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 18),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: Colors.grey.shade300,
-                              width: 1,
+                            controller: controller.passwordController,
+                            obscureText: controller.isPasswordHidden.value,
+                            decoration: InputDecoration(
+                              hintText: 'Password'.tr,
+                              prefixIcon: Icon(
+                                Iconsax.lock,
+                                color: Colors.grey.shade600,
+                              ),
+                              filled: true,
+                              fillColor: Colors.grey.shade100,
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 18),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Colors.grey.shade300,
+                                  width: 1,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(
+                                  color: TColors.primary,
+                                  width: 1.5,
+                                ),
+                              ),
+                              errorText:
+                                  controller.passwordError.value.isNotEmpty
+                                      ? controller.passwordError.value
+                                      : null,
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  controller.isPasswordHidden.value
+                                      ? Iconsax.eye_slash
+                                      : Iconsax.eye,
+                                  color: Colors.grey.shade600,
+                                ),
+                                onPressed: controller.togglePasswordVisibility,
+                              ),
                             ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
-                              color: TColors.primary,
-                              width: 1.5,
-                            ),
-                          ),
-                          errorText: controller.passwordError.value.isNotEmpty
-                              ? controller.passwordError.value
-                              : null,
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              controller.isPasswordHidden.value
-                                  ? Iconsax.eye_slash
-                                  : Iconsax.eye,
-                              color: Colors.grey.shade600,
-                            ),
-                            onPressed: controller.togglePasswordVisibility,
-                          ),
-                        ),
-                      )),
+                          )),
                     ),
                     const SizedBox(height: 20),
 
@@ -202,14 +205,14 @@ class LoginView extends GetView<LoginController> {
                     Row(
                       children: [
                         Obx(() => Checkbox(
-                          value: controller.rememberMe.value,
-                          onChanged: (value) =>
-                          controller.rememberMe.value = value ?? false,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          activeColor: TColors.primary,
-                        )),
+                              value: controller.rememberMe.value,
+                              onChanged: (value) =>
+                                  controller.rememberMe.value = value ?? false,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              activeColor: TColors.primary,
+                            )),
                         Text(
                           'Remember me'.tr,
                           style: const TextStyle(
@@ -242,38 +245,38 @@ class LoginView extends GetView<LoginController> {
                       child: SizedBox(
                         width: double.infinity,
                         child: Obx(() => ElevatedButton(
-                          onPressed: controller.isLoginLoading.value
-                              ? null
-                              : controller.login,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: TColors.primary,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            elevation: 3,
-                            shadowColor: TColors.primary.withOpacity(0.4),
-                            padding:
-                            const EdgeInsets.symmetric(vertical: 16),
-                          ),
-                          child: controller.isLoginLoading.value
-                              ? const SizedBox(
-                            height: 24,
-                            width: 24,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2.5,
-                            ),
-                          )
-                              : Text(
-                            'Log In'.tr,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                              color: Colors.white,
-                            ),
-                          ),
-                        )),
+                              onPressed: controller.isLoginLoading.value
+                                  ? null
+                                  : controller.login,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: TColors.primary,
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                elevation: 3,
+                                shadowColor: TColors.primary.withOpacity(0.4),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16),
+                              ),
+                              child: controller.isLoginLoading.value
+                                  ? const SizedBox(
+                                      height: 24,
+                                      width: 24,
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white,
+                                        strokeWidth: 2.5,
+                                      ),
+                                    )
+                                  : Text(
+                                      'Log In'.tr,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 14,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                            )),
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -285,37 +288,37 @@ class LoginView extends GetView<LoginController> {
                       child: SizedBox(
                         width: double.infinity,
                         child: Obx(() => OutlinedButton(
-                          onPressed: controller.isSignupLoading.value
-                              ? null
-                              : controller.signup,
-                          style: OutlinedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: TColors.primary,
-                            side: BorderSide(
-                                color: TColors.primary, width: 1.8),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            padding:
-                            const EdgeInsets.symmetric(vertical: 16),
-                          ),
-                          child: controller.isSignupLoading.value
-                              ? const SizedBox(
-                            height: 24,
-                            width: 24,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2.5,
-                              color: TColors.primary,
-                            ),
-                          )
-                              : Text(
-                            'Sign Up'.tr,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                            ),
-                          ),
-                        )),
+                              onPressed: controller.isSignupLoading.value
+                                  ? null
+                                  : controller.signup,
+                              style: OutlinedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                foregroundColor: TColors.primary,
+                                side: BorderSide(
+                                    color: TColors.primary, width: 1.8),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16),
+                              ),
+                              child: controller.isSignupLoading.value
+                                  ? const SizedBox(
+                                      height: 24,
+                                      width: 24,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2.5,
+                                        color: TColors.primary,
+                                      ),
+                                    )
+                                  : Text(
+                                      'Sign Up'.tr,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                            )),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -348,23 +351,23 @@ class LoginView extends GetView<LoginController> {
                                   );
                                 },
                             ),
-                            TextSpan(text: ' and '.tr),
-                            TextSpan(
-                              text: 'Data Processing Agreement'.tr,
-                              style: const TextStyle(
-                                color: TColors.primary,
-                                fontWeight: FontWeight.w600,
-                                decoration: TextDecoration.underline,
-                              ),
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () {
-                                  showCustomDialog(
-                                    context,
-                                    'Data Processing Agreement'.tr,
-                                    _dataProcessingText,
-                                  );
-                                },
-                            ),
+                            // TextSpan(text: ' and '.tr),
+                            // TextSpan(
+                            //   text: 'Data Processing Agreement'.tr,
+                            //   style: const TextStyle(
+                            //     color: TColors.primary,
+                            //     fontWeight: FontWeight.w600,
+                            //     decoration: TextDecoration.underline,
+                            //   ),
+                            //   recognizer: TapGestureRecognizer()
+                            //     ..onTap = () {
+                            //       showCustomDialog(
+                            //         context,
+                            //         'Data Processing Agreement'.tr,
+                            //         _dataProcessingText,
+                            //       );
+                            //     },
+                            // ),
                           ],
                         ),
                       ),
@@ -381,10 +384,10 @@ class LoginView extends GetView<LoginController> {
   }
 
   Widget _buildCustomDialog(
-      BuildContext context, {
-        required String title,
-        required String content,
-      }) {
+    BuildContext context, {
+    required String title,
+    required String content,
+  }) {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 8,
@@ -496,30 +499,30 @@ class LoginView extends GetView<LoginController> {
                       child: Text('Close'.tr),
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: TColors.primary),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        textStyle: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: TColors.primary,
-                        ),
-                      ),
-                      onPressed: () {
-                        // Add secondary action here
-                      },
-                      child: Text(
-                        'Learn More'.tr,
-                        style: const TextStyle(color: TColors.primary),
-                      ),
-                    ),
-                  ),
+                  // const SizedBox(width: 12),
+                  // Expanded(
+                  //   child: OutlinedButton(
+                  //     style: OutlinedButton.styleFrom(
+                  //       side: const BorderSide(color: TColors.primary),
+                  //       shape: RoundedRectangleBorder(
+                  //         borderRadius: BorderRadius.circular(10),
+                  //       ),
+                  //       padding: const EdgeInsets.symmetric(vertical: 14),
+                  //       textStyle: const TextStyle(
+                  //         fontSize: 16,
+                  //         fontWeight: FontWeight.w600,
+                  //         color: TColors.primary,
+                  //       ),
+                  //     ),
+                  //     onPressed: () {
+                  //       // Add secondary action here
+                  //     },
+                  //     child: Text(
+                  //       'Learn More'.tr,
+                  //       style: const TextStyle(color: TColors.primary),
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
             ],
@@ -552,71 +555,107 @@ class LoginView extends GetView<LoginController> {
   }
 
   static const String _termsOfServiceText = '''
-  **CRRSA የሲቪል ምዝገባ እና የነዋሪነት አገልግሎት ኤጀንሲ | Civil Registration and Residency Service Agency**
-
-  **የአገልግሎት ውል**
-
-  ይህ የአገልግሎት ውል የCRRSA የሲቪል ምዝገባ እና የነዋሪነት አገልግሎት ኤጀንሲ መተግበሪያን ሲጠቀሙ የሚከተሉትን ህጎችና መመሪያዎች እንዲከተሉ ያሳስባል። በመተግበሪያው መጠቀም ላይ በመቀመጥዎ ይህንን ውል በሙሉ ተቀብላችሁ መኖሩን ይረዳል።
-
-  1. **የመጠቀሚያ ፈቃድ**
-  መተግበሪያውን ለህጋዊና አገልግሎት ዓላማ ብቻ መጠቀም የተፈቀደልዎ ነው። ይህ ፈቃድ የተወሰነ፣ ያልተለዋዋጭ፣ የማይዋረድ እና የማይተላለፍ ነው።
-
-  2. **የተጠቃሚ ኃላፊነቶች**
-  • መተግበሪያውን ለህጋዊና አንደበት ያለው አግባብ ብቻ መጠቀም እንዳለቦት ይስማማሉ።  
-  • የመግቢያ መለያዎን በመጠበቅ ላይ ኃላፊነት አለብዎት።  
-  • መተግበሪያውን ያልተፈቀደ መግባት፣ መቀየር ወይም መጥፋት ከሕጋዊ እርምጃ ጋር ሊያጋጥም ይችላል።
-
-  3. **የውሂብ ትክክለኛነት**
-  በመተግበሪያው ውስጥ የሚሰጡ መረጃዎች ትክክለኛነትና ቅርብነት እንዲኖራቸው መንገድ ማድረግ የተጠቃሚው ኃላፊነት ነው።
-
-  4. **የንብረት መብት**
-  በመተግበሪያው የተጠቀመ የንብረት መብት ሁሉ የCRRSA ናቸው። ያልተፈቀደ መተግበርና ቅዳሜ እንደ ተከለከለ እንዲቆጠር ይሆናል።
-
-  5. **የደህንነት መንገዶች**
-  ሲስተሙ በከፍተኛ የደህንነት መንገዶች ተጠባባቂ ነው። የሲስተሙን ደህንነት ማፍረስ፣ መዝለል ወይም መንቀል በአንደኛው ጊዜ እንዲቋረጥና የምርመራ ሂደት እንዲጀምር ይደርሳል።
-
-  6. **ለውጦችና ማቋረጥ**
-  CRRSA መተግበሪያውን በማሻሻል፣ በማቋረጥ ወይም በማዘጋጀት የተወሰነ መብት አለው።
-
-  7. **የሕግ መመሪያ**
-  ይህ ውል በኢትዮጵያ ፌዴራል ዲሞክራሲያዊ ሪፐብሊክ የተወሰነውን ሕግ እና መመሪያዎች መሠረት ተመስርቷል።
-
-  ከዚህ ውሉ ጋር የማተኮራችሁ ካልተስማሙ፣ መተግበሪያውን እባክዎ አትጠቀሙ።
+  1. **Introduction**
+  These Terms & Conditions (“Terms”) govern your use of the Complaints Mobile 
+  Application (“ICSResolve”), provided by Immigration and Citizenship Service. By 
+  downloading, accessing, or using this App, you agree to be bound by these 
+  Terms. If you disagree, do not use the App.
+  2. **Purpose of the App**
+  The App allows users to submit complaints, track status, and communicate with 
+  customer service. The App may not be used for illegal, abusive, or fraudulent 
+  activities.
+  3. **User Eligibility**
+  You must be at least 18 years old, provide accurate information, and be the 
+  rightful owner of the device. False or fraudulent reporting is prohibited.
+  4. **Account Registration**
+  You may be required to register an account and verify identification. You are 
+  responsible for the confidentiality of your credentials.
+  5. **Submission of Complaints**
+  You agree to provide truthful information and avoid abusive, defamatory, or 
+  illegal content. We may reject or investigate complaints and, if necessary, forward 
+  them to the authorities.
+  6. **Data Collection & Privacy**
+  We may collect personal details, including ID, contact information, and uploaded 
+  documents. Data handling follows Data Protection Laws and our Privacy Policy.
+  7. **Confidentiality of Complaints**
+  We maintain confidentiality but may share information with relevant government 
+  departments or law enforcement if required.
+  8. **Misuse of the App**
+  You are prohibited from submitting fake or malicious complaints, hacking, 
+  uploading harmful files, or using the platform for unauthorized purposes.
+  9. **App Availability**
+  We strive for continuous service, but do not guarantee uninterrupted access. We 
+  are not responsible for outages or technical issues.
+  10. **Intellectual Property**
+  All content and software are the property of the immigration and Citizenship 
+  Service and protected by law.
+  11. **Limitation of Liability**
+  We are not liable for user errors, device malfunctions, or false information 
+  submitted by users.
+  12. **Termination**
+  We may suspend or terminate access in cases of misuse or security compromise. 
+  Users may delete the app to discontinue use.
+  13. **Changes to Terms**
+  We may update Terms at any time, and continued use constitutes acceptance.
+  14. **Governing Law**
+  These Terms are governed by the laws of Ethiopia. Disputes follow national legal 
+  procedures.
+  15. **Contact Information**
+  Email: support@compliant.digitalics.gov.et
+  Hotline:8133
+  Website:-www.ics.gov.et 
   ''';
 
   static const String _dataProcessingText = '''
-  **CRRSA የሲቪል ምዝገባ እና የነዋሪነት አገልግሎት ኤጀንሲ | Civil Registration and Residency Service Agency**
-
-  **የውሂብ ማቀናበሪያ ስምምነት**
-
-  ይህ ስምምነት CRRSA በመተግበሪያው ውስጥ የሚሰበሰቡና የሚቀመጡ የግልና የድርጅት መረጃዎች እንዴት እንደሚተካከሉ እና እንዴት እንደሚጠበቁ ይገልጻል።
-
-  1. **የሚሰበሰቡ ውሂብ**
-  • የተጠቃሚ መረጃ (ሙሉ ስም፣ የስራ ሁኔታ፣ የክፍል መለያ)  
-  • የመግቢያ መለያና አዲት መመዝገቢያዎች  
-  • የመዝገብ መረጃዎች እና ቅሬታ መረጃዎች  
-  • የመተግበሪያ መዳረሻ መረጃ (IP, ሰአት)
-
-  2. **የውሂብ ማቀናበሪያ ዓላማ**
-  • ተጠቃሚዎችን ለማረጋገጥ  
-  • የመዝገብ እና የሲቪል ምዝገባ ሂደቶችን ለማቀናበር  
-  • የውሂብ አጠቃቀምን ለትርፍና ደህንነት ለማረጋገጥ  
-  • ውሂብን በውስጣዊ አሰራር ለማስተዳደር
-
-  3. **ውሂብ ማጋራት**
-  መረጃዎች በመንግስት ውስጥ በተፈቀደ ክፍሎች ብቻ ይጋራሉ። ለሶስተኛ ወገን ያልተፈቀደ መላክ አይፈቀድም።
-
-  4. **የውሂብ መቆያ**
-  ውሂብ እንደ አገሪቱ የማስታወሻና መዝገብ ፖሊሲዎች ይቆያል። የተለያዩ መረጃዎች በአስተዳደር ደንቦች መሠረት ይጠበቃሉ።
-
-  5. **የእርስዎ መብቶች**
-  • የግል መረጃዎትን ማየትና ትክክለኛነቱን ማረጋገጥ ይችላሉ።  
-  • በስሌት የተመዘገበ መረጃ ማስተካከያ ማመንጨት ይችላሉ።  
-  • የመረጃ ተግባራትን ወይም ግንኙነትን ማሳወቅ ይችላሉ።
-
-  6. **የደህንነት መንገዶች**
-  መረጃዎች በኢንክሪፕሽን መንገዶችና በበለፀገ መከላከያ ሲሰበሰቡ እንደሚጠበቁ ነው።
-
-  ይህን መተግበሪያ በመጠቀምዎ የCRRSA የውሂብ ማቀናበሪያ መመሪያዎችን እንዳረጋገጡ ይቆጠራል።
+  ** Terms & Conditions – ICS Resolve Mobile App for Immigration and Citizenship Service **
+  1. **Introduction**
+  These Terms & Conditions (“Terms”) govern your use of the Complaints Mobile 
+  Application (“ICSResolve”), provided by Immigration and Citizenship Service. By 
+  downloading, accessing, or using this App, you agree to be bound by these 
+  Terms. If you disagree, do not use the App.
+  2. **Purpose of the App**
+  The App allows users to submit complaints, track status, and communicate with 
+  customer service. The App may not be used for illegal, abusive, or fraudulent 
+  activities.
+  3. **User Eligibility**
+  You must be at least 18 years old, provide accurate information, and be the 
+  rightful owner of the device. False or fraudulent reporting is prohibited.
+  4. **Account Registration**
+  You may be required to register an account and verify identification. You are 
+  responsible for the confidentiality of your credentials.
+  5. **Submission of Complaints**
+  You agree to provide truthful information and avoid abusive, defamatory, or 
+  illegal content. We may reject or investigate complaints and, if necessary, forward 
+  them to the authorities.
+  6. **Data Collection & Privacy**
+  We may collect personal details, including ID, contact information, and uploaded 
+  documents. Data handling follows Data Protection Laws and our Privacy Policy.
+  7. **Confidentiality of Complaints**
+  We maintain confidentiality but may share information with relevant government 
+  departments or law enforcement if required.
+  8. **Misuse of the App**
+  You are prohibited from submitting fake or malicious complaints, hacking, 
+  uploading harmful files, or using the platform for unauthorized purposes.
+  9. **App Availability**
+  We strive for continuous service, but do not guarantee uninterrupted access. We 
+  are not responsible for outages or technical issues.
+  10. **Intellectual Property**
+  All content and software are the property of the immigration and Citizenship 
+  Service and protected by law.
+  11. **Limitation of Liability**
+  We are not liable for user errors, device malfunctions, or false information 
+  submitted by users.
+  12. **Termination**
+  We may suspend or terminate access in cases of misuse or security compromise. 
+  Users may delete the app to discontinue use.
+  13. **Changes to Terms**
+  We may update Terms at any time, and continued use constitutes acceptance.
+  14. **Governing Law**
+  These Terms are governed by the laws of Ethiopia. Disputes follow national legal 
+  procedures.
+  15. **Contact Information**
+  Email: support@compliant.digitalics.gov.et
+  Hotline:8133
+  Website:-www.ics.gov.et 
   ''';
 }

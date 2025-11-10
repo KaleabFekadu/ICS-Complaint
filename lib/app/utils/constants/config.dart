@@ -1,3 +1,3 @@
 class Config {
-  static const String baseUrl = 'http://196.190.220.154:4400';
+  static const String baseUrl = 'https://complaintadmin.digitalics.gov.et';
 }

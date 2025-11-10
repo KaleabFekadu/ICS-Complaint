@@ -28,7 +28,7 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
       backgroundColor: TColorss.background,
       appBar: AppBar(
         title: Obx(
-              () => FadeInDown(
+          () => FadeInDown(
             duration: const Duration(milliseconds: 400),
             child: Text(
               'Create Complaint - ${controller.categoryName.value.isEmpty ? 'Category'.tr : controller.categoryName.value}',
@@ -52,48 +52,51 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
       body: Column(
         children: [
           Obx(
-                () => controller.errorMessage.isNotEmpty
+            () => controller.errorMessage.isNotEmpty
                 ? FadeIn(
-              duration: const Duration(milliseconds: 600),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: controller.errorMessage.value.contains('patience')
-                        ? TColorss.accent.withOpacity(0.1)
-                        : TColorss.error.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        controller.errorMessage.value.contains('patience')
-                            ? Iconsax.warning_2
-                            : Iconsax.close_circle,
-                        color: controller.errorMessage.value.contains('patience')
-                            ? TColorss.primary
-                            : TColorss.error,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          controller.errorMessage.value,
-                          style: TextStyle(
-                            color: controller.errorMessage.value.contains('patience')
-                                ? TColorss.primary
-                                : TColorss.error,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          textAlign: TextAlign.left,
+                    duration: const Duration(milliseconds: 600),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color:
+                              controller.errorMessage.value.contains('patience')
+                                  ? TColorss.accent.withOpacity(0.1)
+                                  : TColorss.error.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              controller.errorMessage.value.contains('patience')
+                                  ? Iconsax.warning_2
+                                  : Iconsax.close_circle,
+                              color: controller.errorMessage.value
+                                      .contains('patience')
+                                  ? TColorss.primary
+                                  : TColorss.error,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                controller.errorMessage.value,
+                                style: TextStyle(
+                                  color: controller.errorMessage.value
+                                          .contains('patience')
+                                      ? TColorss.primary
+                                      : TColorss.error,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                textAlign: TextAlign.left,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              ),
-            )
+                    ),
+                  )
                 : const SizedBox.shrink(),
           ),
           Obx(() => _buildWizardHeader(context)),
@@ -105,15 +108,15 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                 child: Column(
                   children: [
                     Obx(() => FadeInUp(
-                      duration: const Duration(milliseconds: 600),
-                      child: _buildForm(context),
-                    )),
+                          duration: const Duration(milliseconds: 600),
+                          child: _buildForm(context),
+                        )),
                     Obx(
-                          () => controller.isTicketVerified.value
+                      () => controller.isTicketVerified.value
                           ? FadeInUp(
-                        duration: const Duration(milliseconds: 600),
-                        child: _buildTicketInfoCard(),
-                      )
+                              duration: const Duration(milliseconds: 600),
+                              child: _buildTicketInfoCard(),
+                            )
                           : const SizedBox.shrink(),
                     ),
                   ],
@@ -127,7 +130,12 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
   }
 
   Widget _buildWizardHeader(BuildContext context) {
-    final stepTitles = ['Branch'.tr, 'Personal Info'.tr, 'Report Details'.tr, 'Attachment'.tr];
+    final stepTitles = [
+      'Branch'.tr,
+      'Personal Info'.tr,
+      'Report Details'.tr,
+      'Attachment'.tr
+    ];
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       child: Row(
@@ -149,8 +157,14 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                           shape: BoxShape.circle,
                           gradient: LinearGradient(
                             colors: controller.currentStep.value >= index
-                                ? [TColorss.primary, TColorss.primary.withOpacity(0.8)]
-                                : [TColorss.textSecondary.withOpacity(0.2), TColorss.textSecondary.withOpacity(0.2)],
+                                ? [
+                                    TColorss.primary,
+                                    TColorss.primary.withOpacity(0.8)
+                                  ]
+                                : [
+                                    TColorss.textSecondary.withOpacity(0.2),
+                                    TColorss.textSecondary.withOpacity(0.2)
+                                  ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
@@ -229,12 +243,15 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
         ),
         const SizedBox(height: 16),
         Obx(() {
-          final QrscannerController qrController = Get.find<QrscannerController>(); // Define qrController here
-          if (qrController.scannedCode.isNotEmpty && controller.staffInfo.isNotEmpty) {
+          final QrscannerController qrController =
+              Get.find<QrscannerController>(); // Define qrController here
+          if (qrController.scannedCode.isNotEmpty &&
+              controller.staffInfo.isNotEmpty) {
             // Display scanned staff information
             return Card(
               elevation: 0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
               child: Container(
                 decoration: BoxDecoration(
                   color: TColorss.surface,
@@ -253,12 +270,24 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    _buildInfoRow('Staff Name'.tr, controller.staffInfo['name']?.toString() ?? 'N/A'),
-                    _buildInfoRow('Branch'.tr, controller.staffInfo['branch']?['name']?.toString() ?? 'N/A'),
-                    _buildInfoRow('Service'.tr, controller.staffInfo['service']?['name']?.toString() ?? 'N/A'),
-                    _buildInfoRow('Position'.tr, controller.staffInfo['position']?.toString() ?? 'N/A'),
-                    _buildInfoRow('Phone'.tr, controller.staffInfo['phone_number']?.toString() ?? 'N/A'),
-                    _buildInfoRow('Email'.tr, controller.staffInfo['email']?.toString() ?? 'N/A'),
+                    _buildInfoRow('Staff Name'.tr,
+                        controller.staffInfo['name']?.toString() ?? 'N/A'),
+                    _buildInfoRow(
+                        'Branch'.tr,
+                        controller.staffInfo['branch']?['name']?.toString() ??
+                            'N/A'),
+                    _buildInfoRow(
+                        'Service'.tr,
+                        controller.staffInfo['service']?['name']?.toString() ??
+                            'N/A'),
+                    _buildInfoRow('Position'.tr,
+                        controller.staffInfo['position']?.toString() ?? 'N/A'),
+                    // _buildInfoRow(
+                    //     'Phone'.tr,
+                    //     controller.staffInfo['phone_number']?.toString() ??
+                    //         'N/A'),
+                    // _buildInfoRow('Email'.tr,
+                    //     controller.staffInfo['email']?.toString() ?? 'N/A'),
                     const SizedBox(height: 16),
                     Center(
                       child: TextButton(
@@ -307,7 +336,8 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                       ),
                       filled: true,
                       fillColor: Colors.grey.shade100,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 18),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
@@ -333,18 +363,19 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                     items: controller.branches.map((branch) {
                       return DropdownMenuItem<String>(
                         value: branch['id'].toString(),
-                        child: Text(branch['name']?.toString() ?? 'Unnamed Branch'),
+                        child: Text(
+                            branch['name']?.toString() ?? 'Unnamed Branch'),
                       );
                     }).toList(),
                     onChanged: controller.isLoadingBranches.value
                         ? null
                         : (value) {
-                      if (value != null) {
-                        controller.selectedBranchId.value = value;
-                        controller.selectedServiceId.value = '';
-                        controller.fetchServicesForBranch(value);
-                      }
-                    },
+                            if (value != null) {
+                              controller.selectedBranchId.value = value;
+                              controller.selectedServiceId.value = '';
+                              controller.fetchServicesForBranch(value);
+                            }
+                          },
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -368,15 +399,16 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                       hintText: controller.isLoadingServices.value
                           ? 'Loading services...'.tr
                           : controller.selectedBranchId.value.isEmpty
-                          ? 'Select a branch first'.tr
-                          : 'Choose service'.tr,
+                              ? 'Select a branch first'.tr
+                              : 'Choose service'.tr,
                       prefixIcon: Icon(
                         Iconsax.task,
                         color: Colors.grey.shade600,
                       ),
                       filled: true,
                       fillColor: Colors.grey.shade100,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 18),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
@@ -402,17 +434,18 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                     items: controller.services.map((service) {
                       return DropdownMenuItem<String>(
                         value: service['id'].toString(),
-                        child: Text(service['name']?.toString() ?? 'Unnamed Service'),
+                        child: Text(
+                            service['name']?.toString() ?? 'Unnamed Service'),
                       );
                     }).toList(),
                     onChanged: controller.isLoadingServices.value ||
-                        controller.selectedBranchId.value.isEmpty
+                            controller.selectedBranchId.value.isEmpty
                         ? null
                         : (value) {
-                      if (value != null) {
-                        controller.selectedServiceId.value = value;
-                      }
-                    },
+                            if (value != null) {
+                              controller.selectedServiceId.value = value;
+                            }
+                          },
                   ),
                 ),
               ],
@@ -421,63 +454,75 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
         }),
         const SizedBox(height: 24),
         Obx(() => Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            ZoomIn(
-              duration: const Duration(milliseconds: 400),
-              child: ElevatedButton(
-                onPressed: null, // Disable Previous button in Step 1
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: TColorss.textSecondary.withOpacity(0.5),
-                  foregroundColor: TColorss.surface,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  elevation: 2,
-                  textStyle: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ZoomIn(
+                  duration: const Duration(milliseconds: 400),
+                  child: ElevatedButton(
+                    onPressed: null, // Disable Previous button in Step 1
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: TColorss.textSecondary.withOpacity(0.5),
+                      foregroundColor: TColorss.surface,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 16),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                      elevation: 2,
+                      textStyle: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    child: Text('Previous'.tr),
                   ),
                 ),
-                child: Text('Previous'.tr),
-              ),
-            ),
-            ZoomIn(
-              duration: const Duration(milliseconds: 400),
-              child: ElevatedButton(
-                onPressed: () {
-                  final QrscannerController qrController = Get.find<QrscannerController>(); // Define qrController here
-                  if (qrController.scannedCode.isNotEmpty && controller.staffInfo.isNotEmpty) {
-                    // If QR code is scanned and staff info is available, proceed
-                    controller.nextStep();
-                  } else if (controller.selectedBranchId.value.isNotEmpty &&
-                      controller.selectedServiceId.value.isNotEmpty) {
-                    // If dropdowns are used, ensure branch and service are selected
-                    controller.nextStep();
-                  } else {
-                    controller.errorMessage.value = 'Please select a branch and service or scan a QR code.'.tr;
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: (controller.selectedBranchId.value.isNotEmpty &&
-                      controller.selectedServiceId.value.isNotEmpty) ||
-                      (Get.find<QrscannerController>().scannedCode.isNotEmpty &&
-                          controller.staffInfo.isNotEmpty)
-                      ? TColorss.primary
-                      : TColorss.textSecondary.withOpacity(0.5),
-                  foregroundColor: TColorss.surface,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  elevation: 2,
-                  textStyle: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                ZoomIn(
+                  duration: const Duration(milliseconds: 400),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      final QrscannerController qrController = Get.find<
+                          QrscannerController>(); // Define qrController here
+                      if (qrController.scannedCode.isNotEmpty &&
+                          controller.staffInfo.isNotEmpty) {
+                        // If QR code is scanned and staff info is available, proceed
+                        controller.nextStep();
+                      } else if (controller.selectedBranchId.value.isNotEmpty &&
+                          controller.selectedServiceId.value.isNotEmpty) {
+                        // If dropdowns are used, ensure branch and service are selected
+                        controller.nextStep();
+                      } else {
+                        controller.errorMessage.value =
+                            'Please select a branch and service or scan a QR code.'
+                                .tr;
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          (controller.selectedBranchId.value.isNotEmpty &&
+                                      controller.selectedServiceId.value
+                                          .isNotEmpty) ||
+                                  (Get.find<QrscannerController>()
+                                          .scannedCode
+                                          .isNotEmpty &&
+                                      controller.staffInfo.isNotEmpty)
+                              ? TColorss.primary
+                              : TColorss.textSecondary.withOpacity(0.5),
+                      foregroundColor: TColorss.surface,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 16),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                      elevation: 2,
+                      textStyle: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    child: Text('Next'.tr),
                   ),
                 ),
-                child: Text('Next'.tr),
-              ),
-            ),
-          ],
-        )),
+              ],
+            )),
       ],
     );
   }
@@ -504,14 +549,14 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
         const SizedBox(height: 16),
         _buildTextField(
           controller: controller.lastNameController,
-          label: 'Last Name'.tr,
+          label: 'Father Name'.tr,
           maxLength: 30,
           onChanged: (value) => controller.lastName.value = value,
         ),
         const SizedBox(height: 16),
         _buildTextField(
           controller: controller.surnameController,
-          label: 'Surname'.tr,
+          label: 'Grandfather Name'.tr,
           maxLength: 30,
           onChanged: (value) => controller.surname.value = value,
         ),
@@ -526,8 +571,10 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: TColorss.textSecondary,
                   foregroundColor: TColorss.surface,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
                   elevation: 2,
                   textStyle: const TextStyle(
                     fontSize: 16,
@@ -544,8 +591,10 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: TColorss.primary,
                   foregroundColor: TColorss.surface,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
                   elevation: 2,
                   textStyle: const TextStyle(
                     fontSize: 16,
@@ -595,8 +644,10 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: TColorss.textSecondary,
                     foregroundColor: TColorss.surface,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 16),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
                     elevation: 2,
                     textStyle: const TextStyle(
                       fontSize: 16,
@@ -617,8 +668,10 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: TColorss.primary,
                     foregroundColor: TColorss.surface,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 16),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
                     elevation: 2,
                     textStyle: const TextStyle(
                       fontSize: 16,
@@ -658,7 +711,7 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
         ),
         const SizedBox(height: 8),
         Obx(
-              () => Row(
+          () => Row(
             children: [
               Radio<bool>(
                 value: true,
@@ -691,7 +744,7 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
           ),
         ),
         Obx(
-              () => Visibility(
+          () => Visibility(
             visible: controller.hasDocument.value,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -719,7 +772,8 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                   ),
                 const SizedBox(height: 16),
                 Text(
-                  '• Maximum 5 files\n• Accepted formats: jpeg, png, mp4, mp3, wav, pdf, doc, docx\n• Maximum size: 500MB'.tr,
+                  '• Maximum 5 files\n• Accepted formats: jpeg, png, mp4, mp3, wav, pdf, doc, docx'
+                      .tr,
                   style: TextStyle(
                     fontSize: 12,
                     color: TColorss.textSecondary,
@@ -731,55 +785,59 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
         ),
         const SizedBox(height: 24),
         Obx(
-              () => controller.isLoading.value
+          () => controller.isLoading.value
               ? Center(
-            child: CircularProgressIndicator(
-              color: TColorss.primary,
-              strokeWidth: 4,
-              backgroundColor: TColorss.primary.withOpacity(0.2),
-            ),
-          )
+                  child: CircularProgressIndicator(
+                    color: TColorss.primary,
+                    strokeWidth: 4,
+                    backgroundColor: TColorss.primary.withOpacity(0.2),
+                  ),
+                )
               : Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              ZoomIn(
-                duration: const Duration(milliseconds: 400),
-                child: ElevatedButton(
-                  onPressed: controller.previousStep,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: TColorss.textSecondary,
-                    foregroundColor: TColorss.surface,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    elevation: 2,
-                    textStyle: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ZoomIn(
+                      duration: const Duration(milliseconds: 400),
+                      child: ElevatedButton(
+                        onPressed: controller.previousStep,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: TColorss.textSecondary,
+                          foregroundColor: TColorss.surface,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 24, vertical: 16),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
+                          elevation: 2,
+                          textStyle: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        child: Text('Previous'.tr),
+                      ),
                     ),
-                  ),
-                  child: Text('Previous'.tr),
-                ),
-              ),
-              ZoomIn(
-                duration: const Duration(milliseconds: 400),
-                child: ElevatedButton(
-                  onPressed: controller.submitComplaint,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: TColorss.primary,
-                    foregroundColor: TColorss.surface,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    elevation: 2,
-                    textStyle: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                    ZoomIn(
+                      duration: const Duration(milliseconds: 400),
+                      child: ElevatedButton(
+                        onPressed: controller.submitComplaint,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: TColorss.primary,
+                          foregroundColor: TColorss.surface,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 24, vertical: 16),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
+                          elevation: 2,
+                          textStyle: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        child: Text('Submit'.tr),
+                      ),
                     ),
-                  ),
-                  child: Text('Submit'.tr),
+                  ],
                 ),
-              ),
-            ],
-          ),
         ),
       ],
     );
@@ -802,18 +860,19 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                 duration: const Duration(milliseconds: 250),
                 curve: Curves.easeInOut,
                 margin: const EdgeInsets.symmetric(horizontal: 4),
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                 decoration: BoxDecoration(
                   color: isSelected ? TColorss.primary : Colors.grey.shade500,
                   borderRadius: BorderRadius.circular(10),
                   boxShadow: isSelected
                       ? [
-                    BoxShadow(
-                      color: TColorss.primary.withOpacity(0.3),
-                      blurRadius: 6,
-                      offset: const Offset(0, 3),
-                    ),
-                  ]
+                          BoxShadow(
+                            color: TColorss.primary.withOpacity(0.3),
+                            blurRadius: 6,
+                            offset: const Offset(0, 3),
+                          ),
+                        ]
                       : [],
                 ),
                 child: Row(
@@ -845,7 +904,6 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
       ),
     );
   }
-
 
   Widget _buildUploadContainer(UploadTab tabContent) {
     return Container(
@@ -904,7 +962,8 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.max,
-                  children: List.generate(tabContent.actions.length, (actionIndex) {
+                  children:
+                      List.generate(tabContent.actions.length, (actionIndex) {
                     final action = tabContent.actions[actionIndex];
                     return Expanded(
                       child: Padding(
@@ -914,7 +973,8 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                             if (action.label == 'Start Recording'.tr) {
                               controller.startRecording();
                             } else {
-                              controller.pickFiles(controller.selectedTab.value);
+                              controller
+                                  .pickFiles(controller.selectedTab.value);
                             }
                           },
                           icon: Icon(
@@ -932,8 +992,10 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                             textAlign: TextAlign.center,
                           ),
                           style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                            side: BorderSide(color: TColorss.primary.withOpacity(0.5)),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 12),
+                            side: BorderSide(
+                                color: TColorss.primary.withOpacity(0.5)),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -956,7 +1018,8 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: OutlinedButton.icon(
                       onPressed: () {
-                        if (action.label == 'Take Photo' || action.label == 'Take Video') {
+                        if (action.label == 'Take Photo' ||
+                            action.label == 'Take Video') {
                           controller.captureMedia(action.label);
                         } else {
                           controller.pickFiles(controller.selectedTab.value);
@@ -977,8 +1040,10 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                         textAlign: TextAlign.center,
                       ),
                       style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        side: BorderSide(color: TColorss.primary.withOpacity(0.5)),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                        side: BorderSide(
+                            color: TColorss.primary.withOpacity(0.5)),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -1016,102 +1081,109 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
             ),
             const SizedBox(height: 12),
             Obx(() => Column(
-              children: [
-                ...controller.files.map((file) {
-                  final isImage = ['jpg', 'jpeg', 'png'].contains(file.extension?.toLowerCase());
-                  final isVideo = ['mp4', 'mov', 'avi'].contains(file.extension?.toLowerCase());
-                  final isAudio = ['mp3', 'wav', 'm4a', 'aac'].contains(file.extension?.toLowerCase());
-                  final isDocument = ['pdf', 'doc', 'docx', 'txt'].contains(file.extension?.toLowerCase());
+                  children: [
+                    ...controller.files.map((file) {
+                      final isImage = ['jpg', 'jpeg', 'png']
+                          .contains(file.extension?.toLowerCase());
+                      final isVideo = ['mp4', 'mov', 'avi']
+                          .contains(file.extension?.toLowerCase());
+                      final isAudio = ['mp3', 'wav', 'm4a', 'aac']
+                          .contains(file.extension?.toLowerCase());
+                      final isDocument = ['pdf', 'doc', 'docx', 'txt']
+                          .contains(file.extension?.toLowerCase());
 
-                  if (isAudio) {
-                    return ListTile(
-                      leading: Icon(
-                        Iconsax.sound,
-                        color: TColorss.textSecondary,
-                      ),
-                      title: Text(
-                        file.name,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: TColorss.textPrimary,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          // IconButton(
-                          //   icon: Icon(
-                          //     Icons.play_arrow,
-                          //     color: TColorss.primary,
-                          //   ),
-                          //   onPressed: () => controller.playRecording(file.path!),
-                          // ),
-                          // IconButton(
-                          //   icon: Icon(
-                          //     Icons.stop,
-                          //     color: TColorss.textSecondary,
-                          //   ),
-                          //   onPressed: controller.stopPlayback,
-                          // ),
-                          IconButton(
-                            icon: Icon(
-                              Icons.delete,
-                              color: TColorss.error,
-                            ),
-                            onPressed: () {
-                              controller.files.remove(file);
-                              controller.files.refresh();
-                            },
+                      if (isAudio) {
+                        return ListTile(
+                          leading: Icon(
+                            Iconsax.sound,
+                            color: TColorss.textSecondary,
                           ),
-                        ],
-                      ),
-                    );
-                  }
+                          title: Text(
+                            file.name,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: TColorss.textPrimary,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // IconButton(
+                              //   icon: Icon(
+                              //     Icons.play_arrow,
+                              //     color: TColorss.primary,
+                              //   ),
+                              //   onPressed: () => controller.playRecording(file.path!),
+                              // ),
+                              // IconButton(
+                              //   icon: Icon(
+                              //     Icons.stop,
+                              //     color: TColorss.textSecondary,
+                              //   ),
+                              //   onPressed: controller.stopPlayback,
+                              // ),
+                              IconButton(
+                                icon: Icon(
+                                  Icons.delete,
+                                  color: TColorss.error,
+                                ),
+                                onPressed: () {
+                                  controller.files.remove(file);
+                                  controller.files.refresh();
+                                },
+                              ),
+                            ],
+                          ),
+                        );
+                      }
 
-                  return ListTile(
-                    leading: isImage
-                        ? ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.file(
-                        File(file.path!),
-                        width: 40,
-                        height: 40,
-                        fit: BoxFit.cover,
+                      return ListTile(
+                        leading: isImage
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.file(
+                                  File(file.path!),
+                                  width: 40,
+                                  height: 40,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : Icon(
+                                isVideo
+                                    ? Iconsax.video
+                                    : isDocument
+                                        ? Iconsax.document
+                                        : Iconsax.note,
+                                color: TColorss.textSecondary,
+                              ),
+                        title: Text(
+                          file.name,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: TColorss.textPrimary,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        trailing: IconButton(
+                          icon: Icon(Icons.delete, color: TColorss.error),
+                          onPressed: () {
+                            controller.files.remove(file);
+                            controller.files.refresh();
+                          },
+                        ),
+                      );
+                    }).toList(),
+                    if (controller.files.isEmpty && controller.links.isEmpty)
+                      Text(
+                        'No files or links added yet'.tr,
+                        style: TextStyle(
+                          color: TColorss.textSecondary,
+                          fontSize: 14,
+                        ),
                       ),
-                    )
-                        : Icon(
-                      isVideo ? Iconsax.video :
-                      isDocument ? Iconsax.document : Iconsax.note,
-                      color: TColorss.textSecondary,
-                    ),
-                    title: Text(
-                      file.name,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: TColorss.textPrimary,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    trailing: IconButton(
-                      icon: Icon(Icons.delete, color: TColorss.error),
-                      onPressed: () {
-                        controller.files.remove(file);
-                        controller.files.refresh();
-                      },
-                    ),
-                  );
-                }).toList(),
-                if (controller.files.isEmpty && controller.links.isEmpty)
-                  Text(
-                    'No files or links added yet'.tr,
-                    style: TextStyle(
-                      color: TColorss.textSecondary,
-                      fontSize: 14,
-                    ),
-                  ),
-              ],
-            )),
+                  ],
+                )),
           ],
         ),
       ),
@@ -1197,7 +1269,6 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
     );
   }
 
-
   Widget _buildTicketInfoCard() {
     return Card(
       margin: const EdgeInsets.only(top: 16),
@@ -1222,10 +1293,14 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                 ),
               ),
               const SizedBox(height: 12),
-              _buildTicketInfoRow('Ticket Number'.tr, controller.ticketInfo['ticketNumber'] ?? ''),
-              _buildTicketInfoRow('Company Name'.tr, controller.ticketInfo['companyName'] ?? ''),
-              _buildTicketInfoRow('Room Name'.tr, controller.ticketInfo['roomName'] ?? ''),
-              _buildTicketInfoRow('Staff Name'.tr, controller.ticketInfo['staffName'] ?? ''),
+              _buildTicketInfoRow('Ticket Number'.tr,
+                  controller.ticketInfo['ticketNumber'] ?? ''),
+              _buildTicketInfoRow('Company Name'.tr,
+                  controller.ticketInfo['companyName'] ?? ''),
+              _buildTicketInfoRow(
+                  'Room Name'.tr, controller.ticketInfo['roomName'] ?? ''),
+              _buildTicketInfoRow(
+                  'Staff Name'.tr, controller.ticketInfo['staffName'] ?? ''),
               //_buildTicketInfoRow('Ticket Created At'.tr, controller.ticketInfo['ticketCreatedAt'] ?? ''),
               //_buildTicketInfoRow('Called At'.tr, controller.ticketInfo['calledAt'] ?? ''),
               //_buildTicketInfoRow('Served Date'.tr, controller.ticketInfo['servedDate'] ?? 'Not Served'),
