@@ -233,7 +233,7 @@ class HomeView extends GetView<HomeController> {
                     child: Text(
                       "Unable to load reports",
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 13,
                         fontWeight: FontWeight.w500,
                         color: TColorss.error,
                       ),
@@ -254,7 +254,7 @@ class HomeView extends GetView<HomeController> {
                             borderRadius: BorderRadius.circular(12)),
                         elevation: 2,
                         textStyle: const TextStyle(
-                          fontSize: 14,
+                          fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -288,7 +288,7 @@ class HomeView extends GetView<HomeController> {
                       Text(
                         'No Reports Available',
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 14,
                           fontWeight: FontWeight.w500,
                           color: TColorss.textSecondary,
                         ),
@@ -417,7 +417,7 @@ class HomeView extends GetView<HomeController> {
             children: [
               Icon(
                 Iconsax.stickynote,
-                size: 64,
+                size: 32,
                 color: TColorss.textSecondary,
               ),
               const SizedBox(height: 16),
@@ -426,7 +426,7 @@ class HomeView extends GetView<HomeController> {
                     ? 'No Pending Reports Available'
                     : 'No ${controller.currentTab.value.capitalizeFirst} Reports Available',
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 14,
                   fontWeight: FontWeight.w500,
                   color: TColorss.textSecondary,
                 ),
@@ -519,7 +519,7 @@ class HomeView extends GetView<HomeController> {
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
                             color: TColorss.surfaceSecondary,
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(8),
                             boxShadow: [
                               BoxShadow(
                                 color: TColorss.textPrimary.withOpacity(0.1),
@@ -534,7 +534,7 @@ class HomeView extends GetView<HomeController> {
                             height: 40,
                             errorBuilder: (context, error, stackTrace) => Icon(
                               Iconsax.stickynote,
-                              size: 40,
+                              size: 32,
                               color: TColorss.textSecondary,
                             ),
                           ),
@@ -547,7 +547,7 @@ class HomeView extends GetView<HomeController> {
                               Text(
                                 report['report_place'] ?? '-',
                                 style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.w600,
                                   color: TColorss.textPrimary,
                                 ),
@@ -557,7 +557,7 @@ class HomeView extends GetView<HomeController> {
                               Text(
                                 'Track No: ${report['id'] ?? '-'}',
                                 style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 12,
                                   color: TColorss.textSecondary,
                                 ),
                                 overflow: TextOverflow.ellipsis,
@@ -589,7 +589,7 @@ class HomeView extends GetView<HomeController> {
                               Text(
                                 status,
                                 style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                   color: statusColor,
                                 ),
@@ -601,7 +601,7 @@ class HomeView extends GetView<HomeController> {
                           _formatDateTime(report['created_at']),
                           style: TextStyle(
                             fontSize: 10,
-                            fontWeight: FontWeight.w300,
+                            fontWeight: FontWeight.w500,
                             color: TColorss.textSecondary,
                           ),
                         ),
@@ -675,7 +675,7 @@ class HomeView extends GetView<HomeController> {
                     Text(
                       'Report Details',
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: TColorss.textPrimary,
                       ),
@@ -749,7 +749,7 @@ class HomeView extends GetView<HomeController> {
                         Text(
                           'Escalations',
                           style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 14,
                             fontWeight: FontWeight.bold,
                             color: TColorss.textPrimary,
                           ),
@@ -825,7 +825,7 @@ class HomeView extends GetView<HomeController> {
         margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         elevation: 6,
         shadowColor: TColorss.textPrimary.withOpacity(0.2),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
@@ -855,7 +855,7 @@ class HomeView extends GetView<HomeController> {
                           Text(
                             user['name'] ?? 'You',
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: 14,
                               fontWeight: FontWeight.w700,
                               color: TColorss.textPrimary,
                             ),
@@ -1664,8 +1664,8 @@ class HomeView extends GetView<HomeController> {
             child: Text(
               '$label:',
               style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
+                fontSize: 11,
+                fontWeight: FontWeight.w400,
                 color: TColorss.textPrimary,
               ),
             ),
@@ -1675,8 +1675,9 @@ class HomeView extends GetView<HomeController> {
             child: Text(
               value,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 12,
                 color: color ?? TColorss.textPrimary,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
@@ -1787,13 +1788,42 @@ class HomeView extends GetView<HomeController> {
   String _formatDateTime(String? dateTime) {
     if (dateTime == null) return '-';
     try {
-      final date = DateTime.parse(dateTime);
-      final now = DateTime.now();
+      final date = DateTime.parse(dateTime).toLocal();
+      final now = DateTime.now().toLocal();
       final difference = now.difference(date);
-      if (difference.inDays < 7) {
-        return '${difference.inDays} days ago';
+
+      if (difference.inSeconds < 0) {
+        // Future date
+        return DateFormat('MMM d, yyyy').format(date);
+      } else if (difference.inSeconds < 60) {
+        return 'Just now';
+      } else if (difference.inMinutes < 60) {
+        final minutes = difference.inMinutes;
+        return '$minutes ${minutes == 1 ? 'minute' : 'minutes'} ago';
+      } else if (difference.inHours < 24) {
+        final hours = difference.inHours;
+        return '$hours ${hours == 1 ? 'hour' : 'hours'} ago';
+      } else if (difference.inDays < 7) {
+        final days = difference.inDays;
+        if (days == 0) {
+          // Less than 24 hours but more than 1 hour
+          final hours = difference.inHours;
+          return '$hours ${hours == 1 ? 'hour' : 'hours'} ago';
+        } else if (days == 1) {
+          return 'Yesterday';
+        } else {
+          return '$days ${days == 1 ? 'day' : 'days'} ago';
+        }
+      } else if (difference.inDays < 30) {
+        final weeks = (difference.inDays / 7).floor();
+        return '$weeks ${weeks == 1 ? 'week' : 'weeks'} ago';
+      } else if (difference.inDays < 365) {
+        final months = (difference.inDays / 30).floor();
+        return '$months ${months == 1 ? 'month' : 'months'} ago';
+      } else {
+        final years = (difference.inDays / 365).floor();
+        return '$years ${years == 1 ? 'year' : 'years'} ago';
       }
-      return DateFormat('MMM d, yyyy').format(date);
     } catch (e) {
       return '-';
     }

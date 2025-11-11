@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ics_complaint/app/modules/home/views/home_view.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../controllers/qrscanner_controller.dart';
@@ -12,27 +13,57 @@ class QrscannerView extends StatefulWidget {
 }
 
 class _QrscannerViewState extends State<QrscannerView>
-    with AutomaticKeepAliveClientMixin {
+    with WidgetsBindingObserver, AutomaticKeepAliveClientMixin {
   final controller = Get.put(QrscannerController());
   bool _hasPermission = false;
   MobileScannerController? _cameraController;
   bool _isCameraActive = false;
-  bool _hasScanned = false; // New flag to prevent multiple scans
+  bool _hasScanned = false;
 
   @override
-  bool get wantKeepAlive => false; // Don't keep alive when not visible
+  bool get wantKeepAlive => false;
 
   @override
   void initState() {
     super.initState();
-    _hasScanned = false; // Reset flag on init
+    WidgetsBinding.instance.addObserver(this);
+    _resetScanState();
     _checkPermission();
   }
 
   @override
   void dispose() {
-    _cameraController?.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    _stopCamera();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    switch (state) {
+      case AppLifecycleState.resumed:
+        if (_hasPermission && !_isCameraActive) {
+          _startCamera();
+        }
+        _resetScanState();
+        break;
+      case AppLifecycleState.paused:
+      case AppLifecycleState.inactive:
+        _stopCamera();
+        break;
+      case AppLifecycleState.detached:
+        _stopCamera();
+        break;
+      case AppLifecycleState.hidden:
+        // TODO: Handle this case.
+        break;
+    }
+  }
+
+  void _resetScanState() {
+    _hasScanned = false;
   }
 
   Future<void> _checkPermission() async {
@@ -41,12 +72,17 @@ class _QrscannerViewState extends State<QrscannerView>
       status = await Permission.camera.request();
     }
 
-    setState(() {
-      _hasPermission = status.isGranted;
-    });
+    if (mounted) {
+      setState(() {
+        _hasPermission = status.isGranted;
+      });
+    }
+
+    if (status.isGranted && !_isCameraActive) {
+      _startCamera();
+    }
 
     if (status.isPermanentlyDenied) {
-      // If permanently denied, prompt user to open settings
       Get.snackbar(
         'Permission Required',
         'Camera permission is permanently denied. Please enable it in app settings.',
@@ -68,8 +104,13 @@ class _QrscannerViewState extends State<QrscannerView>
   }
 
   void _startCamera() {
-    if (_hasPermission && !_isCameraActive) {
-      _cameraController = MobileScannerController();
+    if (_hasPermission && !_isCameraActive && mounted) {
+      _cameraController = MobileScannerController(
+        detectionSpeed: DetectionSpeed.normal,
+        facing: CameraFacing.back,
+        torchEnabled: false,
+      );
+
       setState(() {
         _isCameraActive = true;
       });
@@ -79,16 +120,46 @@ class _QrscannerViewState extends State<QrscannerView>
   void _stopCamera() {
     if (_isCameraActive) {
       _cameraController?.dispose();
-      setState(() {
-        _isCameraActive = false;
-        _cameraController = null;
+      if (mounted) {
+        setState(() {
+          _isCameraActive = false;
+          _cameraController = null;
+        });
+      }
+    }
+  }
+
+  void _handleScan(String value) {
+    if (!_hasScanned && mounted) {
+      _hasScanned = true;
+
+      controller.setScannedCode(value);
+
+      Get.snackbar(
+        'Scanned Successfully',
+        value,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.black87,
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+        duration: const Duration(seconds: 2),
+      );
+
+      // Stop camera and navigate
+      _stopCamera();
+
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (mounted) {
+          Get.toNamed('/create-complaint');
+        }
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // Required for AutomaticKeepAliveClientMixin
+    super.build(context);
 
     if (!_hasPermission) {
       return _buildPermissionRequest();
@@ -151,27 +222,10 @@ class _QrscannerViewState extends State<QrscannerView>
               controller: _cameraController,
               onDetect: (capture) {
                 final List<Barcode> barcodes = capture.barcodes;
-                if (barcodes.isNotEmpty && !_hasScanned) {
-                  // Check flag to prevent multiples
-                  _hasScanned = true; // Set flag
+                if (barcodes.isNotEmpty) {
                   final first = barcodes.first;
                   if (first.rawValue != null) {
-                    controller.setScannedCode(first.rawValue!);
-                    Get.snackbar(
-                      'Scanned Successfully',
-                      first.rawValue!,
-                      snackPosition: SnackPosition.BOTTOM,
-                      backgroundColor: Colors.black87,
-                      colorText: Colors.white,
-                      margin: const EdgeInsets.all(16),
-                      borderRadius: 12,
-                    );
-                    _stopCamera(); // Stop camera immediately after scan
-                    // Navigate after a brief delay to show snackbar/value
-                    Future.delayed(const Duration(milliseconds: 1500), () {
-                      Get.toNamed(
-                          '/create-complaint'); // Adjust route name if different
-                    });
+                    _handleScan(first.rawValue!);
                   }
                 }
               },
@@ -227,7 +281,10 @@ class _QrscannerViewState extends State<QrscannerView>
     super.didChangeDependencies();
     final route = ModalRoute.of(context);
     if (route?.isCurrent ?? false) {
-      _startCamera();
+      _resetScanState();
+      if (_hasPermission && !_isCameraActive) {
+        _startCamera();
+      }
     } else {
       _stopCamera();
     }
@@ -238,7 +295,10 @@ class _QrscannerViewState extends State<QrscannerView>
     super.didUpdateWidget(oldWidget);
     final route = ModalRoute.of(context);
     if (route?.isCurrent ?? false) {
-      _startCamera();
+      _resetScanState();
+      if (_hasPermission && !_isCameraActive) {
+        _startCamera();
+      }
     } else {
       _stopCamera();
     }

@@ -27,18 +27,14 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
     return Scaffold(
       backgroundColor: TColorss.background,
       appBar: AppBar(
-        title: Obx(
-          () => FadeInDown(
-            duration: const Duration(milliseconds: 400),
-            child: Text(
-              'Create Complaint - ${controller.categoryName.value.isEmpty ? 'Category'.tr : controller.categoryName.value}',
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: TColorss.textPrimary,
-                letterSpacing: 0.5,
-              ),
-            ),
+        title: Text(
+          'Create Complaint'.tr,
+          // 'Create Complaint - ${controller.categoryName.value.isEmpty ? 'Category'.tr : controller.categoryName.value}',
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+            color: TColorss.textPrimary,
+            letterSpacing: 0.5,
           ),
         ),
         centerTitle: true,
@@ -86,7 +82,7 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                                           .contains('patience')
                                       ? TColorss.primary
                                       : TColorss.error,
-                                  fontSize: 14,
+                                  fontSize: 12,
                                   fontWeight: FontWeight.w500,
                                 ),
                                 textAlign: TextAlign.left,
@@ -177,7 +173,7 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                                   ? TColorss.surface
                                   : TColorss.textSecondary,
                               fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                              fontSize: 14,
                             ),
                           ),
                         ),
@@ -236,7 +232,7 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
         Text(
           'Branch Information'.tr,
           style: TextStyle(
-            fontSize: 20,
+            fontSize: 14,
             fontWeight: FontWeight.bold,
             color: TColorss.textPrimary,
           ),
@@ -244,7 +240,7 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
         const SizedBox(height: 16),
         Obx(() {
           final QrscannerController qrController =
-              Get.find<QrscannerController>(); // Define qrController here
+              Get.put(QrscannerController()); // Define qrController here
           if (qrController.scannedCode.isNotEmpty &&
               controller.staffInfo.isNotEmpty) {
             // Display scanned staff information
@@ -264,7 +260,7 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                     Text(
                       'Scanned Staff Information'.tr,
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
                         color: TColorss.textPrimary,
                       ),
@@ -313,7 +309,7 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                 Text(
                   'Select Branch'.tr,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 12,
                     color: TColorss.textSecondary,
                   ),
                 ),
@@ -333,6 +329,7 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                       prefixIcon: Icon(
                         Iconsax.location,
                         color: Colors.grey.shade600,
+                        size: 24,
                       ),
                       filled: true,
                       fillColor: Colors.grey.shade100,
@@ -382,7 +379,7 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                 Text(
                   'Select Service'.tr,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 12,
                     color: TColorss.textSecondary,
                   ),
                 ),
@@ -469,7 +466,7 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                           borderRadius: BorderRadius.circular(8)),
                       elevation: 2,
                       textStyle: const TextStyle(
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -501,7 +498,7 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                           (controller.selectedBranchId.value.isNotEmpty &&
                                       controller.selectedServiceId.value
                                           .isNotEmpty) ||
-                                  (Get.find<QrscannerController>()
+                                  (Get.put(QrscannerController())
                                           .scannedCode
                                           .isNotEmpty &&
                                       controller.staffInfo.isNotEmpty)
@@ -514,7 +511,7 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                           borderRadius: BorderRadius.circular(8)),
                       elevation: 2,
                       textStyle: const TextStyle(
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -534,7 +531,7 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
         Text(
           'Personal Information'.tr,
           style: TextStyle(
-            fontSize: 20,
+            fontSize: 14,
             fontWeight: FontWeight.bold,
             color: TColorss.textPrimary,
           ),
@@ -620,7 +617,7 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
           Text(
             'Report Details'.tr,
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 14,
               fontWeight: FontWeight.bold,
               color: TColorss.textPrimary,
             ),
@@ -704,7 +701,7 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
         Text(
           'Do you want to upload attachments?'.tr,
           style: TextStyle(
-            fontSize: 16,
+            fontSize: 14,
             fontWeight: FontWeight.w500,
             color: TColorss.textSecondary,
           ),
@@ -772,10 +769,10 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                   ),
                 const SizedBox(height: 16),
                 Text(
-                  '• Maximum 5 files\n• Accepted formats: jpeg, png, mp4, mp3, wav, pdf, doc, docx'
+                  '• Maximum 5 files\n• Accepted formats: jpeg, png, mp4, mp3, wav, aac, pdf, doc, docx'
                       .tr,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 10,
                     color: TColorss.textSecondary,
                   ),
                 ),
@@ -927,7 +924,7 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
             tabContent.uploadTitle,
             style: TextStyle(
               color: TColorss.textPrimary,
-              fontSize: 18,
+              fontSize: 14,
               fontWeight: FontWeight.w600,
               letterSpacing: 0.3,
             ),
@@ -987,7 +984,7 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                             style: TextStyle(
                               color: TColorss.primary,
                               fontWeight: FontWeight.w600,
-                              fontSize: 14,
+                              fontSize: 12,
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -1035,7 +1032,7 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
                         style: TextStyle(
                           color: TColorss.primary,
                           fontWeight: FontWeight.w600,
-                          fontSize: 14,
+                          fontSize: 12,
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -1074,7 +1071,7 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
             Text(
               'Uploaded Media & Links'.tr,
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 14,
                 fontWeight: FontWeight.bold,
                 color: TColorss.textPrimary,
               ),
@@ -1232,17 +1229,26 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
     int maxLines = 1,
     required Function(String) onChanged,
   }) {
+    // Create a reactive variable for the text length
+    final textLength = controller.text.length.obs;
+
+    // Add listener to update the reactive variable when text changes
+    controller.addListener(() {
+      textLength.value = controller.text.length;
+    });
+
     return TextFormField(
       controller: controller,
       maxLength: maxLength,
       maxLines: maxLines,
       decoration: InputDecoration(
         labelText: label,
-        hintStyle: TextStyle(color: TColorss.textSecondary.withOpacity(0.7)),
-        labelStyle: TextStyle(color: TColorss.textSecondary),
+        hintStyle: TextStyle(
+            color: TColorss.textSecondary.withOpacity(0.7), fontSize: 10),
+        labelStyle: TextStyle(color: TColorss.textSecondary, fontSize: 12),
         floatingLabelStyle: TextStyle(color: TColorss.primary),
         filled: true,
-        fillColor: TColorss.surfaceSecondary,
+        fillColor: TColorss.textSecondary.withOpacity(0.05),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
@@ -1251,18 +1257,36 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: TColorss.primary, width: 1.5),
         ),
-        counterStyle: TextStyle(color: TColorss.textSecondary),
-        counterText: '${controller.text.length}/$maxLength',
+        counterStyle: TextStyle(color: TColorss.textSecondary, fontSize: 10),
+        // Use Obx to make the counter text reactive
+        counter: Obx(() => Text(
+              '${textLength.value}/$maxLength',
+              style: TextStyle(
+                color: textLength.value > maxLength
+                    ? TColorss.error
+                    : TColorss.textSecondary,
+                fontSize: 10,
+                fontWeight: textLength.value > maxLength
+                    ? FontWeight.bold
+                    : FontWeight.normal,
+              ),
+            )),
         prefixIcon: Icon(
           label.contains('Ticket') ? Iconsax.ticket : Iconsax.note,
           color: TColorss.textSecondary,
         ),
       ),
       style: TextStyle(color: TColorss.textPrimary),
-      onChanged: onChanged,
+      onChanged: (value) {
+        textLength.value = value.length; // Update the reactive variable
+        onChanged(value); // Call the original onChanged callback
+      },
       validator: (value) {
         if (value == null || value.trim().isEmpty) {
           return '$label is required';
+        }
+        if (value.length > maxLength) {
+          return '$label cannot exceed $maxLength characters';
         }
         return null;
       },
@@ -1287,7 +1311,7 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
               Text(
                 'Branch Information'.tr,
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 14,
                   fontWeight: FontWeight.bold,
                   color: TColorss.textPrimary,
                 ),
@@ -1323,7 +1347,7 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
             child: Text(
               '$label:',
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 12,
                 fontWeight: FontWeight.w500,
                 color: TColorss.textSecondary,
               ),
@@ -1334,7 +1358,7 @@ class CreateComplaintView extends GetView<CreateComplaintController> {
             child: Text(
               value,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 10,
                 color: TColorss.textPrimary,
               ),
             ),

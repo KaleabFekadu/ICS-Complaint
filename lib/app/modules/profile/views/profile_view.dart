@@ -123,52 +123,29 @@ class ProfileView extends GetView<ProfileController> {
                                   ),
                                   const SizedBox(height: 16),
                                   _policySection(
-                                    title:
-                                        "Welcome to the CRRSA (Civil Registration and Residency Service Agency) application."
-                                            .tr,
+                                    title: 'Introduction'.tr,
                                     content:
-                                        "We are committed to protecting your privacy and ensuring that your personal data is handled securely. By using this application, you agree to the collection and use of your information in accordance with this policy."
+                                        "These Terms & Conditions (“Terms”) govern your use of the Complaints Mobile Application (“ICSResolve”), provided by Immigration and Citizenship Service. By downloading, accessing, or using this App, you agree to be bound by these Terms. If you disagree, do not use the App."
                                             .tr,
                                   ),
                                   _policySection(
                                     title: "Information Collection".tr,
                                     content:
-                                        "We collect personal details such as your full name, date of birth, residency details, and identification information strictly for registration and residency services."
+                                        "You must be at least 18 years old, provide accurate information, and be the rightful owner of the device. False or fraudulent reporting is prohibited. You may be required to register an account and verify identification. You are responsible for the confidentiality of your credentials."
                                             .tr,
                                   ),
                                   _policySection(
                                     title: "Information Use".tr,
                                     content:
-                                        "Your data will be used only for official CRRSA services and will not be shared with third parties without your consent, unless required by law."
+                                        "You agree to provide truthful information and avoid abusive, defamatory, or illegal content. We may reject or investigate complaints and, if necessary, forward them to the authorities. We may collect personal details, including ID, contact information, and uploaded documents. Data handling follows Data Protection Laws and our Privacy Policy"
                                             .tr,
                                   ),
                                   _policySection(
                                     title: "Data Security".tr,
                                     content:
-                                        "We use advanced security measures to protect your information from unauthorized access."
+                                        "We maintain confidentiality but may share information with relevant government departments or law enforcement if required."
                                             .tr,
                                   ),
-                                  _policySection(
-                                    title: "User Rights".tr,
-                                    content:
-                                        "You have the right to request corrections or deletion of your personal data in accordance with applicable regulations."
-                                            .tr,
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Center(
-                                    child: Text(
-                                      "Thank you for trusting CRRSA with your personal information."
-                                          .tr,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.grey.shade700,
-                                        fontStyle: FontStyle.normal,
-                                        height: 1.4,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 20),
                                 ],
                               ),
                             ),
@@ -179,7 +156,7 @@ class ProfileView extends GetView<ProfileController> {
                   },
                 ),
                 _buildTile(Iconsax.info_circle, 'About Us'.tr, () {
-                   _launchURL('https://ics.gov.et');
+                  _launchURL('https://ics.gov.et');
                 }),
                 const SizedBox(height: 24),
                 const Divider(),
@@ -397,34 +374,34 @@ class ProfileView extends GetView<ProfileController> {
                     isSelected: value == 'English',
                     isDarkMode: isDarkMode,
                   ),
-                  _buildLanguageTile(
-                    context: context,
-                    language: 'አማርኛ',
-                    selectedLanguage: selectedLanguage,
-                    isSelected: value == 'አማርኛ',
-                    isDarkMode: isDarkMode,
-                  ),
-                  _buildLanguageTile(
-                    context: context,
-                    language: 'ትግርኛ',
-                    selectedLanguage: selectedLanguage,
-                    isSelected: value == 'ትግርኛ',
-                    isDarkMode: isDarkMode,
-                  ),
-                  _buildLanguageTile(
-                    context: context,
-                    language: 'Afaan Oromoo',
-                    selectedLanguage: selectedLanguage,
-                    isSelected: value == 'Afaan Oromoo',
-                    isDarkMode: isDarkMode,
-                  ),
-                  _buildLanguageTile(
-                    context: context,
-                    language: 'Soomaali',
-                    selectedLanguage: selectedLanguage,
-                    isSelected: value == 'Soomaali',
-                    isDarkMode: isDarkMode,
-                  ),
+                  // _buildLanguageTile(
+                  //   context: context,
+                  //   language: 'አማርኛ',
+                  //   selectedLanguage: selectedLanguage,
+                  //   isSelected: value == 'አማርኛ',
+                  //   isDarkMode: isDarkMode,
+                  // ),
+                  // _buildLanguageTile(
+                  //   context: context,
+                  //   language: 'ትግርኛ',
+                  //   selectedLanguage: selectedLanguage,
+                  //   isSelected: value == 'ትግርኛ',
+                  //   isDarkMode: isDarkMode,
+                  // ),
+                  // _buildLanguageTile(
+                  //   context: context,
+                  //   language: 'Afaan Oromoo',
+                  //   selectedLanguage: selectedLanguage,
+                  //   isSelected: value == 'Afaan Oromoo',
+                  //   isDarkMode: isDarkMode,
+                  // ),
+                  // _buildLanguageTile(
+                  //   context: context,
+                  //   language: 'Soomaali',
+                  //   selectedLanguage: selectedLanguage,
+                  //   isSelected: value == 'Soomaali',
+                  //   isDarkMode: isDarkMode,
+                  // ),
                   const SizedBox(height: 20),
                 ],
               ),
@@ -726,8 +703,8 @@ class ProfileView extends GetView<ProfileController> {
         title,
         style: TextStyle(
           color: textColor,
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
+          fontSize: 14,
+          // fontWeight: FontWeight.w500,
         ),
       ),
       trailing: const Icon(Iconsax.arrow_right_3, size: 18, color: Colors.grey),
@@ -735,7 +712,6 @@ class ProfileView extends GetView<ProfileController> {
     );
   }
 }
-
 
 Future<void> _launchURL(String urlString) async {
   final Uri url = Uri.parse(urlString);

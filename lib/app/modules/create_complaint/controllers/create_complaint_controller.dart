@@ -138,6 +138,7 @@ class CreateComplaintController extends GetxController {
   ];
 
   @override
+  @override
   void onInit() async {
     super.onInit();
     fetchBranches();
@@ -168,10 +169,15 @@ class CreateComplaintController extends GetxController {
     await _initAudioRecorder();
     await _initAudioPlayer();
 
-    // Check for scanned QR code and fetch staff info
-    final qrController = Get.find<QrscannerController>();
+    // Check for scanned QR code and fetch staff info with error handling
+    final qrController = Get.put(QrscannerController());
     if (qrController.scannedCode.isNotEmpty) {
-      await fetchStaffInfo(qrController.scannedCode.value);
+      try {
+        await fetchStaffInfo(qrController.scannedCode.value);
+      } catch (e) {
+        // If any error occurs during staff info fetch, clear everything and go back
+        _handleStaffInfoError();
+      }
     }
   }
 
@@ -243,9 +249,9 @@ class CreateComplaintController extends GetxController {
 
       if (result.hasException) {
         print('GraphQL Error: ${result.exception.toString()}');
-        errorMessage.value =
-            'Failed to load staff information: ${result.exception.toString()}'
-                .tr;
+        // Instead of showing error, redirect back and clear data
+        _handleStaffInfoError();
+        handleInvalidQRScan();
         return;
       }
 
@@ -266,14 +272,65 @@ class CreateComplaintController extends GetxController {
           duration: const Duration(seconds: 2),
         );
       } else {
-        errorMessage.value = 'Staff member not found.'.tr;
-        staffInfo.clear();
+        // Staff member not found - redirect back and clear data
+        _handleStaffInfoError();
       }
     } catch (e) {
       print('Fetch Staff Info Error: $e');
-      errorMessage.value = 'Error fetching staff information: $e'.tr;
+      // Handle any other errors by redirecting back and clearing data
+      _handleStaffInfoError();
+      handleInvalidQRScan();
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  void handleInvalidQRScan() {
+    final qrController = Get.find<QrscannerController>();
+
+    // Clear the scanned code and staff info
+    qrController.clearScannedCode();
+    clearStaffInfo();
+
+    // Show error message
+    errorMessage.value =
+        'The scanned QR code is invalid or does not contain valid staff information. Please try scanning again or use the manual selection.'
+            .tr;
+
+    // Optionally, you can navigate back to scanner or show a dialog
+    Get.snackbar(
+      'Invalid QR Code'.tr,
+      'The scanned information could not be verified. Please try again.'.tr,
+      backgroundColor: Colors.orange,
+      colorText: Colors.white,
+      snackPosition: SnackPosition.TOP,
+    );
+  }
+
+  void _handleStaffInfoError() {
+    // Clear all scanned data
+    clearStaffInfo();
+
+    // Get QR controller and clear scanned code
+    final qrController = Get.find<QrscannerController>();
+    qrController.clearScannedCode();
+
+    // Show a user-friendly message
+    Get.snackbar(
+      'Invalid QR Code'.tr,
+      'The scanned QR code is invalid or staff information could not be retrieved. Please try scanning again.'
+          .tr,
+      backgroundColor: Colors.orange,
+      colorText: Colors.white,
+      snackPosition: SnackPosition.TOP,
+      margin: const EdgeInsets.all(16),
+      borderRadius: 8,
+      duration: const Duration(seconds: 3),
+    );
+
+    // Navigate back to previous screen
+    if (Get.currentRoute == '/create-complaint') {
+      Get.back();
     }
   }
 
@@ -283,6 +340,8 @@ class CreateComplaintController extends GetxController {
     selectedServiceId.value = '';
     ticketNumber.value = '';
     errorMessage.value = '';
+    // Also clear the text controllers
+    ticketNumberController.clear();
   }
 
   // Modify resetForm() to include new properties
@@ -1555,7 +1614,7 @@ class CreateComplaintController extends GetxController {
                   child: Icon(
                     Icons.check_circle,
                     color: Colors.green.shade600,
-                    size: 80,
+                    size: 24,
                     semanticLabel: 'Success',
                   ),
                 );
@@ -1565,7 +1624,7 @@ class CreateComplaintController extends GetxController {
             Text(
               'Report Submitted Successfully!',
               style: TextStyle(
-                fontSize: 22,
+                fontSize: 14,
                 fontWeight: FontWeight.w700,
                 color: Colors.black87,
                 fontFamily: 'Roboto',
@@ -1576,7 +1635,7 @@ class CreateComplaintController extends GetxController {
             Text(
               'Please save this information for future reference:',
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 12,
                 color: Colors.grey.shade700,
               ),
               textAlign: TextAlign.center,
@@ -1595,7 +1654,7 @@ class CreateComplaintController extends GetxController {
                   child: Text(
                     'Please take a screenshot of this information for your records.',
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 10,
                       color: Colors.orange.shade700,
                       fontWeight: FontWeight.w600,
                     ),
@@ -1615,7 +1674,10 @@ class CreateComplaintController extends GetxController {
                         snackPosition: SnackPosition.TOP);
                   },
                   icon: Icon(Icons.copy, size: 18),
-                  label: Text('Copy Details'),
+                  label: Text(
+                    'Copy Details',
+                    style: TextStyle(fontSize: 12),
+                  ),
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.blue.shade600,
                     textStyle: TextStyle(fontSize: 16),
@@ -1633,7 +1695,7 @@ class CreateComplaintController extends GetxController {
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                     elevation: 2,
                   ),
@@ -1657,7 +1719,7 @@ class CreateComplaintController extends GetxController {
         Text(
           label,
           style: TextStyle(
-            fontSize: 16,
+            fontSize: 12,
             fontWeight: FontWeight.w600,
             color: Colors.black87,
           ),
@@ -1667,7 +1729,7 @@ class CreateComplaintController extends GetxController {
           child: Text(
             value,
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 10,
               color: Colors.grey.shade800,
             ),
             textAlign: TextAlign.left,
